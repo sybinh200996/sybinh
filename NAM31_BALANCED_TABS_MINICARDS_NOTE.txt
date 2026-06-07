@@ -1,8 +1,0 @@
-NAM31 - Balanced Tabs + Compact Dashboard
-
-- Không xếp tab chức năng thành một hàng dài nữa.
-- Cụm tab chức năng cân giữa và cùng khổ với banner.
-- Desktop: tab thành lưới 4 cột, không lệch phải.
-- Tablet/mobile: tab tự xuống hàng, dễ bấm hơn.
-- Thu nhỏ 3 mục: Lịch sử phân tích, Giọng nói AI, Thống kê của bạn.
-- Giữ nền từ NAM30, không phá API/Render/GitHub workflow.

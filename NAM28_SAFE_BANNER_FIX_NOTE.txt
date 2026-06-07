@@ -1,2 +1,0 @@
-
-NAM28_SAFE_BANNER_FIX: Revert desktop hero to stable layout, rebalance mobile hero height, keep buttons usable.
