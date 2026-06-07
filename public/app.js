@@ -1,7 +1,7 @@
 const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
-function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();initChatInputUX();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
+function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
 function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
@@ -211,67 +211,6 @@ function loadVoicePrefs(){
     },120);
   }catch{}
 }
-
-let synamChatSending=false;
-let synamVoiceSendTimer=null;
-let synamLastSentKey='';
-let synamLastSentAt=0;
-function getChatInput(){return $('chatText')}
-function resizeChatInput(){
-  const el=getChatInput();
-  if(!el) return;
-  el.style.height='auto';
-  const min=96;
-  const max=260;
-  const next=Math.max(min, Math.min(max, el.scrollHeight || min));
-  el.style.height=next+'px';
-  el.style.overflowY=(el.scrollHeight>max)?'auto':'hidden';
-}
-function resetChatInput(){
-  const el=getChatInput();
-  if(el){el.value=''; resizeChatInput();}
-  clearTimeout(synamVoiceSendTimer);
-  synamVoiceSendTimer=null;
-}
-function setChatSending(on){
-  synamChatSending=Boolean(on);
-  const btn=$('chatSendBtn');
-  if(btn){btn.disabled=Boolean(on); btn.classList.toggle('disabled',Boolean(on));}
-}
-function isDuplicateChat(q,attachments){
-  const key=String(q||'').trim()+'|'+(attachments||[]).map(f=>f.name+':'+f.size).join(',');
-  const now=Date.now();
-  if(key && key===synamLastSentKey && now-synamLastSentAt<2500) return true;
-  synamLastSentKey=key;
-  synamLastSentAt=now;
-  return false;
-}
-function initChatInputUX(){
-  const el=getChatInput();
-  if(!el) return;
-  el.style.minHeight='96px';
-  el.style.maxHeight='260px';
-  el.style.overflowY='hidden';
-  el.style.resize='none';
-  el.addEventListener('input',resizeChatInput);
-  el.addEventListener('keydown',(e)=>{
-    if(e.key==='Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendChat();
-    }
-  });
-  resizeChatInput();
-}
-function scheduleVoiceSend(delay=2000){
-  clearTimeout(synamVoiceSendTimer);
-  synamVoiceSendTimer=setTimeout(()=>{
-    const latest=$('chatText')?.value?.trim();
-    if(latest && !voiceListening && !synamChatSending){
-      sendChat();
-    }
-  },delay);
-}
-
 let voiceRecognizer=null;
 let voiceListening=false;
 function getSpeechRecognition(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
@@ -297,17 +236,14 @@ function startVoiceInput(){
         if(event.results[i].isFinal) finalText+=txt;
         else interim+=txt;
       }
-      if($('chatText')){
-        $('chatText').value=(finalText||interim).trim();
-        resizeChatInput();
-      }
+      if($('chatText')) $('chatText').value=(finalText||interim).trim();
     };
     voiceRecognizer.onerror=(e)=>{setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
     voiceRecognizer.onend=()=>{
       voiceListening=false;
-      setVoiceStatus('🎙️ Đã dừng nghe - sẽ gửi sau 2 giây nếu bạn không nói tiếp',false);
+      setVoiceStatus('🎙️ Đã dừng nghe',false);
       const q=$('chatText')?.value?.trim();
-      if(q) scheduleVoiceSend(2000);
+      if(q) sendChat();
     };
     voiceRecognizer.start();
   }catch(e){voiceListening=false;setVoiceStatus('🎙️ Không khởi động được micro',false);toast('Không mở được micro: '+(e.message||e))}
@@ -423,7 +359,7 @@ async function sendImageAI(){
   const attachments=[...chatAttachments];
   if(!prompt){toast('Nhập mô tả ảnh hoặc yêu cầu chỉnh sửa đã nhé');return}
   if(isEdit && !imageEditDataUrl && !attachments.some(f=>String(f.type||'').startsWith('image/'))){toast('Chỉnh sửa ảnh cần tải ảnh gốc');return}
-  resetChatInput();
+  input.value='';
   const title=isEdit?'Chỉnh sửa ảnh AI':'Tạo ảnh AI';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}<b>${title}</b><br>${escapeHtml(prompt)}</div>`);
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg" id="typing">Gemini đang ${isEdit?'chỉnh sửa':'tạo'} ảnh...</div>`);
@@ -444,55 +380,37 @@ function authHeaders(){const token=localStorage.getItem('synam_token')||'';retur
 async function postJSON(url,data){const r=await fetch(url,{method:'POST',headers:authHeaders(),body:JSON.stringify(data)});if(!r.ok)throw new Error(await r.text());return r.json()}
 async function getJSON(url){const token=localStorage.getItem('synam_token')||'';const r=await fetch(url,{headers:token?{'Authorization':'Bearer '+token}:{}});if(!r.ok)throw new Error(await r.text());return r.json()}
 
-async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');$('chatText').value=q;resizeChatInput();sendChat()}
-function getChatHistoryForAI(limit=24){
-  return [...document.querySelectorAll('#chatLog .msg')]
-    .filter(el=>!el.classList.contains('typing') && !el.id)
-    .slice(-limit)
-    .map(el=>({
-      role:el.classList.contains('me')?'user':'assistant',
-      text:String(el.innerText||'').replace(/Trả lời bởi:.*?(\n|$)/g,'').trim().slice(0,1800)
-    }))
-    .filter(x=>x.text && !/AI đang phân tích|Đang trả lời/i.test(x.text));
-}
+async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');$('chatText').value=q;sendChat()}
 async function sendChat(){
   if(chatMode!=='chat') return sendImageAI();
-  if(synamChatSending){toast('AI đang trả lời, đợi xong rồi gửi tiếp nhé');return}
   const input=$('chatText');
-  const q=input?.value?.trim()||'';
+  const q=input.value.trim();
   const attachments=[...chatAttachments];
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
-  if(isDuplicateChat(q,attachments)){toast('Đã chặn gửi trùng câu hỏi');return}
-  const history=getChatHistoryForAI(24);
-  resetChatInput();
-  setChatSending(true);
+  input.value='';
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}${escapeHtml(q||'Phân tích file/ảnh đã tải lên')}${attachLabel}</div>`);
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
   chatAttachments=[];renderChatAttachments();
   try{
+    const history=[...document.querySelectorAll('#chatLog .msg')].slice(-10).map(el=>({role:el.classList.contains('me')?'user':'assistant',text:el.innerText||''}));
     let data;
     const provider=$('chatProvider')?.value||'auto';
     const model=$('chatModel')?.value||'';
     const council=Boolean($('chatCouncil')?.checked);
-    const context={clientTime:new Date().toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}),source:'Sỹ Năm AI Chat',today:new Date().toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})};
     if(attachments.length){
-      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context});
+      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Mystic AI Chat - file/image'}});
     }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context});
+      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Multi-AI Chat'}});
     }
     const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
-    const providerLabel=data.provider==='local'?'':(data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'');
-    const typing=$('typing');
-    if(typing) typing.outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${providerLabel}${markdownish(text)}</div>`;
-    lastResult=text;saveHistory(data.label||'Sỹ Năm AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
+    const providerLabel=data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'';
+    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 ${escapeHtml(data.label||'Sỹ Năm AI')}</span>${providerLabel}${markdownish(text)}</div>`;
+    lastResult=text;saveHistory(data.label||'Sỹ Năm Multi-AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);
-    const typing=$('typing');
-    if(typing) typing.outerHTML=`<div class="msg error"><b>AI chưa phản hồi được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key / mạng / quota hoặc đổi provider khác rồi thử lại.</small></div>`;scrollChatBottom();
+    $('typing').outerHTML=`<div class="msg error"><b>AI chưa phản hồi được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key / mạng / quota hoặc đổi provider khác rồi thử lại.</small></div>`;scrollChatBottom();
     lastResult='';
-  }finally{
-    setChatSending(false);
   }
 }
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
