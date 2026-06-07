@@ -711,10 +711,32 @@ app.post("/api/ai/user-keys", async (req, res) => {
 app.post("/api/multi-ai/chat", async (req, res) => {
   try {
     const user = await currentUserFromRequest(req).catch(() => null);
-    const { message, provider = "auto", model = "", council = false, context } = req.body || {};
+    const { message, provider = "auto", model = "", council = false, context, history } = req.body || {};
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi cho Multi-AI." });
-    const prompt = `Bạn là Sỹ Năm Multi-AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.\n\nNGỮ CẢNH:\n${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}\n\nCÂU HỎI:\n${cleanMessage}`;
+
+    const historyText = Array.isArray(history)
+      ? history.slice(-24).map(m => `${m.role === "assistant" ? "AI" : "Người dùng"}: ${String(m.text || "").slice(0, 2500)}`).join("\n")
+      : "";
+
+    const prompt = `Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.
+
+QUY TẮC NHỚ HỘI THOẠI:
+- Luôn đọc phần LỊCH SỬ CHAT GẦN ĐÂY trước khi trả lời.
+- Nếu câu hỏi hiện tại dùng các từ như "nó", "cái đó", "ý trên", "tiếp", "vậy", "câu thứ nhất", hãy hiểu theo nội dung gần nhất trong lịch sử.
+- Không trả lời lệch chủ đề nếu câu hỏi đang nối tiếp câu trước.
+- Nếu lịch sử chưa đủ rõ, hãy hỏi lại ngắn gọn thay vì đoán bừa.
+- Không tự nêu tên nhà cung cấp AI hoặc model trong nội dung trả lời.
+
+NGỮ CẢNH APP:
+${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
+
+LỊCH SỬ CHAT GẦN ĐÂY:
+${historyText || "Chưa có"}
+
+CÂU HỎI MỚI CỦA NGƯỜI DÙNG:
+${cleanMessage}`;
+
     const safeProvider = provider === "auto" ? "auto" : internalProviderId(provider);
     const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: safeProvider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
     res.json({ ok: true, label: result.provider === "council" ? "So sánh nhiều AI" : "Sỹ Năm AI", text: result.text });

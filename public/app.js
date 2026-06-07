@@ -450,6 +450,15 @@ async function getJSON(url){const token=localStorage.getItem('synam_token')||'';
 
 async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');$('chatText').value=q;sendChat()}
 let chatSending=false;
+function getChatMemory(limit=24){
+  const nodes=[...document.querySelectorAll('#chatLog .msg:not(.typing):not(.error)')];
+  return nodes.map(el=>{
+    const isUser=el.classList.contains('me');
+    let text=(el.innerText||'').replace(/^🧑\s*/,'').replace(/^🤖\s*Sỹ Năm AI\s*/,'').replace(/Trả lời bởi:\s*Sỹ Năm AI/gi,'').trim();
+    text=text.replace(/\s+/g,' ').slice(0,3500);
+    return text?{role:isUser?'user':'assistant',text}:null;
+  }).filter(Boolean).slice(-limit);
+}
 async function sendChat(){
   if(chatSending){toast('AI đang trả lời, đợi xong rồi gửi tiếp nhé');return}
   if(chatMode!=='chat') return sendImageAI();
@@ -457,6 +466,7 @@ async function sendChat(){
   const q=input.value.trim();
   const attachments=[...chatAttachments];
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
+  const history=getChatMemory(24); // lấy ngữ cảnh TRƯỚC khi thêm câu hỏi mới, tránh lẫn dòng typing
   chatSending=true;
   input.value='';autoGrowChatInput();
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
@@ -464,15 +474,15 @@ async function sendChat(){
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
   chatAttachments=[];renderChatAttachments();
   try{
-    const history=[...document.querySelectorAll('#chatLog .msg')].slice(-10).map(el=>({role:el.classList.contains('me')?'user':'assistant',text:el.innerText||''}));
     let data;
     const provider=$('chatProvider')?.value||'auto';
     const model=$('chatModel')?.value||'';
     const council=Boolean($('chatCouncil')?.checked);
+    const chatContext={clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm AI Chat',memoryTurns:history.length};
     if(attachments.length){
-      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Mystic AI Chat - file/image'}});
+      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{...chatContext,source:'Sỹ Năm Mystic AI Chat - file/image'}});
     }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm AI Chat'}});
+      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context:chatContext});
     }
     const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
     const providerLabel=data.label?`<small>Trả lời bởi: Sỹ Năm AI</small><br>`:'';
