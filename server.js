@@ -153,12 +153,12 @@ function publicUser(user) {
 
 const AI_PROVIDERS = {
   gemini: {
-    label: "Gemini / AI Chính",
+    label: "Google Gemini",
     keyEnv: "GEMINI_API_KEY",
     modelEnv: "GEMINI_MODEL",
     defaultModel: "gemini-2.5-flash",
     models: ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite"],
-    freeHint: "Chế độ AI chính, dùng cho hỏi đáp và phân tích nội dung."
+    freeHint: "Google AI Studio thường có free tier để test."
   },
   groq: {
     label: "Groq Free / Siêu nhanh",
@@ -166,15 +166,15 @@ const AI_PROVIDERS = {
     modelEnv: "GROQ_MODEL",
     defaultModel: "llama-3.3-70b-versatile",
     models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it", "mixtral-8x7b-32768"],
-    freeHint: "Chế độ phản hồi nhanh, phù hợp câu hỏi ngắn và lập trình."
+    freeHint: "Groq có quota miễn phí, trả lời rất nhanh. Lấy key tại console.groq.com."
   },
   openrouter: {
-    label: "OpenRouter Free / Dự phòng",
+    label: "OpenRouter Free Models",
     keyEnv: "OPENROUTER_API_KEY",
     modelEnv: "OPENROUTER_MODEL",
-    defaultModel: "openrouter/free",
-    models: ["openrouter/free", "deepseek/deepseek-r1:free", "deepseek/deepseek-chat-v3-0324:free", "qwen/qwen3-235b-a22b:free", "meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free"],
-    freeHint: "Chế độ dự phòng, dùng khi AI chính bị giới hạn hoặc quá tải."
+    defaultModel: "deepseek/deepseek-r1:free",
+    models: ["deepseek/deepseek-r1:free", "deepseek/deepseek-chat-v3-0324:free", "qwen/qwen3-235b-a22b:free", "meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free"],
+    freeHint: "OpenRouter có một số model :free. Lấy key tại openrouter.ai rồi dán vào đây."
   },
   openai: {
     label: "ChatGPT / OpenAI",
@@ -182,65 +182,49 @@ const AI_PROVIDERS = {
     modelEnv: "OPENAI_MODEL",
     defaultModel: "gpt-4o-mini",
     models: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"],
-    freeHint: "Chế độ cao cấp, bật khi có API key riêng."
+    freeHint: "Cần API key OpenAI, thường phải có billing."
   },
   claude: {
-    label: "Claude / Anthropic",
+    label: "Anthropic Claude",
     keyEnv: "CLAUDE_API_KEY",
     modelEnv: "CLAUDE_MODEL",
     defaultModel: "claude-3-5-haiku-latest",
     models: ["claude-3-5-haiku-latest", "claude-3-5-sonnet-latest", "claude-3-opus-latest"],
-    freeHint: "Chế độ cao cấp thiên về phân tích và viết nội dung."
+    freeHint: "Cần API key Anthropic."
   },
   deepseek: {
-    label: "DeepSeek / Lập luận",
+    label: "DeepSeek",
     keyEnv: "DEEPSEEK_API_KEY",
     modelEnv: "DEEPSEEK_MODEL",
     defaultModel: "deepseek-chat",
     models: ["deepseek-chat", "deepseek-reasoner"],
-    freeHint: "Chế độ thiên về suy luận và lập trình."
+    freeHint: "Có thể test bằng key DeepSeek nếu tài khoản còn quota."
   },
   grok: {
-    label: "Grok / Sáng tạo",
+    label: "xAI Grok",
     keyEnv: "GROK_API_KEY",
     modelEnv: "GROK_MODEL",
     defaultModel: "grok-2-latest",
     models: ["grok-2-latest", "grok-2-vision-latest"],
-    freeHint: "Chế độ sáng tạo, bật khi có API key riêng."
+    freeHint: "Cần API key xAI."
   },
   qwen: {
-    label: "Qwen / Tổng hợp",
+    label: "Alibaba Qwen",
     keyEnv: "QWEN_API_KEY",
     modelEnv: "QWEN_MODEL",
     defaultModel: "qwen-plus",
     models: ["qwen-plus", "qwen-turbo", "qwen-max"],
-    freeHint: "Chế độ tổng hợp, bật khi có API key riêng."
+    freeHint: "Dùng DashScope/OpenAI-compatible endpoint nếu có key."
   },
   mistral: {
-    label: "Mistral / Gọn nhẹ",
+    label: "Mistral AI",
     keyEnv: "MISTRAL_API_KEY",
     modelEnv: "MISTRAL_MODEL",
     defaultModel: "mistral-small-latest",
     models: ["mistral-small-latest", "mistral-large-latest", "codestral-latest"],
-    freeHint: "Chế độ gọn nhẹ, bật khi có API key riêng."
+    freeHint: "Cần API key Mistral."
   }
 };
-
-
-const PROVIDER_PUBLIC_IDS = {
-  gemini: "ai_main",
-  groq: "ai_fast",
-  openrouter: "ai_backup",
-  openai: "ai_pro1",
-  claude: "ai_pro2",
-  deepseek: "ai_reason",
-  grok: "ai_creative",
-  qwen: "ai_general",
-  mistral: "ai_light"
-};
-const PROVIDER_INTERNAL_IDS = Object.fromEntries(Object.entries(PROVIDER_PUBLIC_IDS).map(([k, v]) => [v, k]));
-function publicProviderId(id) { return PROVIDER_PUBLIC_IDS[id] || id; }
-function internalProviderId(id) { return PROVIDER_INTERNAL_IDS[id] || id; }
 
 function maskKey(key = "") {
   const s = String(key || "");
@@ -265,12 +249,12 @@ function enabledProvidersForUser(user = null) {
   return Object.entries(AI_PROVIDERS).map(([id, info]) => {
     const key = pickProviderKey(id, user);
     return {
-      id: publicProviderId(id),
+      id,
       label: info.label,
       configured: Boolean(key),
       maskedKey: maskKey(key),
-      model: "auto",
-      models: [],
+      model: pickProviderModel(id, "", user),
+      models: info.models,
       freeHint: info.freeHint
     };
   });
@@ -279,7 +263,7 @@ function enabledProvidersForUser(user = null) {
 function autoProviderOrder(message = "", preferred = "auto", user = null) {
   const text = String(message || "").toLowerCase();
   let order;
-  if (preferred && preferred !== "auto") order = [preferred];
+  if (preferred && preferred !== "auto") order = [preferred, "groq", "openrouter", "gemini", "deepseek", "qwen", "openai", "claude", "grok", "mistral"];
   else if (/code|lập trình|debug|node|react|javascript|python|api|server/.test(text)) order = ["groq", "openrouter", "claude", "openai", "deepseek", "gemini", "qwen", "mistral", "grok"];
   else if (/ảnh|image|vision|pdf|file|phân tích ảnh|xem tướng|chỉ tay/.test(text)) order = ["gemini", "openai", "claude", "qwen", "grok", "deepseek", "groq", "openrouter"];
   else if (/rẻ|free|miễn phí|tiết kiệm/.test(text)) order = ["groq", "openrouter", "gemini", "deepseek", "qwen", "mistral", "openai", "claude", "grok"];
@@ -304,7 +288,7 @@ async function callOpenAICompatible({ provider, apiKey, model, prompt }) {
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
-      ...(provider === "openrouter" ? { "HTTP-Referer": process.env.OPENROUTER_SITE_URL || "https://synam.online", "X-Title": process.env.OPENROUTER_APP_NAME || "SyNam AI" } : {})
+      ...(provider === "openrouter" ? { "HTTP-Referer": "https://synam-ai.local", "X-Title": "Sỹ Năm Mystic AI" } : {})
     },
     body: JSON.stringify({
       model,
@@ -314,7 +298,7 @@ async function callOpenAICompatible({ provider, apiKey, model, prompt }) {
   }), 90000);
   const json = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(json?.error?.message || json?.message || `HTTP ${response.status}`);
-  return json?.choices?.[0]?.message?.content || json?.choices?.[0]?.message?.reasoning || json?.choices?.[0]?.text || "";
+  return json?.choices?.[0]?.message?.content || json?.choices?.[0]?.text || "";
 }
 
 async function callClaude({ apiKey, model, prompt }) {
@@ -378,8 +362,8 @@ async function tryMultiAI({ prompt, parts, preferredProvider = "auto", requested
       err.attempts = attempts;
       throw err;
     }
-    const text = results.map((r, i) => `## Phương án AI ${i + 1}\n${r.text}`).join("\n\n---\n\n");
-    return { provider: "council", label: "So sánh nhiều AI", model: "auto", text, results: [], attempts: [] };
+    const text = results.map(r => `## ${r.label} (${r.model})\n${r.text}`).join("\n\n---\n\n");
+    return { provider: "council", label: "Hội Đồng AI", model: results.map(r => r.model).join(", "), text, results, attempts };
   }
   let lastError;
   for (const provider of order) {
@@ -481,14 +465,87 @@ function currentVietnamTime() {
   return new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+
+
+// ===== NAM27 CLEAN AI CORE STABLE FIX =====
+const VN_WEEKDAYS = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+function vietnamDateFromNow(offsetDays = 0) {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  }).formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {});
+  const isoNoon = `${parts.year}-${parts.month}-${parts.day}T12:00:00+07:00`;
+  const vnDate = new Date(isoNoon);
+  return { date: vnDate, day: parts.day, month: parts.month, year: parts.year, hour: parts.hour, minute: parts.minute, weekday: VN_WEEKDAYS[vnDate.getUTCDay()] };
+}
+function formatVietnamDate(offsetDays = 0) {
+  const x = vietnamDateFromNow(offsetDays);
+  return `${x.weekday}, ngày ${x.day}/${x.month}/${x.year}`;
+}
+function directDateTimeAnswer(message = '') {
+  const q = String(message || '').toLowerCase().normalize('NFC');
+  const asksDate = /(hôm nay|hom nay|ngày mai|ngay mai|ngày kia|ngay kia|hôm qua|hom qua|thứ mấy|thu may|ngày bao nhiêu|ngay bao nhieu|mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q);
+  if (!asksDate) return null;
+  let offset = 0;
+  let label = 'Hôm nay';
+  if (/(ngày kia|ngay kia)/i.test(q)) { offset = 2; label = 'Ngày kia'; }
+  else if (/(ngày mai|ngay mai|\bmai\b)/i.test(q)) { offset = 1; label = 'Ngày mai'; }
+  else if (/(hôm qua|hom qua)/i.test(q)) { offset = -1; label = 'Hôm qua'; }
+  const x = vietnamDateFromNow(offset);
+  if (/(mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q)) {
+    return `${label} là **${x.weekday}, ngày ${x.day}/${x.month}/${x.year}**. Hiện tại ở Việt Nam khoảng **${x.hour}:${x.minute}**.`;
+  }
+  return `${label} là **${x.weekday}, ngày ${x.day}/${x.month}/${x.year}**.`;
+}
+function chatHistoryToText(history, limit = 24) {
+  if (!Array.isArray(history)) return '';
+  return history.slice(-limit)
+    .filter(m => m && String(m.text || '').trim() && !/AI đang phân tích|Đang trả lời|typing/i.test(String(m.text || '')))
+    .map(m => `${m.role === 'assistant' ? 'AI' : 'Người dùng'}: ${String(m.text || '').slice(0, 1800)}`)
+    .join('\n');
+}
+const CAN = ['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
+const CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+const NAP_AM_60 = [
+  'Hải Trung Kim','Hải Trung Kim','Lư Trung Hỏa','Lư Trung Hỏa','Đại Lâm Mộc','Đại Lâm Mộc','Lộ Bàng Thổ','Lộ Bàng Thổ','Kiếm Phong Kim','Kiếm Phong Kim',
+  'Sơn Đầu Hỏa','Sơn Đầu Hỏa','Giản Hạ Thủy','Giản Hạ Thủy','Thành Đầu Thổ','Thành Đầu Thổ','Bạch Lạp Kim','Bạch Lạp Kim','Dương Liễu Mộc','Dương Liễu Mộc',
+  'Tuyền Trung Thủy','Tuyền Trung Thủy','Ốc Thượng Thổ','Ốc Thượng Thổ','Tích Lịch Hỏa','Tích Lịch Hỏa','Tùng Bách Mộc','Tùng Bách Mộc','Trường Lưu Thủy','Trường Lưu Thủy',
+  'Sa Trung Kim','Sa Trung Kim','Sơn Hạ Hỏa','Sơn Hạ Hỏa','Bình Địa Mộc','Bình Địa Mộc','Bích Thượng Thổ','Bích Thượng Thổ','Kim Bạch Kim','Kim Bạch Kim',
+  'Phú Đăng Hỏa','Phú Đăng Hỏa','Thiên Hà Thủy','Thiên Hà Thủy','Đại Trạch Thổ','Đại Trạch Thổ','Thoa Xuyến Kim','Thoa Xuyến Kim','Tang Đố Mộc','Tang Đố Mộc',
+  'Đại Khê Thủy','Đại Khê Thủy','Sa Trung Thổ','Sa Trung Thổ','Thiên Thượng Hỏa','Thiên Thượng Hỏa','Thạch Lựu Mộc','Thạch Lựu Mộc','Đại Hải Thủy','Đại Hải Thủy'
+];
+function elementFromNapAm(nap = '') {
+  if (nap.includes('Kim')) return 'Kim';
+  if (nap.includes('Mộc')) return 'Mộc';
+  if (nap.includes('Thủy')) return 'Thủy';
+  if (nap.includes('Hỏa')) return 'Hỏa';
+  if (nap.includes('Thổ')) return 'Thổ';
+  return 'Không rõ';
+}
+function parseBirthYear(birth) {
+  const m = String(birth || '').match(/(19|20)\d{2}/);
+  return m ? parseInt(m[0], 10) : null;
+}
+function fixedLunarProfile(person = {}, idx = 1) {
+  const birthDate = person.birthDate || person.birth || person.date || '';
+  const year = parseBirthYear(birthDate);
+  if (!year) return { name: person.name || `Người ${idx}`, birthDate, error: 'Thiếu năm sinh hợp lệ' };
+  const cycleIndex = ((year - 1924) % 60 + 60) % 60;
+  const canChi = `${CAN[((year - 4) % 10 + 10) % 10]} ${CHI[((year - 4) % 12 + 12) % 12]}`;
+  const napAm = NAP_AM_60[cycleIndex];
+  return { name: person.name || `Người ${idx}`, birthDate, year, canChi, napAm, nguHanh: elementFromNapAm(napAm), note: 'Can Chi/Nạp âm/Ngũ hành được tính cố định bằng code, AI không được tự tính lại.' };
+}
+// ===== END NAM27 CLEAN AI CORE STABLE FIX =====
+
 function cleanError(error) {
   const msg = error?.message || "Có lỗi không xác định.";
   const lower = msg.toLowerCase();
-  if (msg.includes("TIMEOUT_GEMINI")) return "AI phản hồi quá lâu. Kiểm tra mạng, quota hoặc thử lại bằng cấu hình nhẹ hơn.";
-  if (lower.includes("api key") || lower.includes("apikey") || lower.includes("permission") || lower.includes("unauthorized")) return "API key AI sai, thiếu quyền, hoặc chưa được thêm đúng vào file .env.";
-  if (lower.includes("quota") || lower.includes("rate") || lower.includes("429")) return "API key AI hết quota, bị giới hạn tốc độ hoặc tài khoản đang bị giới hạn.";
-  if (lower.includes("404") || lower.includes("not found") || lower.includes("model")) return "Model AI không khả dụng với API key này. Server đã thử cấu hình dự phòng nhưng vẫn lỗi.";
-  if (lower.includes("fetch failed") || lower.includes("network") || lower.includes("econn") || lower.includes("enotfound")) return "Server Node không kết nối được tới AI. Kiểm tra mạng, proxy/VPN, DNS hoặc tường lửa.";
+  if (msg.includes("TIMEOUT_GEMINI")) return "Gemini phản hồi quá lâu. Kiểm tra mạng, quota hoặc thử lại bằng model nhẹ hơn.";
+  if (lower.includes("api key") || lower.includes("apikey") || lower.includes("permission") || lower.includes("unauthorized")) return "API key Gemini sai, thiếu quyền, hoặc chưa được thêm đúng vào file .env.";
+  if (lower.includes("quota") || lower.includes("rate") || lower.includes("429")) return "API key Gemini hết quota, bị giới hạn tốc độ hoặc tài khoản đang bị giới hạn.";
+  if (lower.includes("404") || lower.includes("not found") || lower.includes("model")) return "Model Gemini không khả dụng với API key này. Server đã thử model dự phòng nhưng vẫn lỗi.";
+  if (lower.includes("fetch failed") || lower.includes("network") || lower.includes("econn") || lower.includes("enotfound")) return "Server Node không kết nối được tới Gemini. Kiểm tra mạng, proxy/VPN, DNS hoặc tường lửa.";
   return msg;
 }
 
@@ -516,7 +573,7 @@ async function tryModels(parts, preferredModel = "auto") {
     }
   }
 
-  const finalError = lastError || new Error("Không có cấu hình AI nào để thử.");
+  const finalError = lastError || new Error("Không có model Gemini nào để thử.");
   finalError.attempts = attempts;
   throw finalError;
 }
@@ -689,17 +746,15 @@ app.post("/api/ai/user-keys", async (req, res) => {
     if (!saved) return res.status(404).json({ error: "Không tìm thấy tài khoản." });
     saved.aiKeys = saved.aiKeys || {};
     saved.aiModels = saved.aiModels || {};
-    for (const publicId of Object.keys(keys || {})) {
-      const id = internalProviderId(publicId);
-      if (!AI_PROVIDERS[id]) continue;
-      const value = String(keys[publicId] || "").trim();
-      if (value) saved.aiKeys[id] = value;
-    }
-    for (const publicId of Object.keys(models || {})) {
-      const id = internalProviderId(publicId);
-      if (!AI_PROVIDERS[id]) continue;
-      const value = String(models[publicId] || "").trim();
-      if (value) saved.aiModels[id] = value;
+    for (const id of Object.keys(AI_PROVIDERS)) {
+      if (Object.prototype.hasOwnProperty.call(keys, id)) {
+        const value = String(keys[id] || "").trim();
+        if (value) saved.aiKeys[id] = value;
+      }
+      if (Object.prototype.hasOwnProperty.call(models, id)) {
+        const value = String(models[id] || "").trim();
+        if (value) saved.aiModels[id] = value;
+      }
     }
     await writeUsers(users);
     res.json({ ok: true, providers: enabledProvidersForUser(saved), note: "Đã lưu API key cá nhân vào data/users.json. Bản demo chưa mã hóa key, chỉ dùng test cá nhân." });
@@ -715,55 +770,69 @@ app.post("/api/multi-ai/chat", async (req, res) => {
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi cho Multi-AI." });
 
-    const historyText = Array.isArray(history)
-      ? history.slice(-24).map(m => `${m.role === "assistant" ? "AI" : "Người dùng"}: ${String(m.text || "").slice(0, 2500)}`).join("\n")
-      : "";
+    const dateAnswer = directDateTimeAnswer(cleanMessage);
+    if (dateAnswer) {
+      return res.json({ ok: true, provider: "local", label: "Sỹ Năm AI", model: "local-date-time", text: dateAnswer });
+    }
 
+    const historyText = chatHistoryToText(history, 24);
     const prompt = `Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.
 
-QUY TẮC NHỚ HỘI THOẠI:
-- Luôn đọc phần LỊCH SỬ CHAT GẦN ĐÂY trước khi trả lời.
-- Nếu câu hỏi hiện tại dùng các từ như "nó", "cái đó", "ý trên", "tiếp", "vậy", "câu thứ nhất", hãy hiểu theo nội dung gần nhất trong lịch sử.
-- Không trả lời lệch chủ đề nếu câu hỏi đang nối tiếp câu trước.
-- Nếu lịch sử chưa đủ rõ, hãy hỏi lại ngắn gọn thay vì đoán bừa.
-- Không tự nêu tên nhà cung cấp AI hoặc model trong nội dung trả lời.
+THỜI GIAN HỆ THỐNG VIỆT NAM:
+- Hôm nay: ${formatVietnamDate(0)}
+- Ngày mai: ${formatVietnamDate(1)}
+- Ngày kia: ${formatVietnamDate(2)}
+
+QUY TẮC BẮT BUỘC:
+- Luôn bám theo lịch sử hội thoại bên dưới nếu câu hỏi mới có liên quan câu trước.
+- Không hỏi ngược người dùng hôm nay là ngày nào/thứ mấy; dữ liệu thời gian đã có ở trên.
+- Nếu câu hỏi là ngày giờ đơn giản, trả lời trực tiếp theo thời gian hệ thống.
+- Không bịa dữ kiện. Nếu thiếu dữ liệu thật sự, nói rõ thiếu dữ liệu nào.
 
 NGỮ CẢNH APP:
 ${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
 
-LỊCH SỬ CHAT GẦN ĐÂY:
+LỊCH SỬ HỘI THOẠI GẦN ĐÂY:
 ${historyText || "Chưa có"}
 
-CÂU HỎI MỚI CỦA NGƯỜI DÙNG:
+CÂU HỎI MỚI:
 ${cleanMessage}`;
-
-    const safeProvider = provider === "auto" ? "auto" : internalProviderId(provider);
-    const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: safeProvider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
-    res.json({ ok: true, label: result.provider === "council" ? "So sánh nhiều AI" : "Sỹ Năm AI", text: result.text });
+    const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: provider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
+    res.json({ ok: true, ...result });
   } catch (error) {
-    res.status(500).json({ ok: false, error: cleanError(error).replace(/Gemini|Groq|OpenRouter|OpenAI|ChatGPT|Claude|DeepSeek|Grok|Qwen|Mistral/gi, "AI") });
+    res.status(500).json({ ok: false, error: cleanError(error), attempts: error.attempts || [] });
   }
 });
 
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
-    hasAIKey: Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || process.env.CLAUDE_API_KEY),
-    aiStatus: "private",
-    app: "Sỹ Năm Mystic AI Ultimate Pro"
+    hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
+    models: MODELS,
+    defaultModel: process.env.GEMINI_MODEL || "auto",
+    imageModels: resolveImageModelOrder("auto"),
+    imageModel: resolveImageModelOrder("auto")[0] || "auto",
+    multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
+    app: "Sỹ Năm Mystic AI Ultimate Pro NAM20 Multi-AI"
   });
 });
 
 app.get("/api/models", (req, res) => {
-  res.json({ ok: true, aiStatus: "private", note: "Danh sách model được ẩn khỏi giao diện công khai." });
+  res.json({
+    ok: true,
+    chatModels: MODELS,
+    imageModels: resolveImageModelOrder("auto"),
+    activeImageModel: resolveImageModelOrder("auto")[0] || "auto",
+    note: "Có thể đổi GEMINI_IMAGE_MODEL hoặc GEMINI_IMAGE_MODELS trong .env mà không cần sửa server.js."
+  });
 });
 
 app.get("/api/gemini-check", async (req, res) => {
   try {
-    if (!ai) return res.status(400).json({ error: "Chưa có API key AI trong file .env." });
+    if (!ai) return res.status(400).json({ error: "Chưa có GEMINI_API_KEY trong file .env." });
     const preferredModel = req.query.model || "auto";
     const result = await tryModels([{ text: "Trả lời ngắn gọn: OK" }], preferredModel);
-    res.json({ ok: true, text: result.text });
+    res.json({ ok: true, model: result.model, text: result.text });
   } catch (error) {
     res.status(500).json({ ok: false, error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -774,7 +843,7 @@ app.post("/api/vision-ai", async (req, res) => {
   try {
     if (!ai) {
       return res.status(400).json({
-        error: "Chưa cấu hình API key AI. Phần xem ảnh cần server AI."
+        error: "Chưa có GEMINI_API_KEY. Phần xem ảnh AI cần server Gemini."
       });
     }
 
@@ -901,7 +970,7 @@ DỮ LIỆU:
 app.post("/api/chat-ai", async (req, res) => {
   try {
     if (!ai) {
-      return res.status(400).json({ error: "Chưa cấu hình API key AI. Chatbot cần server AI." });
+      return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Chatbot AI cần server Gemini." });
     }
 
     const { message, attachments, context, history, geminiModel } = req.body || {};
@@ -912,16 +981,23 @@ app.post("/api/chat-ai", async (req, res) => {
       return res.status(400).json({ error: "Bạn cần nhập câu hỏi hoặc tải ảnh/file lên trước." });
     }
 
-    const historyText = Array.isArray(history)
-      ? history.slice(-8).map(m => `${m.role === "assistant" ? "AI" : "Người dùng"}: ${String(m.text || "").slice(0, 2000)}`).join("\n")
-      : "";
+    const dateAnswer = directDateTimeAnswer(cleanMessage);
+    if (dateAnswer && files.length === 0) {
+      return res.json({ ok: true, model: "local-date-time", text: dateAnswer });
+    }
+
+    const historyText = chatHistoryToText(history, 24);
 
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
-Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không tự nêu tên nhà cung cấp AI hoặc model đang sử dụng.
+Bạn là chatbot Gemini AI thật trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
 
-THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
+THỜI GIAN HỆ THỐNG VIỆT NAM:
+- Hiện tại: ${currentVietnamTime()}
+- Hôm nay: ${formatVietnamDate(0)}
+- Ngày mai: ${formatVietnamDate(1)}
+- Ngày kia: ${formatVietnamDate(2)}
 
 QUY TẮC:
 - Trả lời bằng tiếng Việt, dễ hiểu, có Markdown đẹp.
@@ -930,6 +1006,9 @@ QUY TẮC:
 - Không bịa nội dung file nếu không đọc được.
 - Với nội dung tử vi/xem tướng, chỉ xem là tham khảo văn hóa, không phán chắc số phận/sức khỏe/tài chính/pháp lý.
 - Nếu câu hỏi là kỹ thuật, trả lời theo từng bước cụ thể.
+- Luôn bám theo LỊCH SỬ CHAT GẦN ĐÂY nếu câu hỏi mới liên quan câu trước.
+- Không hỏi ngược người dùng hôm nay/ngày mai là thứ mấy; dữ liệu thời gian đã có ở trên.
+- Không bịa dữ kiện; thiếu dữ liệu thì nói rõ thiếu gì.
 
 NGỮ CẢNH APP HIỆN TẠI:
 ${contextText}
@@ -1005,7 +1084,7 @@ async function tryImageModels(parts, preferredModel = "auto") {
         extracted = extractImagesFromGeminiResponse(response);
       }
       if (extracted.images.length) return { model, ...extracted };
-      const err = new Error("AI không trả ảnh. Có thể API key chưa được cấp quyền tạo/chỉnh ảnh hoặc cấu hình không hỗ trợ image output.");
+      const err = new Error("Model không trả ảnh. Có thể API key chưa được cấp quyền tạo/chỉnh ảnh hoặc model không hỗ trợ image output.");
       err.responseText = extracted.text;
       throw err;
     } catch (err) {
@@ -1015,16 +1094,16 @@ async function tryImageModels(parts, preferredModel = "auto") {
       lastError = err;
     }
   }
-  const finalError = lastError || new Error("Không có cấu hình AI tạo ảnh nào để thử.");
+  const finalError = lastError || new Error("Không có model Gemini tạo ảnh nào để thử.");
   finalError.attempts = attempts;
-  finalError.message = `${cleanError(finalError)} | Đã thử cấu hình ảnh: ${attempts.map(a => `${a.model}: ${a.error}`).join(" ; ") || "không có"}`;
+  finalError.message = `${cleanError(finalError)} | Đã thử model ảnh: ${attempts.map(a => `${a.model}: ${a.error}`).join(" ; ") || "không có"}`;
   throw finalError;
 }
 
 app.post("/api/image-ai", async (req, res) => {
   try {
     if (!ai) {
-      return res.status(400).json({ error: "Chưa cấu hình API key AI. Tạo/chỉnh ảnh cần API AI thật." });
+      return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Tạo/chỉnh ảnh AI cần Gemini API thật." });
     }
     const { mode, prompt, image, attachments, geminiModel } = req.body || {};
     const cleanPrompt = String(prompt || "").trim();
@@ -1065,7 +1144,7 @@ QUY TẮC:
 
 app.post("/api/teacher-ai", async (req, res) => {
   try {
-    if (!ai) return res.status(400).json({ error: "Chưa cấu hình API key AI. Thầy Sỹ Năm AI cần server AI." });
+    if (!ai) return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Thầy Sỹ Năm AI cần server Gemini." });
     const { message, context, geminiModel } = req.body || {};
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi trước." });
@@ -1093,58 +1172,36 @@ ${cleanMessage}
   }
 });
 
-
-function safeAgeFromBirthDate(birthDate){
-  const m = String(birthDate || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!m) return null;
-  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
-  const now = new Date();
-  // Theo giờ Việt Nam tương đối bằng UTC+7 để tránh lệch ngày trên server.
-  const vn = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-  let age = vn.getUTCFullYear() - y;
-  const cm = vn.getUTCMonth() + 1;
-  const cd = vn.getUTCDate();
-  if (cm < mo || (cm === mo && cd < d)) age--;
-  return Number.isFinite(age) ? age : null;
-}
-function lovePersonSummary(p, fallbackName){
-  const birth = p?.birthDate || p?.birth || '';
-  const age = safeAgeFromBirthDate(birth);
-  return { name: p?.name || fallbackName, birthDate: birth, ageToday: age };
-}
-
 app.post("/api/love-ai", async (req, res) => {
   try {
-    if (!ai) return res.status(400).json({ error: "Chưa cấu hình API key AI. AI tình duyên cần server AI." });
+    if (!ai) return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. AI tình duyên cần server Gemini." });
     const body = req.body || {};
     const { persons, focus, localReport, geminiModel, name1, birth1, name2, birth2 } = body;
-    const rawPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
-    const finalPersons = [
-      lovePersonSummary(rawPersons[0] || {}, "Người 1"),
-      lovePersonSummary(rawPersons[1] || {}, "Người 2")
-    ];
-    const ageGap = (finalPersons[0].ageToday !== null && finalPersons[1].ageToday !== null)
-      ? Math.abs(finalPersons[0].ageToday - finalPersons[1].ageToday)
-      : null;
+    const finalPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
+    const fixedProfiles = finalPersons.map((p, i) => fixedLunarProfile(p, i + 1));
+    const fixedSummary = fixedProfiles.map(p => `- ${p.name}: ${p.birthDate || 'chưa nhập'} => ${p.year || 'thiếu năm'}${p.canChi ? `, tuổi ${p.canChi}, nạp âm ${p.napAm}, ngũ hành ${p.nguHanh}` : ''}`).join("\n");
     const parts = [{ text: `
 Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app Sỹ Năm Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
-YÊU CẦU:
-- Dựa trên ngày tháng năm sinh dương lịch của 2 người, Can Chi, Ngũ hành, nạp âm, Địa Chi, cung phi, cung hoàng đạo.
-- TUYỆT ĐỐI không tự bịa tuổi, năm sinh, ngày sinh hoặc khoảng cách tuổi. Tuổi đã được server tính trong trường ageToday; nếu ageToday là null thì ghi "chưa đủ dữ liệu".
-- Giải thích vì sao hợp/chưa hợp, không chỉ chấm điểm.
+DỮ LIỆU NỀN ĐÃ ĐƯỢC CODE TÍNH CỐ ĐỊNH - TUYỆT ĐỐI KHÔNG TỰ TÍNH LẠI:
+${fixedSummary}
+
+JSON DỮ LIỆU NỀN:
+${JSON.stringify(fixedProfiles, null, 2)}
+
+QUY TẮC BẮT BUỘC:
+- Không được tự đổi Can Chi/Nạp âm/Ngũ hành. Ví dụ 2004 là Giáp Thân, không được nói Giáp Thìn.
+- Nếu người dùng nhập thiếu/ngày sinh sai định dạng, nói rõ thiếu dữ liệu thay vì bịa.
+- AI chỉ được luận giải dựa trên DỮ LIỆU NỀN ĐÃ ĐƯỢC CODE TÍNH CỐ ĐỊNH ở trên.
 - Có mục điểm mạnh, điểm dễ xung đột, cách hóa giải/hòa hợp, lời khuyên thực tế.
 - Không phán chắc cưới/ly hôn/chia tay/giàu nghèo/số phận. Chỉ nói theo hướng tham khảo văn hóa và tự nhận thức.
 - Nếu dữ liệu thiếu giờ sinh thì nói rõ phần giờ sinh chỉ tham khảo/không có.
 - Trả về Markdown đẹp.
 
-DỮ LIỆU 2 NGƯỜI ĐÃ CHUẨN HÓA:
+DỮ LIỆU GỐC NGƯỜI DÙNG NHẬP:
 ${JSON.stringify(finalPersons, null, 2)}
-
-KHOẢNG CÁCH TUỔI ĐÃ TÍNH:
-${ageGap === null ? "Chưa đủ dữ liệu" : ageGap + " tuổi"}
 
 TRỌNG TÂM MUỐN XEM:
 ${focus || "tong-quan"}
@@ -1153,15 +1210,14 @@ BẢN LOCAL NỀN:
 ${localReport || ""}
 
 Hãy trả về theo cấu trúc:
-1. Bảng tổng quan 2 người, dùng đúng ngày sinh và ageToday ở trên
+1. Bảng tổng quan 2 người
 2. Điểm hợp tổng quan và mức độ tương hợp
 3. Phân tích Can Chi - Địa Chi
 4. Phân tích Ngũ hành/Nạp âm
-5. Phân tích cung phi và khí gia đạo
-6. Tính cách yêu, cách giao tiếp, điểm hút nhau
-7. Điểm dễ xung đột
-8. Cách hòa hợp và phát triển lâu dài
-9. Lưu ý tham khảo
+5. Tính cách yêu, cách giao tiếp, điểm hút nhau
+6. Điểm dễ xung đột
+7. Cách hòa hợp và phát triển lâu dài
+8. Lưu ý tham khảo
 ` }];
     const result = await tryModels(parts, geminiModel);
     res.json(result);
@@ -1174,7 +1230,7 @@ app.post("/api/mystic-ai", async (req, res) => {
   try {
     if (!ai) {
       return res.status(400).json({
-        error: "Chưa cấu hình API key AI. App vẫn chạy bản local, nhưng AI luận giải dài cần server AI."
+        error: "Chưa có GEMINI_API_KEY. App vẫn chạy bản local, nhưng AI luận giải dài cần server Gemini."
       });
     }
 

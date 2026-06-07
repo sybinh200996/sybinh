@@ -24,7 +24,7 @@
     <header class="hero-section">
       <nav class="topbar">
         <button class="icon-btn menu-btn" onclick="toggleMenu(true)">☰</button>
-        <div class="top-actions"><span id="liveClock" class="live-clock">Đang lấy giờ...</span><span id="aiStatus" class="ai-status warn">AI: kiểm tra...</span>
+        <div class="top-actions"><span id="liveClock" class="live-clock">Đang lấy giờ...</span><span id="geminiStatus" class="ai-status warn">Gemini: kiểm tra...</span>
           <button class="icon-btn" onclick="speakLastResult()">🔊</button>
           <button class="icon-btn" onclick="routeTo('account')">🌐</button>
           <button class="profile-pill" onclick="routeTo('account')"><span class="avatar">👤</span> Tài khoản <b>Member</b></button>
@@ -74,11 +74,11 @@
           <div><h2>THẦN SỐ HỌC AI <em>PRO</em></h2><p>Tính con số chủ đạo, linh hồn, biểu đạt và AI luận giải theo tên + ngày sinh.</p><button>🔢 XEM THẦN SỐ</button></div><div class="card-art">🔢</div>
         </article>
         <article class="feature-card wide" onclick="routeTo('chat')">
-          <div><h2>AI CHAT - HỎI VÀ ĐÁP <em>PRO</em></h2><p>Hỏi đáp với Sỹ Năm AI, có thể tải ảnh/file để phân tích nội dung.</p><button>☻ BẮT ĐẦU CHAT</button></div><div class="card-art bot-art">🤖</div>
+          <div><h2>AI CHAT - HỎI VÀ ĐÁP <em>PRO</em></h2><p>Hỏi đáp với Gemini AI thật, có thể tải ảnh/file để phân tích nội dung.</p><button>☻ BẮT ĐẦU CHAT</button></div><div class="card-art bot-art">🤖</div>
         </article>
-        <article class="mini-card usable-card" onclick="routeTo('history')"><h3>LỊCH SỬ PHÂN TÍCH</h3><div id="historyMini"></div><button type="button">Mở lịch sử</button></article>
-        <article class="mini-card usable-card"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Đọc kết quả gần nhất, dừng đọc hoặc bật/tắt giọng trả lời.</p><div class="mini-actions"><button type="button" onclick="speakLastResult()">▶ Đọc kết quả</button><button type="button" onclick="stopSpeaking()">⏹ Dừng</button></div></article>
-        <article class="mini-card stats-card usable-card" onclick="routeTo('history')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring"><b id="statCount">0</b><span>Lượt phân tích</span></div><ul><li>Hôm nay <b id="statToday">0</b></li><li>Ngày sử dụng <b id="statDays">0</b></li><li>Dùng nhiều nhất <b id="statTop">Chưa có</b></li></ul><div id="statsBars"></div></article>
+        <article class="mini-card" onclick="routeTo('history')"><h3>LỊCH SỬ PHÂN TÍCH</h3><div id="historyMini"></div></article>
+        <article class="mini-card" onclick="speakLastResult()"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Nghe kết quả phân tích bằng giọng nói truyền cảm.</p><button>▶ Giọng Năm 1</button></article>
+        <article class="mini-card stats-card" onclick="routeTo('account')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring">85%<span>Hoàn thành hồ sơ</span></div><ul><li>Phân tích đã thực hiện <b id="statCount">0</b></li><li>Ngày sử dụng <b>12</b></li><li>Độ chính xác AI <b>96.8%</b></li></ul></article>
       </div>
     </section>
 
@@ -126,25 +126,22 @@
               <img id="imageEditPreview" class="image-edit-preview" alt="Ảnh gốc" />
             </div>
             <div class="multi-ai-toolbar pro-toolbar">
-              <label>Chế độ AI<select id="chatProvider"><option value="auto">Tự động chọn</option><option value="ai_main">Gemini / AI Chính</option><option value="ai_fast">Groq Free / Siêu nhanh</option><option value="ai_backup">OpenRouter Free / Dự phòng</option><option value="ai_pro1">ChatGPT / OpenAI</option><option value="ai_pro2">Claude / Anthropic</option><option value="ai_reason">DeepSeek / Lập luận</option><option value="ai_creative">Grok / Sáng tạo</option><option value="ai_general">Qwen / Tổng hợp</option><option value="ai_light">Mistral / Gọn nhẹ</option></select></label>
-              <label>Tùy chọn nâng cao<input id="chatModel" placeholder="Để trống = tự động"></label>
-              <label class="council-toggle"><input id="chatCouncil" type="checkbox"> So sánh nhiều AI</label>
+              <label>AI Provider<select id="chatProvider"><option value="auto">Auto Router</option><option value="gemini">Gemini</option><option value="groq">Groq Free/Nhanh</option><option value="openrouter">OpenRouter Free</option><option value="openai">ChatGPT/OpenAI</option><option value="claude">Claude</option><option value="deepseek">DeepSeek</option><option value="grok">Grok</option><option value="qwen">Qwen</option><option value="mistral">Mistral</option></select></label>
+              <label>Model tùy chọn<input id="chatModel" placeholder="Để trống = mặc định"></label>
+              <label class="council-toggle"><input id="chatCouncil" type="checkbox"> Hội Đồng AI</label>
             </div>
             <div id="voiceStatus" class="voice-status">🎙️ Sẵn sàng nhận giọng nói</div>
             <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
             <div class="chat-upload-bar pro-upload">
-              <button type="button" class="upload-chip" onclick="openChatPicker('chatImageInput')">📷 Tải ảnh</button>
-              <button type="button" class="upload-chip camera-chip" onclick="openChatPicker('chatCameraInput')">📸 Chụp ảnh</button>
-              <button type="button" class="upload-chip" onclick="openChatPicker('chatFileInput')">📎 Tải file</button>
-              <input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)" style="display:none">
-              <input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)" style="display:none">
-              <input id="chatFileInput" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,image/*" multiple onchange="handleChatFiles(event)" style="display:none">
-              <button type="button" class="clear-attachments" onclick="clearChatAttachments()">Xóa file</button>
+              <label class="upload-chip">📷 Tải ảnh<input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)"></label>
+              <label class="upload-chip">📸 Chụp ảnh<input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)"></label>
+              <label class="upload-chip">📎 Tải file<input id="chatFileInput" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,image/*" multiple onchange="handleChatFiles(event)"></label>
+              <button class="clear-attachments" onclick="clearChatAttachments()">Xóa file</button>
             </div>
             <div id="chatAttachments" class="chat-attachments"></div>
             <div class="chat-input pro-input mobile-voice-input">
               <button id="voiceBtn" class="voice-btn" type="button" onclick="toggleVoiceInput()" title="Bấm để nói">🎤</button>
-              <textarea id="chatText" rows="2" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." oninput="autoGrowChatInput()" onkeydown="handleChatKeydown(event)"></textarea>
+              <input id="chatText" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." onkeydown="if(event.key==='Enter')sendChat()">
               <button id="voiceReplyQuickBtn" class="quick-voice-btn" type="button" onclick="toggleQuickSpeakReply()" title="Bật/tắt giọng đọc">🔊</button>
               <button id="stopSpeakQuickBtn" class="quick-stop-btn" type="button" onclick="stopSpeaking()" title="Dừng đọc ngay">⛔</button>
               <button id="chatSendBtn" onclick="sendChat()">Gửi ✈</button>
@@ -152,7 +149,7 @@
           </div>
         </div>
       </div></section>
-    <section id="page-ai" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();saveAIKeys()"><h2>🤖 Cài đặt AI</h2><p class="muted">Nhập API key cá nhân để bật từng AI. Tên AI hiển thị ở phần chọn/cài đặt, nhưng trong hội thoại người dùng chỉ thấy Sỹ Năm AI.</p><div id="aiProviderGrid" class="ai-provider-grid"></div><button class="primary">💾 Lưu API Keys</button><button type="button" onclick="loadAIProviders()">🔄 Kiểm tra lại</button><p class="ai-note">Lưu ý: bản demo lưu key trong <code>data/users.json</code>. Chỉ dùng test cá nhân; khi thương mại cần mã hóa hoặc dùng vault.</p></form><article class="result-panel"><h2>🧠 Bộ chọn AI thông minh</h2><div id="aiProviderStatus" class="ai-status-list"><p>Đang tải danh sách AI...</p></div><hr><h3>Chế độ hỗ trợ</h3><ul><li><b>Tự động chọn</b>: tự chọn chế độ phù hợp.</li><li><b>Dự phòng</b>: chế độ lỗi thì thử chế độ kế tiếp.</li><li><b>So sánh nhiều AI</b>: chỉ bật khi muốn nhiều chế độ cùng trả lời.</li></ul><p>Vào trang Chat để chọn Gemini/Groq/OpenRouter/ChatGPT... hoặc bật so sánh nhiều AI. Trong khung trả lời vẫn giấu tên AI thật.</p></article></div></section>
+    <section id="page-ai" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();saveAIKeys()"><h2>🤖 Multi-AI Provider</h2><p class="muted">Nhập API key cá nhân để bật từng AI. Có key nào dùng key đó, không có thì tự ẩn.</p><div id="aiProviderGrid" class="ai-provider-grid"></div><button class="primary">💾 Lưu API Keys</button><button type="button" onclick="loadAIProviders()">🔄 Kiểm tra lại</button><p class="ai-note">Lưu ý: bản demo lưu key trong <code>data/users.json</code>. Chỉ dùng test cá nhân; khi thương mại cần mã hóa hoặc dùng vault.</p></form><article class="result-panel"><h2>🧠 AI Router</h2><div id="aiProviderStatus" class="ai-status-list"><p>Đang tải danh sách AI...</p></div><hr><h3>Chế độ hỗ trợ</h3><ul><li><b>Auto Router</b>: tự chọn AI phù hợp.</li><li><b>Fallback</b>: AI lỗi thì thử AI kế tiếp.</li><li><b>Hội Đồng AI</b>: nhiều AI cùng trả lời rồi hiển thị từng ý kiến.</li></ul><p>Vào trang Chat để chọn Provider hoặc bật Hội Đồng AI.</p></article></div></section>
     <section id="page-history" class="page"><div class="glass-panel full"><h2>🗂 Lịch sử phân tích</h2><div id="historyList"></div><button onclick="clearHistory()">🧹 Xóa lịch sử</button></div></section>
     <section id="page-account" class="page"><div class="route-layout account-clean-layout"><form class="glass-panel auth-panel" onsubmit="event.preventDefault();registerAccount()"><h2>👤 Tài khoản</h2><p class="muted">Đăng nhập hoặc đăng ký để lưu hồ sơ, lịch sử chat và cài đặt AI của bạn.</p><div class="social-login-row"><button type="button" class="google-btn" onclick="socialLogin('google')">🔴 Đăng nhập Google</button><button type="button" class="facebook-btn" onclick="socialLogin('facebook')">🔵 Đăng nhập Facebook</button></div><div class="auth-divider"><span>hoặc dùng email</span></div><label>Tên hiển thị<input id="profileName" placeholder="Tên của bạn"></label><label>Email<input id="profileEmail" placeholder="email@example.com"></label><label>Mật khẩu<input id="profilePassword" type="password" placeholder="Tối thiểu 6 ký tự"></label><label>Gói sử dụng<select id="profilePlan"><option>Free</option><option>Pro Demo</option><option>Ultimate Pro</option></select></label><button class="primary">📝 Đăng ký</button><button type="button" onclick="loginAccount()">🔐 Đăng nhập</button><button type="button" onclick="saveAccount()">💾 Lưu hồ sơ</button></form><article class="result-panel account-user-panel"><h2>👤 Tài khoản</h2><div id="accountStatus"><div class="account-warn"><h3>🔐 Chưa đăng nhập</h3><p>Đăng nhập để đồng bộ hồ sơ và cá nhân hóa trải nghiệm AI.</p></div></div><div class="clean-member-actions"><button type="button" onclick="routeTo('chat')">🤖 Mở AI Chat</button><button type="button" onclick="routeTo('ai')">⚙️ Cài đặt AI</button><button type="button" onclick="routeTo('history')">📜 Xem lịch sử</button></div></article></div></section>
     <nav class="bottom-nav"><button onclick="routeTo('home')">⌂<span>Trang chủ</span></button><button onclick="routeTo('history')">▣<span>Lịch sử</span></button><button class="magic" onclick="quickAsk()">✦</button><button onclick="routeTo('chat')">☻<span>AI Chat</span></button><button onclick="routeTo('account')">♙<span>Tài khoản</span></button></nav>

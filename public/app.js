@@ -1,9 +1,9 @@
-const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Cài Đặt AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
+const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
-function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkAIStatus();loadAIProviders();}
+function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -23,9 +23,9 @@ function routeTo(route,push=true){
 function toggleMenu(open){$('sideMenu').classList.toggle('open',open);$('menuShade').classList.toggle('open',open)}
 
 function escapeHtml(str=''){return String(str).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
-function parseError(e){const raw=String(e?.message||e||'Lỗi không xác định');try{const j=JSON.parse(raw);let msg=j.error||raw;if(Array.isArray(j.attempts)&&j.attempts.length){msg+='\n\nCác chế độ AI đã thử nhưng chưa phản hồi được.'}return msg}catch{return raw.replace(/^Error:\s*/,'')}}
+function parseError(e){const raw=String(e?.message||e||'Lỗi không xác định');try{const j=JSON.parse(raw);let msg=j.error||raw;if(Array.isArray(j.attempts)&&j.attempts.length){msg+='\n\nCác model đã thử:\n'+j.attempts.map(a=>`- ${a.model}: ${a.error}`).join('\n')}return msg}catch{return raw.replace(/^Error:\s*/,'')}}
 function startClock(){const tick=()=>{const el=$('liveClock');if(el)el.textContent=new Date().toLocaleString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});};tick();setInterval(tick,30000)}
-async function checkAIStatus(){const el=$('aiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasAIKey?'AI: đã cấu hình':'AI: chưa cấu hình';el.className=h.hasAIKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Server AI: chưa kết nối';el.className='ai-status warn'}}
+async function checkGeminiStatus(){const el=$('geminiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasGeminiKey?'Gemini: đã cấu hình API key':'Gemini: chưa có API key';el.className=h.hasGeminiKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Server AI: chưa kết nối';el.className='ai-status warn'}}
 
 function getCurrentMember(){
   try{return JSON.parse(localStorage.getItem('synam_user')||'null')}catch{return null}
@@ -93,44 +93,9 @@ function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');
 function setLoading(id,on=true){$(id)?.classList.toggle('loading',on)}
 function htmlResult(title,text){lastResult=text||'';return `<h2>${title}</h2>${markdownish(text)}`}
 function markdownish(text=''){return text.split('\n').map(line=>{if(line.startsWith('### '))return `<h3>${line.slice(4)}</h3>`;if(line.startsWith('## '))return `<h2>${line.slice(3)}</h2>`;if(line.startsWith('- '))return `<li>${line.slice(2)}</li>`;return line.trim()?`<p>${line}</p>`:''}).join('').replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')}
-function getHistoryList(){try{return JSON.parse(localStorage.getItem('synam_history')||'[]')}catch{return []}}
-function saveHistory(type,content){
-  const list=getHistoryList();
-  const item={id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),type,content,at:new Date().toLocaleString('vi-VN'),day:new Date().toISOString().slice(0,10)};
-  list.unshift(item);
-  localStorage.setItem('synam_history',JSON.stringify(list.slice(0,120)));
-  renderHistory();
-}
-function renderHistory(){
-  const list=getHistoryList();
-  const today=new Date().toISOString().slice(0,10);
-  const byType=list.reduce((m,x)=>{m[x.type]=(m[x.type]||0)+1;return m},{});
-  const days=new Set(list.map(x=>x.day||String(x.at||'').slice(0,10)).filter(Boolean));
-  if($('statCount'))$('statCount').textContent=list.length;
-  if($('statToday'))$('statToday').textContent=list.filter(x=>(x.day||'')===today).length;
-  if($('statDays'))$('statDays').textContent=days.size||0;
-  if($('statTop')){const top=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];$('statTop').textContent=top?top[0]:'Chưa có';}
-  if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map((x,i)=>`<div class="history-mini-item usable" onclick="showHistoryByIndex(${i})"><span>${escapeHtml(x.type)}</span><small>${escapeHtml(x.at||'')} · Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử. Hãy dùng Chat AI, Tình duyên hoặc Thần số học trước nhé.</p>');
-  if($('historyList'))$('historyList').innerHTML=(list.map((x,i)=>`<div class="history-item"><div><b>${escapeHtml(x.type)}</b><br><small>${escapeHtml(x.at||'')}</small></div><div class="history-actions"><button onclick="showHistoryByIndex(${i})">Chi tiết</button><button onclick="speakHistory(${i})">Đọc</button><button onclick="deleteHistory(${i})">Xóa</button></div></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>');
-  renderStatsBars(byType,list.length);
-}
-function renderStatsBars(byType,total){
-  const el=$('statsBars'); if(!el) return;
-  const order=['Sỹ Năm AI Chat','Tình duyên','Thần số học','Tử vi AI','Xem chỉ tay','Xem tướng'];
-  const rows=order.map(k=>[k,byType[k]||0]).filter(x=>x[1]>0);
-  el.innerHTML=rows.length?rows.map(([k,v])=>{const pct=total?Math.round(v*100/total):0;return `<div class="stat-bar-row"><span>${escapeHtml(k)}</span><b>${v}</b><i style="--w:${pct}%"></i></div>`}).join(''):'<p class="muted">Chưa có dữ liệu thống kê thật.</p>';
-}
-function showHistoryByIndex(i){const item=getHistoryList()[i];if(!item)return;lastResult=item.content||'';openResultModal(item.type,item.content,item.at);}
-function speakHistory(i){const item=getHistoryList()[i];if(item)speakText(item.content,true)}
-function deleteHistory(i){const list=getHistoryList();list.splice(i,1);localStorage.setItem('synam_history',JSON.stringify(list));renderHistory();toast('Đã xóa một mục lịch sử')}
-function openResultModal(title,content,at=''){
-  let modal=$('resultModal');
-  if(!modal){document.body.insertAdjacentHTML('beforeend',`<div id="resultModal" class="result-modal"><div class="result-modal-box"><button class="modal-close" onclick="closeResultModal()">×</button><h2 id="resultModalTitle"></h2><small id="resultModalTime"></small><div id="resultModalBody" class="result-modal-body"></div><div class="modal-actions"><button onclick="speakText(lastResult,true)">🔊 Đọc</button><button onclick="copyLastResult()">📋 Copy</button><button onclick="closeResultModal()">Đóng</button></div></div></div>`);modal=$('resultModal')}
-  $('resultModalTitle').textContent=title||'Chi tiết'; $('resultModalTime').textContent=at||''; $('resultModalBody').innerHTML=markdownish(content||''); modal.classList.add('open');
-}
-function closeResultModal(){$('resultModal')?.classList.remove('open')}
-async function copyLastResult(){try{await navigator.clipboard.writeText(lastResult||'');toast('Đã copy kết quả')}catch{toast('Không copy được trên trình duyệt này')}}
-function showHistory(c){lastResult=decodeURIComponent(c);openResultModal('Chi tiết lịch sử',lastResult)}
+function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,50)));renderHistory();}
+function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');if($('statCount'))$('statCount').textContent=list.length;if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
+function showHistory(c){lastResult=decodeURIComponent(c);toast('Đã mở nội dung lịch sử');alert(lastResult.slice(0,2000))}
 function clearHistory(){localStorage.removeItem('synam_history');renderHistory();toast('Đã xóa lịch sử')}
 
 function cleanSpeakText(text=''){
@@ -219,7 +184,7 @@ function speakText(text, force=false){
   u.onend=()=>{ if($('autoListenToggle')?.checked && $('page-chat')?.classList.contains('active')) startVoiceInput(); };
   speechSynthesis.speak(u);
 }
-function speakLastResult(){if(lastResult){speakText(lastResult,true);return}const first=getHistoryList()[0];if(first){lastResult=first.content||'';speakText(lastResult,true);toast('Đang đọc kết quả gần nhất');return}toast('Chưa có kết quả để đọc. Hãy phân tích trước nhé.')}
+function speakLastResult(){if(!lastResult){toast('Chưa có kết quả để đọc');return} speakText(lastResult,true)}
 function testVoice(){speakText('Xin chào Chủ tịch Năm. Đây là bản Sỹ Năm Voice Việt Pro. Nếu máy có giọng tiếng Việt, tôi sẽ đọc đúng tiếng Việt.',true)}
 function saveVoicePrefs(){
   const prefs={
@@ -248,32 +213,9 @@ function loadVoicePrefs(){
 }
 let voiceRecognizer=null;
 let voiceListening=false;
-let voiceAutoSendTimer=null;
-let voiceCountdownTimer=null;
 function getSpeechRecognition(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
-function clearVoiceAutoSend(){
-  if(voiceAutoSendTimer){clearTimeout(voiceAutoSendTimer);voiceAutoSendTimer=null}
-  if(voiceCountdownTimer){clearInterval(voiceCountdownTimer);voiceCountdownTimer=null}
-}
 function setVoiceStatus(text,active=false){const el=$('voiceStatus');if(el){el.textContent=text;el.classList.toggle('listening',active)} const btn=$('voiceBtn');if(btn){btn.classList.toggle('recording',active);btn.textContent=active?'🔴':'🎤'}}
-function scheduleVoiceAutoSend(){
-  clearVoiceAutoSend();
-  const q=$('chatText')?.value?.trim();
-  if(!q){setVoiceStatus('🎙️ Chưa nhận được nội dung rõ ràng',false);return}
-  let left=3;
-  setVoiceStatus(`✅ Đã nghe xong. Tự gửi sau ${left} giây...`,false);
-  voiceCountdownTimer=setInterval(()=>{
-    left-=1;
-    if(left>0) setVoiceStatus(`✅ Đã nghe xong. Tự gửi sau ${left} giây...`,false);
-  },1000);
-  voiceAutoSendTimer=setTimeout(()=>{
-    clearVoiceAutoSend();
-    const now=$('chatText')?.value?.trim();
-    if(now && !chatSending) sendChat();
-  },3000);
-}
 function startVoiceInput(){
-  clearVoiceAutoSend();
   if($('voiceInputToggle') && !$('voiceInputToggle').checked){toast('Mic nhập giọng đang tắt. Bật 🎤 Mic trước đã nhé.');return}
   const SR=getSpeechRecognition();
   if(!SR){toast('Trình duyệt này chưa hỗ trợ nhập giọng nói. Dùng Chrome/Edge trên Android hoặc máy tính nhé.');return}
@@ -286,30 +228,35 @@ function startVoiceInput(){
     voiceRecognizer.continuous=false;
     let finalText='';
     voiceListening=true;
-    setVoiceStatus('🎙️ Đang nghe... nói hết câu rồi im khoảng 3 giây',true);
+    setVoiceStatus('🎙️ Đang nghe... nói câu hỏi của Năm đi',true);
     voiceRecognizer.onresult=(event)=>{
       let interim='';
       for(let i=event.resultIndex;i<event.results.length;i++){
         const txt=event.results[i][0].transcript;
-        if(event.results[i].isFinal) finalText+=(finalText?' ':'')+txt.trim();
+        if(event.results[i].isFinal) finalText+=txt;
         else interim+=txt;
       }
-      const text=(finalText || interim).trim();
-      if($('chatText') && text) {$('chatText').value=text;autoGrowChatInput();}
+      if($('chatText')) $('chatText').value=(finalText||interim).trim();
     };
-    voiceRecognizer.onerror=(e)=>{clearVoiceAutoSend();setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
+    voiceRecognizer.onerror=(e)=>{setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
     voiceRecognizer.onend=()=>{
       voiceListening=false;
-      scheduleVoiceAutoSend();
+      setVoiceStatus('🎙️ Đã dừng nghe - sẽ gửi sau 3 giây nếu bạn không nói tiếp',false);
+      const q=$('chatText')?.value?.trim();
+      if(q){
+        clearTimeout(window.synamVoiceSendTimer);
+        window.synamVoiceSendTimer=setTimeout(()=>{
+          const latest=$('chatText')?.value?.trim();
+          if(latest && !voiceListening) sendChat();
+        },3000);
+      }
     };
     voiceRecognizer.start();
   }catch(e){voiceListening=false;setVoiceStatus('🎙️ Không khởi động được micro',false);toast('Không mở được micro: '+(e.message||e))}
 }
-function stopVoiceInput(){try{voiceRecognizer?.stop?.()}catch{} voiceListening=false;clearVoiceAutoSend();setVoiceStatus('🎙️ Đã dừng nghe',false)}
+function stopVoiceInput(){try{voiceRecognizer?.stop?.()}catch{} voiceListening=false;setVoiceStatus('🎙️ Đã dừng nghe',false)}
 function toggleVoiceInput(){voiceListening?stopVoiceInput():startVoiceInput()}
 function scrollChatBottom(){const el=$('chatLog'); if(el) el.scrollTop=el.scrollHeight}
-function autoGrowChatInput(){clearVoiceAutoSend();const el=$('chatText'); if(!el) return; el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,180)+'px'}
-function handleChatKeydown(event){clearVoiceAutoSend();if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChat()} }
 function newProChat(){if(!confirm('Tạo cuộc chat mới? Lịch sử cũ vẫn nằm trong mục Lịch sử.'))return; const log=$('chatLog'); if(log) log.innerHTML='<div class="msg ai-welcome"><b>✨ Cuộc chat mới</b><br>Năm muốn hỏi gì tiếp? Bấm 🎤 để nói hoặc gõ nội dung bên dưới.</div>'; lastResult='';}
 
 function previewImage(e,id){const f=e.target.files[0];if(!f)return;const img=$(id);img.src=URL.createObjectURL(f);img.style.display='block'}
@@ -339,15 +286,8 @@ async function fileToTextPreview(file){
   if(!canRead) return '';
   return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||'').slice(0,12000));r.onerror=rej;r.readAsText(file)});
 }
-function openChatPicker(inputId){
-  const input=$(inputId);
-  if(!input){toast('Không tìm thấy nút tải file');return}
-  input.value='';
-  input.click();
-}
 async function handleChatFiles(e){
-  const input=e.target;
-  const files=[...(input.files||[])].slice(0,6);
+  const files=[...(e.target.files||[])].slice(0,6);
   if(!files.length) return;
   for(const file of files){
     if(chatAttachments.length>=6){toast('Tối đa 6 file/ảnh mỗi lần hỏi');break}
@@ -355,14 +295,13 @@ async function handleChatFiles(e){
     const textPreview=await fileToTextPreview(file);
     chatAttachments.push({name:file.name,type:file.type||'application/octet-stream',size:file.size,dataUrl,textPreview});
   }
-  input.value='';
+  e.target.value='';
   renderChatAttachments();
-  toast(files.some(f=>String(f.type||'').startsWith('image/'))?'Đã đưa ảnh vào câu hỏi':'Đã đưa file vào câu hỏi');
 }
 function renderChatAttachments(){
   const box=$('chatAttachments'); if(!box) return;
   if(!chatAttachments.length){box.innerHTML='';return}
-  box.innerHTML=chatAttachments.map((f,i)=>`<div class="attachment-pill">${f.type.startsWith('image/')?`<img class="attachment-thumb" src="${f.dataUrl}" alt="ảnh">`:''}<span>${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}</span><small>${Math.ceil((f.size||0)/1024)} KB</small><button onclick="removeChatAttachment(${i})">×</button></div>`).join('');
+  box.innerHTML=chatAttachments.map((f,i)=>`<div class="attachment-pill"><span>${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}</span><small>${Math.ceil((f.size||0)/1024)} KB</small><button onclick="removeChatAttachment(${i})">×</button></div>`).join('');
 }
 function removeChatAttachment(i){chatAttachments.splice(i,1);renderChatAttachments()}
 function clearChatAttachments(){chatAttachments=[];renderChatAttachments();toast('Đã xóa file đính kèm')}
@@ -381,7 +320,7 @@ function setChatMode(mode){
   if(mode==='chat'){
     $('modeChat')?.classList.add('active');
     if(panel) panel.style.display='none';
-    if(input) input.placeholder='Nhập câu hỏi về ảnh/file hoặc nội dung cần hỏi AI...';
+    if(input) input.placeholder='Nhập câu hỏi về ảnh/file hoặc nội dung cần hỏi Gemini...';
     if(btn) btn.textContent='Gửi';
     return;
   }
@@ -391,7 +330,7 @@ function setChatMode(mode){
     if(upload) upload.style.display='none';
   if(camUpload) camUpload.style.display='none';
     if(title) title.textContent='🎨 Tạo ảnh AI';
-    if(hint) hint.textContent='Nhập mô tả ảnh muốn AI tạo.';
+    if(hint) hint.textContent='Nhập mô tả ảnh muốn Gemini tạo.';
     if(input) input.placeholder='Ví dụ: tạo ảnh poster neon xanh tím, phong cách cinematic...';
     if(btn) btn.textContent='Tạo ảnh';
   }else{
@@ -426,21 +365,20 @@ async function sendImageAI(){
   const attachments=[...chatAttachments];
   if(!prompt){toast('Nhập mô tả ảnh hoặc yêu cầu chỉnh sửa đã nhé');return}
   if(isEdit && !imageEditDataUrl && !attachments.some(f=>String(f.type||'').startsWith('image/'))){toast('Chỉnh sửa ảnh cần tải ảnh gốc');return}
-  chatSending=true;
-  input.value='';autoGrowChatInput();
+  input.value='';
   const title=isEdit?'Chỉnh sửa ảnh AI':'Tạo ảnh AI';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}<b>${title}</b><br>${escapeHtml(prompt)}</div>`);
-  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg" id="typing">AI đang ${isEdit?'chỉnh sửa':'tạo'} ảnh...</div>`);
+  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg" id="typing">Gemini đang ${isEdit?'chỉnh sửa':'tạo'} ảnh...</div>`);
   chatAttachments=[];renderChatAttachments();
   try{
     const data=await postJSON('/api/image-ai',{mode:isEdit?'edit':'create',prompt,image:imageEditDataUrl,attachments,context:{clientTime:new Date().toLocaleString('vi-VN')}});
     const images=data.images||[];
-    const text=data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng Sỹ Năm AI.`;
+    const text=data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng ${data.model||'Gemini'}.`;
     $('typing').outerHTML=`<div class="msg image-ai-result">${markdownish(text)}${renderGeneratedImages(images)}</div>`;
-    lastResult=text;saveHistory(title,text);checkAIStatus();
+    lastResult=text;saveHistory(title,text);checkGeminiStatus();
   }catch(e){
     const err=parseError(e);
-    $('typing').outerHTML=`<div class="msg error"><b>AI chưa tạo/chỉnh ảnh được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key, quota hoặc cấu hình model ảnh trong .env.</small></div>`;
+    $('typing').outerHTML=`<div class="msg error"><b>Gemini chưa tạo/chỉnh ảnh được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra GEMINI_API_KEY, quota hoặc đổi GEMINI_IMAGE_MODEL / GEMINI_IMAGE_MODELS trong .env. Có thể mở /api/models để xem danh sách fallback.</small></div>`;
   }
 }
 
@@ -449,26 +387,24 @@ async function postJSON(url,data){const r=await fetch(url,{method:'POST',headers
 async function getJSON(url){const token=localStorage.getItem('synam_token')||'';const r=await fetch(url,{headers:token?{'Authorization':'Bearer '+token}:{}});if(!r.ok)throw new Error(await r.text());return r.json()}
 
 async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');$('chatText').value=q;sendChat()}
-let chatSending=false;
-function getChatMemory(limit=24){
-  const nodes=[...document.querySelectorAll('#chatLog .msg:not(.typing):not(.error)')];
-  return nodes.map(el=>{
-    const isUser=el.classList.contains('me');
-    let text=(el.innerText||'').replace(/^🧑\s*/,'').replace(/^🤖\s*Sỹ Năm AI\s*/,'').replace(/Trả lời bởi:\s*Sỹ Năm AI/gi,'').trim();
-    text=text.replace(/\s+/g,' ').slice(0,3500);
-    return text?{role:isUser?'user':'assistant',text}:null;
-  }).filter(Boolean).slice(-limit);
+function getChatHistoryForAI(limit=24){
+  return [...document.querySelectorAll('#chatLog .msg')]
+    .filter(el=>!el.classList.contains('typing') && !el.id)
+    .slice(-limit)
+    .map(el=>({
+      role:el.classList.contains('me')?'user':'assistant',
+      text:String(el.innerText||'').replace(/Trả lời bởi:.*?(\n|$)/g,'').trim().slice(0,1800)
+    }))
+    .filter(x=>x.text && !/AI đang phân tích|Đang trả lời/i.test(x.text));
 }
 async function sendChat(){
-  if(chatSending){toast('AI đang trả lời, đợi xong rồi gửi tiếp nhé');return}
   if(chatMode!=='chat') return sendImageAI();
   const input=$('chatText');
   const q=input.value.trim();
   const attachments=[...chatAttachments];
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
-  const history=getChatMemory(24); // lấy ngữ cảnh TRƯỚC khi thêm câu hỏi mới, tránh lẫn dòng typing
-  chatSending=true;
-  input.value='';autoGrowChatInput();
+  const history=getChatHistoryForAI(24);
+  input.value='';
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}${escapeHtml(q||'Phân tích file/ảnh đã tải lên')}${attachLabel}</div>`);
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
@@ -478,22 +414,20 @@ async function sendChat(){
     const provider=$('chatProvider')?.value||'auto';
     const model=$('chatModel')?.value||'';
     const council=Boolean($('chatCouncil')?.checked);
-    const chatContext={clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm AI Chat',memoryTurns:history.length};
+    const context={clientTime:new Date().toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}),source:'Sỹ Năm AI Chat',today:new Date().toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})};
     if(attachments.length){
-      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{...chatContext,source:'Sỹ Năm Mystic AI Chat - file/image'}});
+      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context});
     }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context:chatContext});
+      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context});
     }
     const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
-    const providerLabel=data.label?`<small>Trả lời bởi: Sỹ Năm AI</small><br>`:'';
+    const providerLabel=data.provider==='local'?'':(data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'');
     $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${providerLabel}${markdownish(text)}</div>`;
-    lastResult=text;saveHistory('Sỹ Năm AI Chat',text);checkAIStatus();scrollChatBottom();speakText(text); 
+    lastResult=text;saveHistory(data.label||'Sỹ Năm AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);
     $('typing').outerHTML=`<div class="msg error"><b>AI chưa phản hồi được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key / mạng / quota hoặc đổi provider khác rồi thử lại.</small></div>`;scrollChatBottom();
     lastResult='';
-  }finally{
-    chatSending=false;
   }
 }
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
@@ -714,24 +648,24 @@ async function loadAIProviders(){
     const data=await getJSON('/api/ai/providers');
     const providers=data.providers||[];
     if(status){
-      status.innerHTML=providers.map(p=>`<div class="ai-status-item"><span><span class="provider-dot ${p.configured?'ok':''}"></span><b>${escapeHtml(p.label)}</b><br><span class="model-small">${p.configured?'Đã cấu hình':'Chưa có key'}</span></span><span>${p.configured?'🟢':'⚪'}</span></div>`).join('');
+      status.innerHTML=providers.map(p=>`<div class="ai-status-item"><span><span class="provider-dot ${p.configured?'ok':''}"></span><b>${escapeHtml(p.label)}</b><br><span class="model-small">${escapeHtml(p.model||'auto')} · ${p.configured?'Đã cấu hình':'Chưa có key'}</span></span><span>${p.configured?'🟢':'⚪'}</span></div>`).join('');
     }
     const mini=$('miniProviderList');
-    if(mini){mini.innerHTML=providers.map(p=>`<div class="mini-provider ${p.configured?'on':''}"><span>${p.configured?'🟢':'⚪'} ${escapeHtml(p.label)}</span><small>${p.configured?'Sẵn sàng':'Chưa có key'}</small></div>`).join('')}
+    if(mini){mini.innerHTML=providers.map(p=>`<div class="mini-provider ${p.configured?'on':''}"><span>${p.configured?'🟢':'⚪'} ${escapeHtml(p.label)}</span><small>${p.configured?'Ready':'No key'}</small></div>`).join('')}
     if(grid){
-      grid.innerHTML=providers.map(p=>`<div class="ai-provider-card"><h3><span class="provider-dot ${p.configured?'ok':''}"></span>${escapeHtml(p.label)}</h3><label>API Key<input id="key_${p.id}" type="password" autocomplete="off" placeholder="${p.configured?'Đã lưu key ẩn an toàn':'Dán API key'}"></label><label>Tùy chọn nâng cao<input id="model_${p.id}" autocomplete="off" placeholder="Để trống = tự động"></label><p class="ai-note">${escapeHtml(p.freeHint||'')}</p></div>`).join('');
+      grid.innerHTML=providers.map(p=>`<div class="ai-provider-card"><h3><span class="provider-dot ${p.configured?'ok':''}"></span>${escapeHtml(p.label)}</h3><label>API Key<input id="key_${p.id}" type="password" autocomplete="off" placeholder="${p.configured?'Đã lưu key ẩn an toàn':'Dán API key'}"></label><label>Model<select id="model_${p.id}"><option value="">Mặc định: ${escapeHtml(p.model||'auto')}</option>${(p.models||[]).map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('')}</select></label><p class="ai-note">${escapeHtml(p.freeHint||'')}</p></div>`).join('');
     }
     const select=$('chatProvider');
     if(select){
       [...select.options].forEach(opt=>{ if(opt.value&&opt.value!=='auto'){ const p=providers.find(x=>x.id===opt.value); opt.disabled=p&&!p.configured; }});
     }
   }catch(e){
-    if(status)status.innerHTML=`<p class="error">Không tải được cài đặt AI: ${escapeHtml(parseError(e))}</p>`;
+    if(status)status.innerHTML=`<p class="error">Không tải được Multi-AI: ${escapeHtml(parseError(e))}</p>`;
   }
 }
 
 async function saveAIKeys(){
-  const providers=['ai_main','ai_fast','ai_backup','ai_pro1','ai_pro2','ai_reason','ai_creative','ai_general','ai_light'];
+  const providers=['gemini','groq','openrouter','openai','claude','deepseek','grok','qwen','mistral'];
   const keys={}; const models={};
   for(const id of providers){
     const k=$('key_'+id)?.value?.trim()||'';
@@ -741,7 +675,7 @@ async function saveAIKeys(){
   }
   try{
     const data=await postJSON('/api/ai/user-keys',{keys,models});
-    toast('Đã lưu API key AI');
+    toast('Đã lưu API key Multi-AI');
     loadAIProviders();
   }catch(e){
     toast(parseError(e));
