@@ -134,14 +134,14 @@
             <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
             <div class="chat-upload-bar pro-upload">
               <label class="upload-chip">📷 Tải ảnh<input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)"></label>
-              <label class="upload-chip camera-chip">📸 Chụp ảnh<input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event, true)"></label>
-              <label class="upload-chip">📎 Tải file<input id="chatFileInput" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,.doc,.docx,image/*" multiple onchange="handleChatFiles(event)"></label>
+              <label class="upload-chip camera-chip" onclick="const i=document.getElementById('chatCameraInput'); if(i) i.value='';">📸 Chụp ảnh<input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)"></label>
+              <label class="upload-chip">📎 Tải file<input id="chatFileInput" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,image/*" multiple onchange="handleChatFiles(event)"></label>
               <button class="clear-attachments" onclick="clearChatAttachments()">Xóa file</button>
             </div>
             <div id="chatAttachments" class="chat-attachments"></div>
             <div class="chat-input pro-input mobile-voice-input">
               <button id="voiceBtn" class="voice-btn" type="button" onclick="toggleVoiceInput()" title="Bấm để nói">🎤</button>
-              <textarea id="chatText" rows="2" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." oninput="autoGrowChatInput()" onkeydown="handleChatKey(event)"></textarea>
+              <textarea id="chatText" rows="2" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." oninput="autoGrowChatInput()" onkeydown="handleChatKeydown(event)"></textarea>
               <button id="voiceReplyQuickBtn" class="quick-voice-btn" type="button" onclick="toggleQuickSpeakReply()" title="Bật/tắt giọng đọc">🔊</button>
               <button id="stopSpeakQuickBtn" class="quick-stop-btn" type="button" onclick="stopSpeaking()" title="Dừng đọc ngay">⛔</button>
               <button id="chatSendBtn" onclick="sendChat()">Gửi ✈</button>
