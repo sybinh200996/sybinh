@@ -248,64 +248,68 @@ function loadVoicePrefs(){
 }
 let voiceRecognizer=null;
 let voiceListening=false;
+let voiceAutoSendTimer=null;
+let voiceCountdownTimer=null;
 function getSpeechRecognition(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
+function clearVoiceAutoSend(){
+  if(voiceAutoSendTimer){clearTimeout(voiceAutoSendTimer);voiceAutoSendTimer=null}
+  if(voiceCountdownTimer){clearInterval(voiceCountdownTimer);voiceCountdownTimer=null}
+}
 function setVoiceStatus(text,active=false){const el=$('voiceStatus');if(el){el.textContent=text;el.classList.toggle('listening',active)} const btn=$('voiceBtn');if(btn){btn.classList.toggle('recording',active);btn.textContent=active?'🔴':'🎤'}}
-let voiceSendTimer=null;
-function scheduleVoiceSend(delay=650){
-  clearTimeout(voiceSendTimer);
-  voiceSendTimer=setTimeout(()=>{
-    const q=$('chatText')?.value?.trim();
-    if(!q || chatSending) return;
-    try{ voiceRecognizer?.abort?.(); }catch{}
-    voiceListening=false;
-    setVoiceStatus('🚀 Đã nhận giọng nói, đang gửi...',false);
-    sendChat();
-  }, delay);
+function scheduleVoiceAutoSend(){
+  clearVoiceAutoSend();
+  const q=$('chatText')?.value?.trim();
+  if(!q){setVoiceStatus('🎙️ Chưa nhận được nội dung rõ ràng',false);return}
+  let left=3;
+  setVoiceStatus(`✅ Đã nghe xong. Tự gửi sau ${left} giây...`,false);
+  voiceCountdownTimer=setInterval(()=>{
+    left-=1;
+    if(left>0) setVoiceStatus(`✅ Đã nghe xong. Tự gửi sau ${left} giây...`,false);
+  },1000);
+  voiceAutoSendTimer=setTimeout(()=>{
+    clearVoiceAutoSend();
+    const now=$('chatText')?.value?.trim();
+    if(now && !chatSending) sendChat();
+  },3000);
 }
 function startVoiceInput(){
+  clearVoiceAutoSend();
   if($('voiceInputToggle') && !$('voiceInputToggle').checked){toast('Mic nhập giọng đang tắt. Bật 🎤 Mic trước đã nhé.');return}
   const SR=getSpeechRecognition();
   if(!SR){toast('Trình duyệt này chưa hỗ trợ nhập giọng nói. Dùng Chrome/Edge trên Android hoặc máy tính nhé.');return}
   if(voiceListening) return;
   try{
     speechSynthesis?.cancel?.();
-    clearTimeout(voiceSendTimer);
     voiceRecognizer=new SR();
     voiceRecognizer.lang='vi-VN';
     voiceRecognizer.interimResults=true;
     voiceRecognizer.continuous=false;
     let finalText='';
-    let bestText='';
     voiceListening=true;
-    setVoiceStatus('🎙️ Đang nghe... nói xong sẽ tự gửi nhanh',true);
+    setVoiceStatus('🎙️ Đang nghe... nói hết câu rồi im khoảng 3 giây',true);
     voiceRecognizer.onresult=(event)=>{
       let interim='';
       for(let i=event.resultIndex;i<event.results.length;i++){
-        const txt=event.results[i][0].transcript || '';
+        const txt=event.results[i][0].transcript;
         if(event.results[i].isFinal) finalText+=(finalText?' ':'')+txt.trim();
-        else interim+=(interim?' ':'')+txt.trim();
+        else interim+=txt;
       }
-      bestText=(finalText || interim || bestText).trim();
-      if($('chatText')) {$('chatText').value=bestText;autoGrowChatInput();}
-      // Gửi nhanh sau khi có câu cuối; nếu Chrome không báo final thì vẫn gửi sau khoảng nghỉ ngắn.
-      if(finalText.trim()) scheduleVoiceSend(350);
-      else if(bestText) scheduleVoiceSend(1100);
+      const text=(finalText || interim).trim();
+      if($('chatText') && text) {$('chatText').value=text;autoGrowChatInput();}
     };
-    voiceRecognizer.onerror=(e)=>{clearTimeout(voiceSendTimer);setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
+    voiceRecognizer.onerror=(e)=>{clearVoiceAutoSend();setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
     voiceRecognizer.onend=()=>{
       voiceListening=false;
-      const q=$('chatText')?.value?.trim();
-      if(q && !chatSending){ setVoiceStatus('🚀 Đã nghe xong, đang gửi...',false); scheduleVoiceSend(120); }
-      else setVoiceStatus('🎙️ Đã dừng nghe',false);
+      scheduleVoiceAutoSend();
     };
     voiceRecognizer.start();
   }catch(e){voiceListening=false;setVoiceStatus('🎙️ Không khởi động được micro',false);toast('Không mở được micro: '+(e.message||e))}
 }
-function stopVoiceInput(){clearTimeout(voiceSendTimer);try{voiceRecognizer?.stop?.()}catch{} voiceListening=false;setVoiceStatus('🎙️ Đã dừng nghe',false)}
+function stopVoiceInput(){try{voiceRecognizer?.stop?.()}catch{} voiceListening=false;clearVoiceAutoSend();setVoiceStatus('🎙️ Đã dừng nghe',false)}
 function toggleVoiceInput(){voiceListening?stopVoiceInput():startVoiceInput()}
 function scrollChatBottom(){const el=$('chatLog'); if(el) el.scrollTop=el.scrollHeight}
-function autoGrowChatInput(){const el=$('chatText'); if(!el) return; el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,180)+'px'}
-function handleChatKeydown(event){if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChat()} }
+function autoGrowChatInput(){clearVoiceAutoSend();const el=$('chatText'); if(!el) return; el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,180)+'px'}
+function handleChatKeydown(event){clearVoiceAutoSend();if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChat()} }
 function newProChat(){if(!confirm('Tạo cuộc chat mới? Lịch sử cũ vẫn nằm trong mục Lịch sử.'))return; const log=$('chatLog'); if(log) log.innerHTML='<div class="msg ai-welcome"><b>✨ Cuộc chat mới</b><br>Năm muốn hỏi gì tiếp? Bấm 🎤 để nói hoặc gõ nội dung bên dưới.</div>'; lastResult='';}
 
 function previewImage(e,id){const f=e.target.files[0];if(!f)return;const img=$(id);img.src=URL.createObjectURL(f);img.style.display='block'}
@@ -321,23 +325,6 @@ function copyCameraFile(e,targetInputId,previewId){
   toast('Đã chụp ảnh xong');
 }
 
-function triggerFileInput(id){ const el=$(id); if(el){ el.value=''; el.click(); } }
-function safeFileName(file, ext='jpg'){ const base=(file?.name||'camera-image').replace(/\.[^.]+$/,'').slice(0,50); return base+'.'+ext; }
-async function compressImageFile(file, maxSide=1280, quality=0.82){
-  if(!file || !(file.type||'').startsWith('image/')) return file;
-  // GIF/very small images giữ nguyên để tránh lỗi canvas trên vài máy.
-  if(file.type==='image/gif' || file.size < 450*1024) return file;
-  const dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)});
-  const img=await new Promise((res,rej)=>{const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=dataUrl;});
-  let {width:w,height:h}=img;
-  const scale=Math.min(1, maxSide/Math.max(w,h));
-  w=Math.max(1,Math.round(w*scale)); h=Math.max(1,Math.round(h*scale));
-  const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-  const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h);
-  const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',quality));
-  if(!blob) return file;
-  return new File([blob], safeFileName(file,'jpg'), {type:'image/jpeg', lastModified:Date.now()});
-}
 async function fileToDataURL(file){return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 
 let chatAttachments=[];
@@ -352,21 +339,25 @@ async function fileToTextPreview(file){
   if(!canRead) return '';
   return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||'').slice(0,12000));r.onerror=rej;r.readAsText(file)});
 }
+function openChatPicker(inputId){
+  const input=$(inputId);
+  if(!input){toast('Không tìm thấy nút tải file');return}
+  input.value='';
+  input.click();
+}
 async function handleChatFiles(e){
-  const rawFiles=[...(e.target.files||[])].slice(0,6);
-  if(!rawFiles.length) return;
-  toast('Đang nạp file/ảnh...');
-  for(const raw of rawFiles){
+  const input=e.target;
+  const files=[...(input.files||[])].slice(0,6);
+  if(!files.length) return;
+  for(const file of files){
     if(chatAttachments.length>=6){toast('Tối đa 6 file/ảnh mỗi lần hỏi');break}
-    const file=await compressImageFile(raw);
     const dataUrl=await fileToDataURL(file);
     const textPreview=await fileToTextPreview(file);
-    chatAttachments.push({name:file.name||raw.name||'ảnh-chụp.jpg',type:file.type||raw.type||'application/octet-stream',size:file.size||raw.size,dataUrl,textPreview});
+    chatAttachments.push({name:file.name,type:file.type||'application/octet-stream',size:file.size,dataUrl,textPreview});
   }
-  e.target.value='';
+  input.value='';
   renderChatAttachments();
-  toast('Đã gắn ảnh/file vào câu hỏi');
-  const input=$('chatText'); if(input && !input.value.trim()) input.placeholder='Ảnh/file đã sẵn sàng. Gõ câu hỏi rồi bấm Gửi...';
+  toast(files.some(f=>String(f.type||'').startsWith('image/'))?'Đã đưa ảnh vào câu hỏi':'Đã đưa file vào câu hỏi');
 }
 function renderChatAttachments(){
   const box=$('chatAttachments'); if(!box) return;

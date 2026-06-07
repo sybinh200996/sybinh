@@ -133,13 +133,13 @@
             <div id="voiceStatus" class="voice-status">🎙️ Sẵn sàng nhận giọng nói</div>
             <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
             <div class="chat-upload-bar pro-upload">
-              <button type="button" class="upload-chip" onclick="triggerFileInput('chatImageInput')">📷 Tải ảnh</button>
-              <button type="button" class="upload-chip camera-chip" onclick="triggerFileInput('chatCameraInput')">📸 Chụp ảnh</button>
-              <button type="button" class="upload-chip" onclick="triggerFileInput('chatFileInput')">📎 Tải file</button>
+              <button type="button" class="upload-chip" onclick="openChatPicker('chatImageInput')">📷 Tải ảnh</button>
+              <button type="button" class="upload-chip camera-chip" onclick="openChatPicker('chatCameraInput')">📸 Chụp ảnh</button>
+              <button type="button" class="upload-chip" onclick="openChatPicker('chatFileInput')">📎 Tải file</button>
+              <input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)" style="display:none">
+              <input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)" style="display:none">
+              <input id="chatFileInput" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,image/*" multiple onchange="handleChatFiles(event)" style="display:none">
               <button type="button" class="clear-attachments" onclick="clearChatAttachments()">Xóa file</button>
-              <input id="chatImageInput" class="hidden-file-input" type="file" accept="image/*" multiple onchange="handleChatFiles(event)">
-              <input id="chatCameraInput" class="hidden-file-input" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)">
-              <input id="chatFileInput" class="hidden-file-input" type="file" accept=".txt,.md,.json,.csv,.html,.css,.js,.pdf,image/*" multiple onchange="handleChatFiles(event)">
             </div>
             <div id="chatAttachments" class="chat-attachments"></div>
             <div class="chat-input pro-input mobile-voice-input">
