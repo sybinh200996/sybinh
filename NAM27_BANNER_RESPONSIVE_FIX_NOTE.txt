@@ -1,0 +1,12 @@
+NAM27 - Banner Responsive Fix
+
+- Chỉnh banner mobile/desktop dùng cùng tỉ lệ gần giống nhau.
+- Mobile không còn kéo banner quá cao, chữ Sỹ Năm Mystic không phóng đại quá lố.
+- Thu nhỏ topbar, nút AI phân tích, quick buttons trên mobile.
+- Giữ nguyên chức năng NAM26: Tình Duyên, Thần Số Học, thống kê thật, voice controls.
+
+Cách dùng:
+1. Bung ZIP.
+2. Đẩy nguyên folder lên GitHub như các bản trước.
+3. Render deploy latest commit.
+4. Mở synam.online bằng tab ẩn danh hoặc xóa cache nếu chưa thấy giao diện mới.
