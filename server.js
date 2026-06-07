@@ -153,7 +153,7 @@ function publicUser(user) {
 
 const AI_PROVIDERS = {
   gemini: {
-    label: "AI Chính",
+    label: "Gemini / AI Chính",
     keyEnv: "GEMINI_API_KEY",
     modelEnv: "GEMINI_MODEL",
     defaultModel: "gemini-2.5-flash",
@@ -161,7 +161,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ AI chính, dùng cho hỏi đáp và phân tích nội dung."
   },
   groq: {
-    label: "AI Nhanh",
+    label: "Groq Free / Siêu nhanh",
     keyEnv: "GROQ_API_KEY",
     modelEnv: "GROQ_MODEL",
     defaultModel: "llama-3.3-70b-versatile",
@@ -169,7 +169,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ phản hồi nhanh, phù hợp câu hỏi ngắn và lập trình."
   },
   openrouter: {
-    label: "AI Dự phòng",
+    label: "OpenRouter Free / Dự phòng",
     keyEnv: "OPENROUTER_API_KEY",
     modelEnv: "OPENROUTER_MODEL",
     defaultModel: "openrouter/free",
@@ -177,7 +177,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ dự phòng, dùng khi AI chính bị giới hạn hoặc quá tải."
   },
   openai: {
-    label: "AI Cao cấp 1",
+    label: "ChatGPT / OpenAI",
     keyEnv: "OPENAI_API_KEY",
     modelEnv: "OPENAI_MODEL",
     defaultModel: "gpt-4o-mini",
@@ -185,7 +185,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ cao cấp, bật khi có API key riêng."
   },
   claude: {
-    label: "AI Cao cấp 2",
+    label: "Claude / Anthropic",
     keyEnv: "CLAUDE_API_KEY",
     modelEnv: "CLAUDE_MODEL",
     defaultModel: "claude-3-5-haiku-latest",
@@ -193,7 +193,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ cao cấp thiên về phân tích và viết nội dung."
   },
   deepseek: {
-    label: "AI Lập luận",
+    label: "DeepSeek / Lập luận",
     keyEnv: "DEEPSEEK_API_KEY",
     modelEnv: "DEEPSEEK_MODEL",
     defaultModel: "deepseek-chat",
@@ -201,7 +201,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ thiên về suy luận và lập trình."
   },
   grok: {
-    label: "AI Sáng tạo",
+    label: "Grok / Sáng tạo",
     keyEnv: "GROK_API_KEY",
     modelEnv: "GROK_MODEL",
     defaultModel: "grok-2-latest",
@@ -209,7 +209,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ sáng tạo, bật khi có API key riêng."
   },
   qwen: {
-    label: "AI Tổng hợp",
+    label: "Qwen / Tổng hợp",
     keyEnv: "QWEN_API_KEY",
     modelEnv: "QWEN_MODEL",
     defaultModel: "qwen-plus",
@@ -217,7 +217,7 @@ const AI_PROVIDERS = {
     freeHint: "Chế độ tổng hợp, bật khi có API key riêng."
   },
   mistral: {
-    label: "AI Gọn nhẹ",
+    label: "Mistral / Gọn nhẹ",
     keyEnv: "MISTRAL_API_KEY",
     modelEnv: "MISTRAL_MODEL",
     defaultModel: "mistral-small-latest",
@@ -1071,12 +1071,39 @@ ${cleanMessage}
   }
 });
 
+
+function safeAgeFromBirthDate(birthDate){
+  const m = String(birthDate || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return null;
+  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+  const now = new Date();
+  // Theo giờ Việt Nam tương đối bằng UTC+7 để tránh lệch ngày trên server.
+  const vn = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  let age = vn.getUTCFullYear() - y;
+  const cm = vn.getUTCMonth() + 1;
+  const cd = vn.getUTCDate();
+  if (cm < mo || (cm === mo && cd < d)) age--;
+  return Number.isFinite(age) ? age : null;
+}
+function lovePersonSummary(p, fallbackName){
+  const birth = p?.birthDate || p?.birth || '';
+  const age = safeAgeFromBirthDate(birth);
+  return { name: p?.name || fallbackName, birthDate: birth, ageToday: age };
+}
+
 app.post("/api/love-ai", async (req, res) => {
   try {
     if (!ai) return res.status(400).json({ error: "Chưa cấu hình API key AI. AI tình duyên cần server AI." });
     const body = req.body || {};
     const { persons, focus, localReport, geminiModel, name1, birth1, name2, birth2 } = body;
-    const finalPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
+    const rawPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
+    const finalPersons = [
+      lovePersonSummary(rawPersons[0] || {}, "Người 1"),
+      lovePersonSummary(rawPersons[1] || {}, "Người 2")
+    ];
+    const ageGap = (finalPersons[0].ageToday !== null && finalPersons[1].ageToday !== null)
+      ? Math.abs(finalPersons[0].ageToday - finalPersons[1].ageToday)
+      : null;
     const parts = [{ text: `
 Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app Sỹ Năm Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
@@ -1084,14 +1111,18 @@ THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
 YÊU CẦU:
 - Dựa trên ngày tháng năm sinh dương lịch của 2 người, Can Chi, Ngũ hành, nạp âm, Địa Chi, cung phi, cung hoàng đạo.
+- TUYỆT ĐỐI không tự bịa tuổi, năm sinh, ngày sinh hoặc khoảng cách tuổi. Tuổi đã được server tính trong trường ageToday; nếu ageToday là null thì ghi "chưa đủ dữ liệu".
 - Giải thích vì sao hợp/chưa hợp, không chỉ chấm điểm.
 - Có mục điểm mạnh, điểm dễ xung đột, cách hóa giải/hòa hợp, lời khuyên thực tế.
 - Không phán chắc cưới/ly hôn/chia tay/giàu nghèo/số phận. Chỉ nói theo hướng tham khảo văn hóa và tự nhận thức.
 - Nếu dữ liệu thiếu giờ sinh thì nói rõ phần giờ sinh chỉ tham khảo/không có.
 - Trả về Markdown đẹp.
 
-DỮ LIỆU 2 NGƯỜI:
+DỮ LIỆU 2 NGƯỜI ĐÃ CHUẨN HÓA:
 ${JSON.stringify(finalPersons, null, 2)}
+
+KHOẢNG CÁCH TUỔI ĐÃ TÍNH:
+${ageGap === null ? "Chưa đủ dữ liệu" : ageGap + " tuổi"}
 
 TRỌNG TÂM MUỐN XEM:
 ${focus || "tong-quan"}
@@ -1100,7 +1131,7 @@ BẢN LOCAL NỀN:
 ${localReport || ""}
 
 Hãy trả về theo cấu trúc:
-1. Bảng tổng quan 2 người
+1. Bảng tổng quan 2 người, dùng đúng ngày sinh và ageToday ở trên
 2. Điểm hợp tổng quan và mức độ tương hợp
 3. Phân tích Can Chi - Địa Chi
 4. Phân tích Ngũ hành/Nạp âm
