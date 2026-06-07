@@ -93,9 +93,44 @@ function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');
 function setLoading(id,on=true){$(id)?.classList.toggle('loading',on)}
 function htmlResult(title,text){lastResult=text||'';return `<h2>${title}</h2>${markdownish(text)}`}
 function markdownish(text=''){return text.split('\n').map(line=>{if(line.startsWith('### '))return `<h3>${line.slice(4)}</h3>`;if(line.startsWith('## '))return `<h2>${line.slice(3)}</h2>`;if(line.startsWith('- '))return `<li>${line.slice(2)}</li>`;return line.trim()?`<p>${line}</p>`:''}).join('').replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')}
-function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,50)));renderHistory();}
-function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');if($('statCount'))$('statCount').textContent=list.length;if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
-function showHistory(c){lastResult=decodeURIComponent(c);toast('Đã mở nội dung lịch sử');alert(lastResult.slice(0,2000))}
+function getHistoryList(){try{return JSON.parse(localStorage.getItem('synam_history')||'[]')}catch{return []}}
+function saveHistory(type,content){
+  const list=getHistoryList();
+  const item={id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),type,content,at:new Date().toLocaleString('vi-VN'),day:new Date().toISOString().slice(0,10)};
+  list.unshift(item);
+  localStorage.setItem('synam_history',JSON.stringify(list.slice(0,120)));
+  renderHistory();
+}
+function renderHistory(){
+  const list=getHistoryList();
+  const today=new Date().toISOString().slice(0,10);
+  const byType=list.reduce((m,x)=>{m[x.type]=(m[x.type]||0)+1;return m},{});
+  const days=new Set(list.map(x=>x.day||String(x.at||'').slice(0,10)).filter(Boolean));
+  if($('statCount'))$('statCount').textContent=list.length;
+  if($('statToday'))$('statToday').textContent=list.filter(x=>(x.day||'')===today).length;
+  if($('statDays'))$('statDays').textContent=days.size||0;
+  if($('statTop')){const top=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];$('statTop').textContent=top?top[0]:'Chưa có';}
+  if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map((x,i)=>`<div class="history-mini-item usable" onclick="showHistoryByIndex(${i})"><span>${escapeHtml(x.type)}</span><small>${escapeHtml(x.at||'')} · Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử. Hãy dùng Chat AI, Tình duyên hoặc Thần số học trước nhé.</p>');
+  if($('historyList'))$('historyList').innerHTML=(list.map((x,i)=>`<div class="history-item"><div><b>${escapeHtml(x.type)}</b><br><small>${escapeHtml(x.at||'')}</small></div><div class="history-actions"><button onclick="showHistoryByIndex(${i})">Chi tiết</button><button onclick="speakHistory(${i})">Đọc</button><button onclick="deleteHistory(${i})">Xóa</button></div></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>');
+  renderStatsBars(byType,list.length);
+}
+function renderStatsBars(byType,total){
+  const el=$('statsBars'); if(!el) return;
+  const order=['Sỹ Năm AI Chat','Tình duyên','Thần số học','Tử vi AI','Xem chỉ tay','Xem tướng'];
+  const rows=order.map(k=>[k,byType[k]||0]).filter(x=>x[1]>0);
+  el.innerHTML=rows.length?rows.map(([k,v])=>{const pct=total?Math.round(v*100/total):0;return `<div class="stat-bar-row"><span>${escapeHtml(k)}</span><b>${v}</b><i style="--w:${pct}%"></i></div>`}).join(''):'<p class="muted">Chưa có dữ liệu thống kê thật.</p>';
+}
+function showHistoryByIndex(i){const item=getHistoryList()[i];if(!item)return;lastResult=item.content||'';openResultModal(item.type,item.content,item.at);}
+function speakHistory(i){const item=getHistoryList()[i];if(item)speakText(item.content,true)}
+function deleteHistory(i){const list=getHistoryList();list.splice(i,1);localStorage.setItem('synam_history',JSON.stringify(list));renderHistory();toast('Đã xóa một mục lịch sử')}
+function openResultModal(title,content,at=''){
+  let modal=$('resultModal');
+  if(!modal){document.body.insertAdjacentHTML('beforeend',`<div id="resultModal" class="result-modal"><div class="result-modal-box"><button class="modal-close" onclick="closeResultModal()">×</button><h2 id="resultModalTitle"></h2><small id="resultModalTime"></small><div id="resultModalBody" class="result-modal-body"></div><div class="modal-actions"><button onclick="speakText(lastResult,true)">🔊 Đọc</button><button onclick="copyLastResult()">📋 Copy</button><button onclick="closeResultModal()">Đóng</button></div></div></div>`);modal=$('resultModal')}
+  $('resultModalTitle').textContent=title||'Chi tiết'; $('resultModalTime').textContent=at||''; $('resultModalBody').innerHTML=markdownish(content||''); modal.classList.add('open');
+}
+function closeResultModal(){$('resultModal')?.classList.remove('open')}
+async function copyLastResult(){try{await navigator.clipboard.writeText(lastResult||'');toast('Đã copy kết quả')}catch{toast('Không copy được trên trình duyệt này')}}
+function showHistory(c){lastResult=decodeURIComponent(c);openResultModal('Chi tiết lịch sử',lastResult)}
 function clearHistory(){localStorage.removeItem('synam_history');renderHistory();toast('Đã xóa lịch sử')}
 
 function cleanSpeakText(text=''){
@@ -184,7 +219,7 @@ function speakText(text, force=false){
   u.onend=()=>{ if($('autoListenToggle')?.checked && $('page-chat')?.classList.contains('active')) startVoiceInput(); };
   speechSynthesis.speak(u);
 }
-function speakLastResult(){if(!lastResult){toast('Chưa có kết quả để đọc');return} speakText(lastResult,true)}
+function speakLastResult(){if(lastResult){speakText(lastResult,true);return}const first=getHistoryList()[0];if(first){lastResult=first.content||'';speakText(lastResult,true);toast('Đang đọc kết quả gần nhất');return}toast('Chưa có kết quả để đọc. Hãy phân tích trước nhé.')}
 function testVoice(){speakText('Xin chào Chủ tịch Năm. Đây là bản Sỹ Năm Voice Việt Pro. Nếu máy có giọng tiếng Việt, tôi sẽ đọc đúng tiếng Việt.',true)}
 function saveVoicePrefs(){
   const prefs={
@@ -390,6 +425,7 @@ async function sendChat(){
   const q=input.value.trim();
   const attachments=[...chatAttachments];
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
+  chatSending=true;
   input.value='';
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}${escapeHtml(q||'Phân tích file/ảnh đã tải lên')}${attachLabel}</div>`);

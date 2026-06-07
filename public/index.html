@@ -76,9 +76,9 @@
         <article class="feature-card wide" onclick="routeTo('chat')">
           <div><h2>AI CHAT - HỎI VÀ ĐÁP <em>PRO</em></h2><p>Hỏi đáp với Sỹ Năm AI, có thể tải ảnh/file để phân tích nội dung.</p><button>☻ BẮT ĐẦU CHAT</button></div><div class="card-art bot-art">🤖</div>
         </article>
-        <article class="mini-card" onclick="routeTo('history')"><h3>LỊCH SỬ PHÂN TÍCH</h3><div id="historyMini"></div></article>
-        <article class="mini-card" onclick="speakLastResult()"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Nghe kết quả phân tích bằng giọng nói truyền cảm.</p><button>▶ Giọng Năm 1</button></article>
-        <article class="mini-card stats-card" onclick="routeTo('account')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring">85%<span>Hoàn thành hồ sơ</span></div><ul><li>Phân tích đã thực hiện <b id="statCount">0</b></li><li>Ngày sử dụng <b>12</b></li><li>Độ chính xác AI <b>96.8%</b></li></ul></article>
+        <article class="mini-card usable-card" onclick="routeTo('history')"><h3>LỊCH SỬ PHÂN TÍCH</h3><div id="historyMini"></div><button type="button">Mở lịch sử</button></article>
+        <article class="mini-card usable-card"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Đọc kết quả gần nhất, dừng đọc hoặc bật/tắt giọng trả lời.</p><div class="mini-actions"><button type="button" onclick="speakLastResult()">▶ Đọc kết quả</button><button type="button" onclick="stopSpeaking()">⏹ Dừng</button></div></article>
+        <article class="mini-card stats-card usable-card" onclick="routeTo('history')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring"><b id="statCount">0</b><span>Lượt phân tích</span></div><ul><li>Hôm nay <b id="statToday">0</b></li><li>Ngày sử dụng <b id="statDays">0</b></li><li>Dùng nhiều nhất <b id="statTop">Chưa có</b></li></ul><div id="statsBars"></div></article>
       </div>
     </section>
 
