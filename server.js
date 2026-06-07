@@ -485,13 +485,21 @@ function formatVietnamDate(offsetDays = 0) {
 }
 function directDateTimeAnswer(message = '') {
   const q = String(message || '').toLowerCase().normalize('NFC');
+
+  // Không chặn các câu hỏi cần AI/API trả lời như thời tiết, lịch sự kiện, dự báo, giá cả...
+  // Lỗi cũ: câu "dự báo thời tiết 3 ngày" có chữ "ngày" nên bị local date handler nuốt mất.
+  const needsLiveOrKnowledgeAnswer = /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau|lịch thi đấu|lich thi dau|tin tức|tin tuc|giá|gia|tỷ giá|ty gia)/i.test(q);
+  if (needsLiveOrKnowledgeAnswer) return null;
+
   const asksDate = /(hôm nay|hom nay|ngày mai|ngay mai|ngày kia|ngay kia|hôm qua|hom qua|thứ mấy|thu may|ngày bao nhiêu|ngay bao nhieu|mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q);
   if (!asksDate) return null;
+
   let offset = 0;
   let label = 'Hôm nay';
   if (/(ngày kia|ngay kia)/i.test(q)) { offset = 2; label = 'Ngày kia'; }
   else if (/(ngày mai|ngay mai|\bmai\b)/i.test(q)) { offset = 1; label = 'Ngày mai'; }
   else if (/(hôm qua|hom qua)/i.test(q)) { offset = -1; label = 'Hôm qua'; }
+
   const x = vietnamDateFromNow(offset);
   if (/(mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q)) {
     return `${label} là **${x.weekday}, ngày ${x.day}/${x.month}/${x.year}**. Hiện tại ở Việt Nam khoảng **${x.hour}:${x.minute}**.`;
