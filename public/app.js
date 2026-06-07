@@ -1,9 +1,9 @@
-const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
+const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
 function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['love','Tình duyên','love'],['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -415,55 +415,6 @@ async function sendChat(){
 }
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
 async function generateMystic(){setLoading('report',true);try{const payload={name:$('name').value,birthDate:$('birthDate').value,birthTime:$('birthTime').value,gender:$('gender').value};const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng local')}finally{setLoading('report',false)}}
-
-function reduceNumber(n, keepMaster=true){
-  n = Math.abs(parseInt(n||0,10)||0);
-  while(n>9 && !(keepMaster && (n===11 || n===22 || n===33))){
-    n = String(n).split('').reduce((s,d)=>s+(parseInt(d,10)||0),0);
-  }
-  return n;
-}
-function lettersToNumber(name=''){
-  const map={A:1,J:1,S:1,B:2,K:2,T:2,C:3,L:3,U:3,D:4,M:4,V:4,E:5,N:5,W:5,F:6,O:6,X:6,G:7,P:7,Y:7,H:8,Q:8,Z:8,I:9,R:9};
-  const clean=String(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  return clean.split('').reduce((s,ch)=>s+(map[ch]||0),0);
-}
-function vowelsToNumber(name=''){
-  const vowels='AEIOUY';
-  const map={A:1,J:1,S:1,B:2,K:2,T:2,C:3,L:3,U:3,D:4,M:4,V:4,E:5,N:5,W:5,F:6,O:6,X:6,G:7,P:7,Y:7,H:8,Q:8,Z:8,I:9,R:9};
-  const clean=String(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  return clean.split('').reduce((s,ch)=>s+(vowels.includes(ch)?(map[ch]||0):0),0);
-}
-function consonantsToNumber(name=''){
-  const vowels='AEIOUY';
-  const map={A:1,J:1,S:1,B:2,K:2,T:2,C:3,L:3,U:3,D:4,M:4,V:4,E:5,N:5,W:5,F:6,O:6,X:6,G:7,P:7,Y:7,H:8,Q:8,Z:8,I:9,R:9};
-  const clean=String(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  return clean.split('').reduce((s,ch)=>s+(!vowels.includes(ch)?(map[ch]||0):0),0);
-}
-function numberMeaning(n){
-  const m={1:'độc lập, chủ động, có tố chất dẫn dắt',2:'tinh tế, biết lắng nghe, hợp làm cầu nối',3:'sáng tạo, vui vẻ, giỏi biểu đạt',4:'thực tế, kỷ luật, bền bỉ',5:'tự do, linh hoạt, thích trải nghiệm',6:'ấm áp, trách nhiệm, giàu tình cảm',7:'sâu sắc, trực giác tốt, thích tìm hiểu',8:'tham vọng, quản lý tốt, hướng thành tựu',9:'nhân văn, bao dung, giàu lý tưởng',11:'trực giác mạnh, truyền cảm hứng, nhạy cảm',22:'xây dựng lớn, biến ý tưởng thành hệ thống',33:'chữa lành, yêu thương, phụng sự cộng đồng'};
-  return m[n]||'cần thêm dữ liệu để luận kỹ hơn';
-}
-function localNumerologyReport(name,birth){
-  const digits=String(birth||'').replace(/\D/g,'');
-  const life=reduceNumber(digits.split('').reduce((s,d)=>s+(+d||0),0));
-  const soul=reduceNumber(vowelsToNumber(name));
-  const expr=reduceNumber(lettersToNumber(name));
-  const personality=reduceNumber(consonantsToNumber(name));
-  return `### 🔢 Thần số học tổng quan\n- Họ tên: ${name||'Chưa nhập'}\n- Ngày sinh: ${birth||'Chưa nhập'}\n- Con số chủ đạo: ${life} — ${numberMeaning(life)}.\n- Con số linh hồn: ${soul} — điều bên trong bạn hướng tới: ${numberMeaning(soul)}.\n- Con số biểu đạt: ${expr} — cách bạn thể hiện ra ngoài: ${numberMeaning(expr)}.\n- Con số nhân cách: ${personality} — ấn tượng người khác dễ cảm nhận: ${numberMeaning(personality)}.\n\n### Điểm mạnh\n- Bạn có năng lượng nổi bật của số ${life}: ${numberMeaning(life)}.\n- Khi cân bằng cảm xúc, bạn dễ phát huy tốt năng lực giao tiếp, lựa chọn và kiên trì.\n\n### Điểm cần cân bằng\n- Tránh để cảm xúc nhất thời quyết định thay mục tiêu dài hạn.\n- Nên rèn thói quen ghi chép, lên kế hoạch và kiểm tra lại việc quan trọng.\n\n### Gợi ý tình duyên & công việc\n- Tình duyên: hợp với người biết tôn trọng nhịp sống và cách suy nghĩ của bạn.\n- Công việc: ưu tiên môi trường giúp bạn phát huy điểm mạnh của số ${life}.\n\n### Lưu ý\n- Kết quả thần số học chỉ mang tính tham khảo, không thay thế quyết định thực tế.`;
-}
-async function generateNumerology(){
-  const name=$('numName')?.value||''; const birth=$('numBirth')?.value||''; const focus=$('numFocus')?.value||'Tổng quan';
-  const local=localNumerologyReport(name,birth); setLoading('numerologyResult',true);
-  try{
-    const prompt=`Luận thần số học tiếng Việt thật chi tiết cho: Họ tên ${name}, ngày sinh ${birth}, trọng tâm ${focus}. Dựa trên bản tính local sau, mở rộng thành báo cáo đẹp, rõ mục, có điểm mạnh/yếu, công việc, tình duyên và lời khuyên thực tế. Không mê tín cực đoan.\n\n${local}`;
-    const data=await postJSON('/api/chat-ai',{message:prompt});
-    const text=data.text||data.answer||data.result||local;
-    $('numerologyResult').innerHTML=htmlResult('🔢 Kết quả thần số học AI',text); saveHistory('Thần số học',text);
-  }catch(e){$('numerologyResult').innerHTML=htmlResult('🔢 Kết quả thần số học',local); saveHistory('Thần số học local',local)}
-  finally{setLoading('numerologyResult',false)}
-}
-
 async function generateLove(){setLoading('loveResult',true);try{const payload={name1:$('loveName1').value,birth1:$('loveBirth1').value,name2:$('loveName2').value,birth2:$('loveBirth2').value,focus:$('loveFocus').value};const data=await postJSON('/api/love-ai',payload);const text=data.text||data.result||data.answer;$('loveResult').innerHTML=htmlResult('💕 Kết quả tình duyên AI',text);saveHistory('Tình duyên',text)}catch(e){const text=`### Tình duyên tham khảo\n- Hai người cần xem sự hòa hợp qua cách giao tiếp, nhịp sống và mục tiêu dài hạn.\n- Điểm mạnh: có thể bổ sung cho nhau nếu biết lắng nghe.\n- Điểm cần tránh: im lặng, thử lòng, nóng vội.\n- Lời khuyên: dùng tử vi như tham khảo, tình cảm thật nằm ở hành động hằng ngày.`;$('loveResult').innerHTML=htmlResult('💕 Kết quả tình duyên',text);saveHistory('Tình duyên local',text)}finally{setLoading('loveResult',false)}}
 async function analyzeVision(kind){const isPalm=kind==='palm';const resultId=isPalm?'palmResult':'faceResult';const file=$(isPalm?'palmImage':'faceImage').files[0];const note=$(isPalm?'palmNote':'faceNote').value;setLoading(resultId,true);try{const image=file?await fileToDataURL(file):'';const payload={mode:isPalm?'palm':'face',palmImage:isPalm?image:'',faceImage:isPalm?'':image,palmLine:isPalm?$('palmLine').value:'',palmNote:isPalm?note:'',facePart:isPalm?'':$('facePart').value,faceNote:isPalm?'':note,clientTime:new Date().toLocaleString('vi-VN')};const data=await postJSON('/api/vision-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$(resultId).innerHTML=htmlResult(isPalm?'🖐 Kết quả xem chỉ tay AI':'🙂 Kết quả xem tướng AI',text);saveHistory(isPalm?'Xem chỉ tay':'Xem tướng',text)}catch(e){const text=isPalm?`### Chỉ tay tham khảo\n- Sinh đạo: tượng trưng sức bền và nhịp sống.\n- Trí đạo: tượng trưng tư duy, cách quyết định.\n- Tâm đạo: tượng trưng cảm xúc và tình cảm.\n- Ảnh cần rõ lòng bàn tay để AI phân tích sâu hơn.`:`### Xem tướng tham khảo\n- Ngũ quan cân đối thường tạo cảm giác hài hòa.\n- Thần thái sáng thể hiện sự tự tin.\n- Kết quả chỉ là tham khảo văn hóa, không dùng để định danh hoặc kết luận sức khỏe.`;$(resultId).innerHTML=htmlResult(isPalm?'🖐 Kết quả xem chỉ tay':'🙂 Kết quả xem tướng',text);saveHistory(isPalm?'Xem chỉ tay local':'Xem tướng local',text)}finally{setLoading(resultId,false)}}
 async function simpleTool(kind){const map={astrology:['astrologyResult','🪐 Kết quả chiêm tinh',`Cung: ${$('zodiac')?.value||''}\nCâu hỏi: ${$('astroQuestion')?.value||''}`],fengshui:['fengshuiResult','☯ Kết quả phong thủy',`Năm sinh: ${$('fengYear')?.value||''}\nCâu hỏi: ${$('fengAsk')?.value||''}`],tarot:['tarotResult','🃏 Kết quả bói bài',$('tarotAsk')?.value||'']};const [id,title,prompt]=map[kind];setLoading(id,true);try{const data=await postJSON('/api/chat-ai',{message:`${title}. ${prompt}`});const text=data.text||data.answer||data.result;$(id).innerHTML=htmlResult(title,text);saveHistory(title,text)}catch(e){const text=`### ${title}\n- Hiện chưa kết nối được AI server.\n- Nội dung bạn hỏi: ${prompt}\n- Lời khuyên: xem đây là gợi ý tham khảo, nên đối chiếu với tình hình thực tế.`;$(id).innerHTML=htmlResult(title,text);saveHistory(title+' local',text)}finally{setLoading(id,false)}}

@@ -225,5 +225,3 @@ html,body{scroll-padding-top:18px}
   .mobile-voice-input .voice-btn,.mobile-voice-input .quick-voice-btn,.mobile-voice-input .quick-stop-btn{width:50px!important;min-width:50px!important;height:48px!important;border-radius:16px!important}
   .bottom-nav{z-index:30!important}
 }
-
-.icon-num{--c1:#f8d76a;--c2:#35d7ff}.icon-num:before{content:'🔢';font-size:25px;left:8px;top:8px;filter:drop-shadow(0 0 10px var(--c1))}
