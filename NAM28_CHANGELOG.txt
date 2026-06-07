@@ -1,0 +1,14 @@
+SyNam NAM28 - AI Chat UX Stable
+
+Nền: NAM27 CLEAN AI CORE STABLE FIX V2 WEATHER RESTORE
+
+Đã chỉnh:
+- Chống gửi trùng câu hỏi trong AI Chat.
+- Gửi xong tự xóa ô nhập chat.
+- Reset file/ảnh đính kèm sau khi gửi.
+- Ô chat tự giãn, Enter gửi, Shift+Enter xuống dòng.
+- Voice chờ khoảng 2 giây sau khi dừng nghe rồi mới gửi.
+- Không sửa server.js để tránh làm hỏng AI/API.
+
+File chính đã sửa:
+- public/app.js
