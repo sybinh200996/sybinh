@@ -1,7 +1,0 @@
-NAM26 nâng cấp:
-- Khôi phục Tình Duyên AI vào menu/tab.
-- Thêm Thần Số Học AI/local.
-- Thu nhỏ các card desktop khoảng 60% bằng CSS compact.
-- Thống kê của bạn dùng dữ liệu thật từ localStorage/history/profile.
-- Giọng nói AI có 5 nút giọng thật lấy từ Web Speech API của thiết bị/trình duyệt.
-- Giữ nguyên domain/kỹ thuật synam.online, chỉ đổi giao diện/chức năng.
