@@ -225,3 +225,31 @@ html,body{scroll-padding-top:18px}
   .mobile-voice-input .voice-btn,.mobile-voice-input .quick-voice-btn,.mobile-voice-input .quick-stop-btn{width:50px!important;min-width:50px!important;height:48px!important;border-radius:16px!important}
   .bottom-nav{z-index:30!important}
 }
+
+
+/* NAM26: compact desktop 60%, real stats, 5 real voices, love + numerology */
+@media (min-width: 900px){
+  .dashboard-grid{gap:12px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:stretch}
+  .feature-card{min-height:132px!important;padding:16px!important;border-radius:22px!important}
+  .feature-card.wide{min-height:132px!important}
+  .feature-card h2{font-size:clamp(16px,1.6vw,24px)!important;line-height:1.05!important;margin-bottom:6px!important}
+  .feature-card p{font-size:13px!important;line-height:1.35!important;max-width:74%!important}
+  .feature-card button{padding:8px 12px!important;font-size:12px!important;margin-top:8px!important}
+  .card-art{transform:scale(.6)!important;right:18px!important;bottom:12px!important;opacity:.85}
+  .mini-card{min-height:126px!important;padding:14px!important;border-radius:22px!important}
+  .mini-card h3{font-size:15px!important;margin-bottom:8px!important}
+  .mini-card p,.mini-card li{font-size:12px!important;line-height:1.32!important}
+  .stats-card .ring{width:92px!important;height:92px!important;font-size:22px!important}
+  .stats-card .ring span{font-size:9px!important}
+}
+.voice-showcase{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
+.voice-showcase button{display:flex;flex-direction:column;gap:2px;align-items:flex-start;justify-content:center;border:1px solid rgba(105,222,255,.28);background:rgba(255,255,255,.07);color:#ecfeff;border-radius:14px;padding:8px 10px;font-weight:900;min-height:48px}
+.voice-showcase small{font-size:10px;opacity:.75;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voice-card-real{cursor:default!important}.voice-card-real .wave{transform:scale(.75);transform-origin:left center}
+.stats-card ul{display:grid;gap:4px;margin-top:8px}.stats-card li{display:flex;justify-content:space-between;gap:8px}.stats-card b{color:#a5f3fc}.stats-card .ring b{font-size:inherit;color:#fff}.love-art,.number-art{font-size:64px;filter:drop-shadow(0 0 20px rgba(56,189,248,.35))}
+@media(max-width:560px){
+  .feature-card{min-height:150px!important;padding:15px!important}
+  .feature-card h2{font-size:20px!important}.feature-card p{font-size:13px!important;max-width:78%!important}.card-art{transform:scale(.72)!important;opacity:.72}
+  .voice-showcase{grid-template-columns:1fr 1fr}.voice-showcase button{font-size:12px;min-height:46px}
+  .stats-card .ring{width:96px!important;height:96px!important;font-size:22px!important}
+}

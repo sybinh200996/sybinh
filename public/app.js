@@ -1,9 +1,9 @@
-const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
+const routes=[['home','Tử Vi','tuvi'],['love','Tình Duyên','love'],['numerology','Thần Số Học','number'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
-function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
+function init(){renderTabs();initStats();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['love','Tình duyên','love'],['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -93,10 +93,62 @@ function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');
 function setLoading(id,on=true){$(id)?.classList.toggle('loading',on)}
 function htmlResult(title,text){lastResult=text||'';return `<h2>${title}</h2>${markdownish(text)}`}
 function markdownish(text=''){return text.split('\n').map(line=>{if(line.startsWith('### '))return `<h3>${line.slice(4)}</h3>`;if(line.startsWith('## '))return `<h2>${line.slice(3)}</h2>`;if(line.startsWith('- '))return `<li>${line.slice(2)}</li>`;return line.trim()?`<p>${line}</p>`:''}).join('').replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')}
-function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,50)));renderHistory();}
-function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');if($('statCount'))$('statCount').textContent=list.length;if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
+function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,80)));trackStat(type);renderHistory();}
+function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');renderStats();if($('statCount'))$('statCount').textContent=Math.max(list.length,Number(getStats().total||0));if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
 function showHistory(c){lastResult=decodeURIComponent(c);toast('Đã mở nội dung lịch sử');alert(lastResult.slice(0,2000))}
 function clearHistory(){localStorage.removeItem('synam_history');renderHistory();toast('Đã xóa lịch sử')}
+
+function getStats(){
+  const today=new Date().toISOString().slice(0,10);
+  let s={firstDay:today,lastDay:today,total:0,chat:0,image:0,tools:{},profilePercent:0};
+  try{s={...s,...JSON.parse(localStorage.getItem('synam_stats')||'{}')}}catch{}
+  if(!s.firstDay) s.firstDay=today;
+  s.lastDay=today;
+  return s;
+}
+function saveStats(s){localStorage.setItem('synam_stats',JSON.stringify(s));renderStats();}
+function trackStat(type='Phân tích'){
+  const s=getStats();
+  s.total=Number(s.total||0)+1;
+  const t=String(type||'').toLowerCase();
+  if(t.includes('chat')||t.includes('hỏi')||t.includes('multi-ai')) s.chat=Number(s.chat||0)+1;
+  if(t.includes('ảnh')||t.includes('image')) s.image=Number(s.image||0)+1;
+  s.tools=s.tools||{};
+  s.tools[type]=(s.tools[type]||0)+1;
+  saveStats(s);
+}
+function initStats(){
+  const s=getStats();
+  if(!localStorage.getItem('synam_stats')) saveStats(s); else renderStats();
+}
+function daysBetween(a,b){
+  try{return Math.max(1,Math.floor((new Date(b)-new Date(a))/(24*3600*1000))+1)}catch{return 1}
+}
+function calcProfilePercent(){
+  let p=0;
+  try{
+    const user=JSON.parse(localStorage.getItem('synam_user')||'null')||JSON.parse(localStorage.getItem('synam_profile')||'null');
+    if(user?.name) p+=30;
+    if(user?.email) p+=30;
+    if(user?.plan && user.plan!=='Free') p+=20;
+    if(localStorage.getItem('synam_token')) p+=20;
+  }catch{}
+  return Math.min(100,p);
+}
+function renderStats(){
+  const s=getStats();
+  const list=[]; try{list.push(...JSON.parse(localStorage.getItem('synam_history')||'[]'))}catch{}
+  const total=Math.max(Number(s.total||0),list.length);
+  const days=daysBetween(s.firstDay||new Date().toISOString().slice(0,10),new Date().toISOString().slice(0,10));
+  const tools=Object.keys(s.tools||{}).length || new Set(list.map(x=>x.type)).size || 0;
+  const profile=calcProfilePercent();
+  if($('statCount')) $('statCount').textContent=total;
+  if($('statDays')) $('statDays').textContent=days;
+  if($('statChat')) $('statChat').textContent=Number(s.chat||0);
+  if($('statImage')) $('statImage').textContent=Number(s.image||0);
+  if($('statTools')) $('statTools').textContent=tools;
+  if($('profilePercent')) $('profilePercent').textContent=profile+'%';
+}
 
 function cleanSpeakText(text=''){
   return String(text||'')
@@ -141,7 +193,32 @@ function refreshVoiceList(){
     select.innerHTML=opts.join('');
     select.value=prefs.voiceName||'auto';
   }
+  renderVoiceShowcase();
   return cachedVoices;
+}
+function getFiveVoiceProfiles(){
+  const voices=(cachedVoices||[]).slice();
+  const vi=voices.filter(isVietnameseVoice).sort((a,b)=>scoreVietnameseVoice(b)-scoreVietnameseVoice(a));
+  const pool=vi.length?vi:voices;
+  const labels=['Năm 1 - Nam trầm','Năm 2 - Nam sáng','Năm 3 - Nữ nhẹ','Năm 4 - Nữ truyền cảm','Năm 5 - Tự động'];
+  return labels.map((label,i)=>({label,voice:pool[i%Math.max(1,pool.length)]||null,index:i}));
+}
+function renderVoiceShowcase(){
+  const box=$('voiceShowcase'); if(!box) return;
+  const list=getFiveVoiceProfiles();
+  box.innerHTML=list.map(v=>`<button type="button" onclick="selectVoicePreset(${v.index})">🔊 ${escapeHtml(v.label)}${v.voice?`<small>${escapeHtml(v.voice.name)}</small>`:'<small>Giọng mặc định máy</small>'}</button>`).join('');
+}
+function selectVoicePreset(i){
+  const item=getFiveVoiceProfiles()[i];
+  const select=$('voiceSelect');
+  if(item?.voice?.name){
+    if(select) select.value=item.voice.name;
+    const prefs=getVoicePrefs(); prefs.voiceName=item.voice.name; localStorage.setItem('synam_voice_prefs',JSON.stringify(prefs));
+  }else{
+    if(select) select.value='auto';
+  }
+  speakText(`Xin chào, đây là ${item?.label||'giọng Sỹ Năm AI'}.`, true);
+  toast('Đã chọn '+(item?.label||'giọng AI'));
 }
 function initVietnameseVoices(){
   if(!('speechSynthesis' in window)) return;
@@ -416,6 +493,54 @@ async function sendChat(){
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
 async function generateMystic(){setLoading('report',true);try{const payload={name:$('name').value,birthDate:$('birthDate').value,birthTime:$('birthTime').value,gender:$('gender').value};const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng local')}finally{setLoading('report',false)}}
 async function generateLove(){setLoading('loveResult',true);try{const payload={name1:$('loveName1').value,birth1:$('loveBirth1').value,name2:$('loveName2').value,birth2:$('loveBirth2').value,focus:$('loveFocus').value};const data=await postJSON('/api/love-ai',payload);const text=data.text||data.result||data.answer;$('loveResult').innerHTML=htmlResult('💕 Kết quả tình duyên AI',text);saveHistory('Tình duyên',text)}catch(e){const text=`### Tình duyên tham khảo\n- Hai người cần xem sự hòa hợp qua cách giao tiếp, nhịp sống và mục tiêu dài hạn.\n- Điểm mạnh: có thể bổ sung cho nhau nếu biết lắng nghe.\n- Điểm cần tránh: im lặng, thử lòng, nóng vội.\n- Lời khuyên: dùng tử vi như tham khảo, tình cảm thật nằm ở hành động hằng ngày.`;$('loveResult').innerHTML=htmlResult('💕 Kết quả tình duyên',text);saveHistory('Tình duyên local',text)}finally{setLoading('loveResult',false)}}
+
+function digitSum(n){
+  let s=String(n||'').replace(/\D/g,'').split('').reduce((a,b)=>a+Number(b),0);
+  while(s>9 && ![11,22,33].includes(s)) s=String(s).split('').reduce((a,b)=>a+Number(b),0);
+  return s||0;
+}
+function letterNumber(ch){
+  const raw=String(ch||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  const c=raw[0];
+  if(!/[A-Z]/.test(c)) return 0;
+  return ((c.charCodeAt(0)-65)%9)+1;
+}
+function calcNumerology(name,birth){
+  const digits=String(birth||'').replace(/\D/g,'');
+  const lifePath=digitSum(digits);
+  const day=digitSum(String(birth||'').split('-')[2]||'');
+  const year=new Date().getFullYear();
+  const md=String(birth||'').split('-');
+  const personalYear=digitSum(`${md[1]||''}${md[2]||''}${year}`);
+  const letters=String(name||'').replace(/[^\p{L}]/gu,'');
+  const destiny=digitSum([...letters].reduce((a,c)=>a+letterNumber(c),0));
+  const vowels='AĂÂEÊIOÔƠUƯY';
+  const soul=digitSum([...letters].filter(c=>vowels.includes(c.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase()[0])).reduce((a,c)=>a+letterNumber(c),0));
+  return {lifePath,day,personalYear,destiny,soul};
+}
+function numerologyLocalText(name,birth,focus){
+  const n=calcNumerology(name,birth);
+  return `### 🔢 Thần số học cho ${name||'bạn'}\n- **Số chủ đạo:** ${n.lifePath}\n- **Số thái độ/ngày sinh:** ${n.day}\n- **Số sứ mệnh theo tên:** ${n.destiny}\n- **Số linh hồn:** ${n.soul}\n- **Năm cá nhân hiện tại:** ${n.personalYear}\n\n### Luận nhanh\n- Số chủ đạo ${n.lifePath} cho thấy hướng phát triển chính trong cuộc sống.\n- Số sứ mệnh ${n.destiny} gợi ý cách bạn thể hiện năng lực với người khác.\n- Số linh hồn ${n.soul} nghiêng về mong muốn bên trong.\n- Trọng tâm đang xem: ${focus||'Tổng quan thần số học'}.\n\n*Kết quả chỉ mang tính tham khảo/giải trí, nên đối chiếu với thực tế.*`;
+}
+async function generateNumerology(localOnly=false){
+  const name=$('numName')?.value||'';
+  const birth=$('numBirth')?.value||'';
+  const focus=$('numFocus')?.value||'Tổng quan thần số học';
+  if(!name || !birth) return toast('Nhập họ tên và ngày sinh đã nhé');
+  const local=numerologyLocalText(name,birth,focus);
+  setLoading('numerologyResult',true);
+  if(localOnly){$('numerologyResult').innerHTML=htmlResult('🔢 Kết quả thần số học',local);saveHistory('Thần số học local',local);setLoading('numerologyResult',false);return}
+  try{
+    const data=await postJSON('/api/chat-ai',{message:`Luận giải thần số học bằng tiếng Việt, rõ ràng, thực tế, không mê tín quá đà. Dữ liệu tính sẵn:\n${local}\nHãy phân tích sâu theo trọng tâm: ${focus}`});
+    const text=data.text||data.answer||data.result||local;
+    $('numerologyResult').innerHTML=htmlResult('🔢 Kết quả thần số học AI',text);
+    saveHistory('Thần số học',text);
+  }catch(e){
+    $('numerologyResult').innerHTML=htmlResult('🔢 Kết quả thần số học',local);
+    saveHistory('Thần số học local',local);
+  }finally{setLoading('numerologyResult',false)}
+}
+
 async function analyzeVision(kind){const isPalm=kind==='palm';const resultId=isPalm?'palmResult':'faceResult';const file=$(isPalm?'palmImage':'faceImage').files[0];const note=$(isPalm?'palmNote':'faceNote').value;setLoading(resultId,true);try{const image=file?await fileToDataURL(file):'';const payload={mode:isPalm?'palm':'face',palmImage:isPalm?image:'',faceImage:isPalm?'':image,palmLine:isPalm?$('palmLine').value:'',palmNote:isPalm?note:'',facePart:isPalm?'':$('facePart').value,faceNote:isPalm?'':note,clientTime:new Date().toLocaleString('vi-VN')};const data=await postJSON('/api/vision-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$(resultId).innerHTML=htmlResult(isPalm?'🖐 Kết quả xem chỉ tay AI':'🙂 Kết quả xem tướng AI',text);saveHistory(isPalm?'Xem chỉ tay':'Xem tướng',text)}catch(e){const text=isPalm?`### Chỉ tay tham khảo\n- Sinh đạo: tượng trưng sức bền và nhịp sống.\n- Trí đạo: tượng trưng tư duy, cách quyết định.\n- Tâm đạo: tượng trưng cảm xúc và tình cảm.\n- Ảnh cần rõ lòng bàn tay để AI phân tích sâu hơn.`:`### Xem tướng tham khảo\n- Ngũ quan cân đối thường tạo cảm giác hài hòa.\n- Thần thái sáng thể hiện sự tự tin.\n- Kết quả chỉ là tham khảo văn hóa, không dùng để định danh hoặc kết luận sức khỏe.`;$(resultId).innerHTML=htmlResult(isPalm?'🖐 Kết quả xem chỉ tay':'🙂 Kết quả xem tướng',text);saveHistory(isPalm?'Xem chỉ tay local':'Xem tướng local',text)}finally{setLoading(resultId,false)}}
 async function simpleTool(kind){const map={astrology:['astrologyResult','🪐 Kết quả chiêm tinh',`Cung: ${$('zodiac')?.value||''}\nCâu hỏi: ${$('astroQuestion')?.value||''}`],fengshui:['fengshuiResult','☯ Kết quả phong thủy',`Năm sinh: ${$('fengYear')?.value||''}\nCâu hỏi: ${$('fengAsk')?.value||''}`],tarot:['tarotResult','🃏 Kết quả bói bài',$('tarotAsk')?.value||'']};const [id,title,prompt]=map[kind];setLoading(id,true);try{const data=await postJSON('/api/chat-ai',{message:`${title}. ${prompt}`});const text=data.text||data.answer||data.result;$(id).innerHTML=htmlResult(title,text);saveHistory(title,text)}catch(e){const text=`### ${title}\n- Hiện chưa kết nối được AI server.\n- Nội dung bạn hỏi: ${prompt}\n- Lời khuyên: xem đây là gợi ý tham khảo, nên đối chiếu với tình hình thực tế.`;$(id).innerHTML=htmlResult(title,text);saveHistory(title+' local',text)}finally{setLoading(id,false)}}
 async function deepAnalyze(){const q=$('deepAsk').value.trim();if(!q)return toast('Nhập chủ đề đã nhé');setLoading('deepResult',true);try{const data=await postJSON('/api/chat-ai',{message:`Phân tích sâu theo nhiều lớp, rõ ràng, có lời khuyên thực tế: ${q}`});const text=data.text||data.answer||data.result;$('deepResult').innerHTML=htmlResult('🤯 AI phân tích sâu',text);saveHistory('AI phân tích sâu',text)}catch(e){const text=`### Phân tích sâu local\n- Vấn đề: ${q}\n- Lớp 1: xác định mục tiêu thật sự.\n- Lớp 2: xem rủi ro, nguồn lực, thời gian.\n- Lớp 3: chọn bước nhỏ làm ngay hôm nay.\n- Lời khuyên: đừng ôm quá nhiều hướng cùng lúc.`;$('deepResult').innerHTML=htmlResult('🤯 AI phân tích sâu',text);saveHistory('AI phân tích sâu local',text)}finally{setLoading('deepResult',false)}}

@@ -34,10 +34,10 @@
       <img src="assets/hero-right.jpg" class="hero-person hero-right" alt="Ảnh phải" />
       <div class="hero-center">
         <h1>Sỹ Năm Mystic</h1>
-        <p>AI TỬ VI - CHỈ TAY - XEM TƯỚNG - CHIÊM TINH</p>
+        <p>AI TỬ VI - TÌNH DUYÊN - THẦN SỐ HỌC - CHIÊM TINH</p>
         <div class="search-shell">
           <span>⌕</span>
-          <input id="globalAsk" placeholder="Hỏi về tử vi, chỉ tay, tướng số, chiêm tinh..." onkeydown="if(event.key==='Enter') quickAsk()" />
+          <input id="globalAsk" placeholder="Hỏi về tử vi, tình duyên, thần số học, chiêm tinh..." onkeydown="if(event.key==='Enter') quickAsk()" />
           <button onclick="quickAsk()">✦ AI PHÂN TÍCH</button>
         </div>
         <div class="quick-row">
@@ -45,6 +45,8 @@
           <button onclick="routeTo('astrology')">♈ Cung hoàng đạo</button>
           <button onclick="routeTo('palm')">🖐 Xem chỉ tay</button>
           <button onclick="routeTo('face')">♙ Xem tướng</button>
+          <button onclick="routeTo('love')">💕 Tình duyên</button>
+          <button onclick="routeTo('numerology')">🔢 Thần số học</button>
           <button onclick="routeTo('chat'); setTimeout(()=>setChatMode('edit-image'),80)">🎨 Chỉnh sửa ảnh AI</button>
         </div>
       </div>
@@ -70,14 +72,21 @@
         <article class="feature-card wide" onclick="routeTo('chat')">
           <div><h2>AI CHAT - HỎI VÀ ĐÁP <em>PRO</em></h2><p>Hỏi đáp với Gemini AI thật, có thể tải ảnh/file để phân tích nội dung.</p><button>☻ BẮT ĐẦU CHAT</button></div><div class="card-art bot-art">🤖</div>
         </article>
+        <article class="feature-card wide" onclick="routeTo('love')">
+          <div><h2>TÌNH DUYÊN AI <em>NAM26</em></h2><p>So sánh 2 ngày sinh, điểm hòa hợp, điểm dễ xung đột và lời khuyên thực tế.</p><button>💕 XEM HỢP TUỔI</button></div><div class="card-art love-art">💕</div>
+        </article>
+        <article class="feature-card wide" onclick="routeTo('numerology')">
+          <div><h2>THẦN SỐ HỌC AI <em>NAM26</em></h2><p>Tính số chủ đạo, năm cá nhân, số thái độ và luận giải theo tên/ngày sinh.</p><button>🔢 XEM NGAY</button></div><div class="card-art number-art">🔢</div>
+        </article>
         <article class="mini-card" onclick="routeTo('history')"><h3>LỊCH SỬ PHÂN TÍCH</h3><div id="historyMini"></div></article>
-        <article class="mini-card" onclick="speakLastResult()"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Nghe kết quả phân tích bằng giọng nói truyền cảm.</p><button>▶ Giọng Năm 1</button></article>
-        <article class="mini-card stats-card" onclick="routeTo('account')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring">85%<span>Hoàn thành hồ sơ</span></div><ul><li>Phân tích đã thực hiện <b id="statCount">0</b></li><li>Ngày sử dụng <b>12</b></li><li>Độ chính xác AI <b>96.8%</b></li></ul></article>
+        <article class="mini-card voice-card-real"><h3>GIỌNG NÓI AI</h3><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>5 giọng thật lấy từ máy/trình duyệt. Bấm từng giọng để test và chọn.</p><div id="voiceShowcase" class="voice-showcase"><button onclick="testVoice()">🔊 Test giọng Việt</button></div></article>
+        <article class="mini-card stats-card" onclick="routeTo('account')"><h3>THỐNG KÊ CỦA BẠN</h3><div class="ring"><b id="profilePercent">0%</b><span>Hoàn thành hồ sơ</span></div><ul><li>Phân tích đã thực hiện <b id="statCount">0</b></li><li>Ngày sử dụng <b id="statDays">1</b></li><li>Chat AI <b id="statChat">0</b></li><li>Tạo/chỉnh ảnh <b id="statImage">0</b></li><li>Tính năng đã dùng <b id="statTools">0</b></li></ul></article>
       </div>
     </section>
 
     <section id="page-tuvi" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();generateMystic()"><h2>📜 Tử vi / Luận giải</h2><label>Họ tên<input id="name" placeholder="Đặng Văn Năm"></label><label>Ngày sinh<input id="birthDate" type="date"></label><label>Giờ sinh<input id="birthTime" type="time"></label><label>Giới tính<select id="gender"><option>Nam</option><option>Nữ</option><option>Khác</option></select></label><button class="primary">🤖 AI luận giải</button><button type="button" onclick="localMystic()">🔎 Luận local</button></form><article id="report" class="result-panel"><h2>Kết quả tử vi</h2><p>Nhập thông tin rồi bấm phân tích.</p></article></div></section>
     <section id="page-love" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();generateLove()"><h2>💕 Tình duyên</h2><label>Tên người 1<input id="loveName1"></label><label>Ngày sinh người 1<input id="loveBirth1" type="date"></label><label>Tên người 2<input id="loveName2"></label><label>Ngày sinh người 2<input id="loveBirth2" type="date"></label><label>Muốn xem kỹ<select id="loveFocus"><option>Tổng quan tình duyên</option><option>Hôn nhân lâu dài</option><option>Điểm dễ xung đột</option><option>Cách hòa hợp</option></select></label><button class="primary">🤖 AI luận tình duyên</button></form><article id="loveResult" class="result-panel"><h2>Kết quả tình duyên</h2><p>Nhập thông tin 2 người để xem.</p></article></div></section>
+    <section id="page-numerology" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();generateNumerology()"><h2>🔢 Thần số học</h2><label>Họ tên đầy đủ<input id="numName" placeholder="Ví dụ: Đặng Văn Năm"></label><label>Ngày sinh<input id="numBirth" type="date"></label><label>Muốn xem kỹ<select id="numFocus"><option>Tổng quan thần số học</option><option>Tình duyên</option><option>Công việc / sự nghiệp</option><option>Năm cá nhân</option><option>Điểm mạnh và điểm yếu</option></select></label><button class="primary">🔢 Tính & luận giải</button><button type="button" onclick="generateNumerology(true)">🧮 Tính local</button></form><article id="numerologyResult" class="result-panel"><h2>Kết quả thần số học</h2><p>Nhập họ tên và ngày sinh để xem số chủ đạo, số thái độ, năm cá nhân.</p></article></div></section>
     <section id="page-palm" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();analyzeVision('palm')"><h2>🖐 Xem chỉ tay AI</h2><input id="palmImage" type="file" accept="image/*" onchange="previewImage(event,'palmPreview')"><label class="camera-line">📸 Chụp ảnh bàn tay<input id="palmCamera" type="file" accept="image/*" capture="environment" onchange="copyCameraFile(event,'palmImage','palmPreview')"></label><img id="palmPreview" class="preview"><label>Đường nổi bật<select id="palmLine"><option>Sinh đạo</option><option>Trí đạo</option><option>Tâm đạo</option><option>Sự nghiệp</option></select></label><label>Ghi chú<textarea id="palmNote" placeholder="Mô tả thêm nếu ảnh chưa rõ..."></textarea></label><button class="primary">🤖 Phân tích chỉ tay</button></form><article id="palmResult" class="result-panel"><h2>Kết quả xem chỉ tay</h2><p>Tải ảnh rồi bấm phân tích.</p></article></div></section>
     <section id="page-face" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();analyzeVision('face')"><h2>🙂 Xem tướng AI</h2><input id="faceImage" type="file" accept="image/*" onchange="previewImage(event,'facePreview')"><label class="camera-line">📸 Chụp ảnh khuôn mặt<input id="faceCamera" type="file" accept="image/*" capture="user" onchange="copyCameraFile(event,'faceImage','facePreview')"></label><img id="facePreview" class="preview"><label>Bộ phận muốn xem<select id="facePart"><option>Tổng quan ngũ quan</option><option>Mắt</option><option>Mũi</option><option>Miệng</option><option>Thần thái</option></select></label><label>Ghi chú<textarea id="faceNote"></textarea></label><button class="primary">🤖 Phân tích tướng</button></form><article id="faceResult" class="result-panel"><h2>Kết quả xem tướng</h2><p>Tải ảnh rồi bấm phân tích.</p></article></div></section>
     <section id="page-astrology" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();simpleTool('astrology')"><h2>🪐 Chiêm tinh</h2><label>Cung hoàng đạo<input id="zodiac" placeholder="Song Tử, Sư Tử..."></label><label>Câu hỏi<textarea id="astroQuestion" placeholder="Tình duyên/công việc tháng này?"></textarea></label><button class="primary">✨ Xem chiêm tinh</button></form><article id="astrologyResult" class="result-panel"><h2>Kết quả chiêm tinh</h2><p>Nhập cung và câu hỏi.</p></article></div></section>
