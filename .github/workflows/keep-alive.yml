@@ -1,18 +1,15 @@
-
 name: Keep Render Alive
 
 on:
   schedule:
     - cron: "*/10 * * * *"
-
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Ping Sy Nam Mystic
+      - name: Ping Sỹ Năm Mystic
         run: |
           curl -L https://synam.online
           curl -L https://sybinh.onrender.com
