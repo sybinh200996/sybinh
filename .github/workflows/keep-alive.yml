@@ -12,3 +12,5 @@ jobs:
       - name: Ping Sỹ Năm Mystic
         run: |
           curl -L https://synam.online
+          curl -L https://sybinh.onrender.com
+          curl -L https://sybinh.onrender.com/api/health
