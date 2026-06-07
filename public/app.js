@@ -1,9 +1,9 @@
-const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
+const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Cài Đặt AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
-function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
+function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkAIStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -23,9 +23,9 @@ function routeTo(route,push=true){
 function toggleMenu(open){$('sideMenu').classList.toggle('open',open);$('menuShade').classList.toggle('open',open)}
 
 function escapeHtml(str=''){return String(str).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
-function parseError(e){const raw=String(e?.message||e||'Lỗi không xác định');try{const j=JSON.parse(raw);let msg=j.error||raw;if(Array.isArray(j.attempts)&&j.attempts.length){msg+='\n\nCác model đã thử:\n'+j.attempts.map(a=>`- ${a.model}: ${a.error}`).join('\n')}return msg}catch{return raw.replace(/^Error:\s*/,'')}}
+function parseError(e){const raw=String(e?.message||e||'Lỗi không xác định');try{const j=JSON.parse(raw);let msg=j.error||raw;if(Array.isArray(j.attempts)&&j.attempts.length){msg+='\n\nCác chế độ AI đã thử nhưng chưa phản hồi được.'}return msg}catch{return raw.replace(/^Error:\s*/,'')}}
 function startClock(){const tick=()=>{const el=$('liveClock');if(el)el.textContent=new Date().toLocaleString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});};tick();setInterval(tick,30000)}
-async function checkGeminiStatus(){const el=$('geminiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasGeminiKey?'Gemini: đã cấu hình API key':'Gemini: chưa có API key';el.className=h.hasGeminiKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Server AI: chưa kết nối';el.className='ai-status warn'}}
+async function checkAIStatus(){const el=$('aiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasAIKey?'AI: đã cấu hình':'AI: chưa cấu hình';el.className=h.hasAIKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Server AI: chưa kết nối';el.className='ai-status warn'}}
 
 function getCurrentMember(){
   try{return JSON.parse(localStorage.getItem('synam_user')||'null')}catch{return null}
@@ -314,7 +314,7 @@ function setChatMode(mode){
   if(mode==='chat'){
     $('modeChat')?.classList.add('active');
     if(panel) panel.style.display='none';
-    if(input) input.placeholder='Nhập câu hỏi về ảnh/file hoặc nội dung cần hỏi Gemini...';
+    if(input) input.placeholder='Nhập câu hỏi về ảnh/file hoặc nội dung cần hỏi AI...';
     if(btn) btn.textContent='Gửi';
     return;
   }
@@ -324,7 +324,7 @@ function setChatMode(mode){
     if(upload) upload.style.display='none';
   if(camUpload) camUpload.style.display='none';
     if(title) title.textContent='🎨 Tạo ảnh AI';
-    if(hint) hint.textContent='Nhập mô tả ảnh muốn Gemini tạo.';
+    if(hint) hint.textContent='Nhập mô tả ảnh muốn AI tạo.';
     if(input) input.placeholder='Ví dụ: tạo ảnh poster neon xanh tím, phong cách cinematic...';
     if(btn) btn.textContent='Tạo ảnh';
   }else{
@@ -359,20 +359,21 @@ async function sendImageAI(){
   const attachments=[...chatAttachments];
   if(!prompt){toast('Nhập mô tả ảnh hoặc yêu cầu chỉnh sửa đã nhé');return}
   if(isEdit && !imageEditDataUrl && !attachments.some(f=>String(f.type||'').startsWith('image/'))){toast('Chỉnh sửa ảnh cần tải ảnh gốc');return}
+  chatSending=true;
   input.value='';
   const title=isEdit?'Chỉnh sửa ảnh AI':'Tạo ảnh AI';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}<b>${title}</b><br>${escapeHtml(prompt)}</div>`);
-  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg" id="typing">Gemini đang ${isEdit?'chỉnh sửa':'tạo'} ảnh...</div>`);
+  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg" id="typing">AI đang ${isEdit?'chỉnh sửa':'tạo'} ảnh...</div>`);
   chatAttachments=[];renderChatAttachments();
   try{
     const data=await postJSON('/api/image-ai',{mode:isEdit?'edit':'create',prompt,image:imageEditDataUrl,attachments,context:{clientTime:new Date().toLocaleString('vi-VN')}});
     const images=data.images||[];
-    const text=data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng ${data.model||'Gemini'}.`;
+    const text=data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng Sỹ Năm AI.`;
     $('typing').outerHTML=`<div class="msg image-ai-result">${markdownish(text)}${renderGeneratedImages(images)}</div>`;
-    lastResult=text;saveHistory(title,text);checkGeminiStatus();
+    lastResult=text;saveHistory(title,text);checkAIStatus();
   }catch(e){
     const err=parseError(e);
-    $('typing').outerHTML=`<div class="msg error"><b>Gemini chưa tạo/chỉnh ảnh được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra GEMINI_API_KEY, quota hoặc đổi GEMINI_IMAGE_MODEL / GEMINI_IMAGE_MODELS trong .env. Có thể mở /api/models để xem danh sách fallback.</small></div>`;
+    $('typing').outerHTML=`<div class="msg error"><b>AI chưa tạo/chỉnh ảnh được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key, quota hoặc cấu hình model ảnh trong .env.</small></div>`;
   }
 }
 
@@ -381,7 +382,9 @@ async function postJSON(url,data){const r=await fetch(url,{method:'POST',headers
 async function getJSON(url){const token=localStorage.getItem('synam_token')||'';const r=await fetch(url,{headers:token?{'Authorization':'Bearer '+token}:{}});if(!r.ok)throw new Error(await r.text());return r.json()}
 
 async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');$('chatText').value=q;sendChat()}
+let chatSending=false;
 async function sendChat(){
+  if(chatSending){toast('AI đang trả lời, đợi xong rồi gửi tiếp nhé');return}
   if(chatMode!=='chat') return sendImageAI();
   const input=$('chatText');
   const q=input.value.trim();
@@ -401,16 +404,18 @@ async function sendChat(){
     if(attachments.length){
       data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Mystic AI Chat - file/image'}});
     }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Multi-AI Chat'}});
+      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm AI Chat'}});
     }
     const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
-    const providerLabel=data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'';
-    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 ${escapeHtml(data.label||'Sỹ Năm AI')}</span>${providerLabel}${markdownish(text)}</div>`;
-    lastResult=text;saveHistory(data.label||'Sỹ Năm Multi-AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
+    const providerLabel=data.label?`<small>Trả lời bởi: Sỹ Năm AI</small><br>`:'';
+    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${providerLabel}${markdownish(text)}</div>`;
+    lastResult=text;saveHistory('Sỹ Năm AI Chat',text);checkAIStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);
     $('typing').outerHTML=`<div class="msg error"><b>AI chưa phản hồi được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key / mạng / quota hoặc đổi provider khác rồi thử lại.</small></div>`;scrollChatBottom();
     lastResult='';
+  }finally{
+    chatSending=false;
   }
 }
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
@@ -631,24 +636,24 @@ async function loadAIProviders(){
     const data=await getJSON('/api/ai/providers');
     const providers=data.providers||[];
     if(status){
-      status.innerHTML=providers.map(p=>`<div class="ai-status-item"><span><span class="provider-dot ${p.configured?'ok':''}"></span><b>${escapeHtml(p.label)}</b><br><span class="model-small">${escapeHtml(p.model||'auto')} · ${p.configured?'Đã cấu hình':'Chưa có key'}</span></span><span>${p.configured?'🟢':'⚪'}</span></div>`).join('');
+      status.innerHTML=providers.map(p=>`<div class="ai-status-item"><span><span class="provider-dot ${p.configured?'ok':''}"></span><b>${escapeHtml(p.label)}</b><br><span class="model-small">${p.configured?'Đã cấu hình':'Chưa có key'}</span></span><span>${p.configured?'🟢':'⚪'}</span></div>`).join('');
     }
     const mini=$('miniProviderList');
-    if(mini){mini.innerHTML=providers.map(p=>`<div class="mini-provider ${p.configured?'on':''}"><span>${p.configured?'🟢':'⚪'} ${escapeHtml(p.label)}</span><small>${p.configured?'Ready':'No key'}</small></div>`).join('')}
+    if(mini){mini.innerHTML=providers.map(p=>`<div class="mini-provider ${p.configured?'on':''}"><span>${p.configured?'🟢':'⚪'} ${escapeHtml(p.label)}</span><small>${p.configured?'Sẵn sàng':'Chưa có key'}</small></div>`).join('')}
     if(grid){
-      grid.innerHTML=providers.map(p=>`<div class="ai-provider-card"><h3><span class="provider-dot ${p.configured?'ok':''}"></span>${escapeHtml(p.label)}</h3><label>API Key<input id="key_${p.id}" type="password" autocomplete="off" placeholder="${p.configured?'Đã lưu key ẩn an toàn':'Dán API key'}"></label><label>Model<select id="model_${p.id}"><option value="">Mặc định: ${escapeHtml(p.model||'auto')}</option>${(p.models||[]).map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('')}</select></label><p class="ai-note">${escapeHtml(p.freeHint||'')}</p></div>`).join('');
+      grid.innerHTML=providers.map(p=>`<div class="ai-provider-card"><h3><span class="provider-dot ${p.configured?'ok':''}"></span>${escapeHtml(p.label)}</h3><label>API Key<input id="key_${p.id}" type="password" autocomplete="off" placeholder="${p.configured?'Đã lưu key ẩn an toàn':'Dán API key'}"></label><label>Tùy chọn nâng cao<input id="model_${p.id}" autocomplete="off" placeholder="Để trống = tự động"></label><p class="ai-note">${escapeHtml(p.freeHint||'')}</p></div>`).join('');
     }
     const select=$('chatProvider');
     if(select){
       [...select.options].forEach(opt=>{ if(opt.value&&opt.value!=='auto'){ const p=providers.find(x=>x.id===opt.value); opt.disabled=p&&!p.configured; }});
     }
   }catch(e){
-    if(status)status.innerHTML=`<p class="error">Không tải được Multi-AI: ${escapeHtml(parseError(e))}</p>`;
+    if(status)status.innerHTML=`<p class="error">Không tải được cài đặt AI: ${escapeHtml(parseError(e))}</p>`;
   }
 }
 
 async function saveAIKeys(){
-  const providers=['gemini','groq','openrouter','openai','claude','deepseek','grok','qwen','mistral'];
+  const providers=['ai_main','ai_fast','ai_backup','ai_pro1','ai_pro2','ai_reason','ai_creative','ai_general','ai_light'];
   const keys={}; const models={};
   for(const id of providers){
     const k=$('key_'+id)?.value?.trim()||'';
@@ -658,7 +663,7 @@ async function saveAIKeys(){
   }
   try{
     const data=await postJSON('/api/ai/user-keys',{keys,models});
-    toast('Đã lưu API key Multi-AI');
+    toast('Đã lưu API key AI');
     loadAIProviders();
   }catch(e){
     toast(parseError(e));
