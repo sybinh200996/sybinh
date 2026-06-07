@@ -271,7 +271,7 @@ function startVoiceInput(){
         if(event.results[i].isFinal) finalText+=txt;
         else interim+=txt;
       }
-      if($('chatText')) $('chatText').value=(finalText||interim).trim();
+      if($('chatText')) { $('chatText').value=(finalText||interim).trim(); autoGrowChatInput(); }
     };
     voiceRecognizer.onerror=(e)=>{setVoiceStatus('🎙️ Lỗi nghe giọng nói: '+(e.error||'không rõ'),false);voiceListening=false};
     voiceRecognizer.onend=()=>{
@@ -315,22 +315,50 @@ async function fileToTextPreview(file){
   if(!canRead) return '';
   return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||'').slice(0,12000));r.onerror=rej;r.readAsText(file)});
 }
-async function handleChatFiles(e){
-  const files=[...(e.target.files||[])].slice(0,6);
-  if(!files.length) return;
+function autoGrowChatInput(){
+  const el=$('chatText');
+  if(!el) return;
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,260)+'px';
+}
+function handleChatKey(event){
+  if(event.key==='Enter' && !event.shiftKey){
+    event.preventDefault();
+    sendChat();
+  }
+}
+function safeAttachmentName(file, fromCamera=false){
+  const raw=(file && file.name) ? file.name : '';
+  if(raw && !/^image\./i.test(raw)) return raw;
+  const ext=((file?.type||'').split('/')[1]||'jpg').replace('jpeg','jpg').split(';')[0];
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  return fromCamera ? `anh-chup-${stamp}.${ext}` : `anh-tai-len-${stamp}.${ext}`;
+}
+async function handleChatFiles(e, fromCamera=false){
+  const picked=[...(e.target.files||[])];
+  const files=picked.slice(0,6);
+  if(!files.length){toast('Chưa nhận được ảnh/file. Hãy cấp quyền Camera hoặc chọn lại ảnh nhé.');return}
   for(const file of files){
     if(chatAttachments.length>=6){toast('Tối đa 6 file/ảnh mỗi lần hỏi');break}
+    if(file.size>18*1024*1024){toast(`File ${file.name||'ảnh'} hơi lớn. Nên chọn ảnh/file dưới 18MB để gửi ổn định.`);continue}
     const dataUrl=await fileToDataURL(file);
     const textPreview=await fileToTextPreview(file);
-    chatAttachments.push({name:file.name,type:file.type||'application/octet-stream',size:file.size,dataUrl,textPreview});
+    chatAttachments.push({name:safeAttachmentName(file,fromCamera),type:file.type||'application/octet-stream',size:file.size,dataUrl,textPreview,fromCamera:Boolean(fromCamera)});
   }
   e.target.value='';
   renderChatAttachments();
+  if(fromCamera) toast('Đã chụp ảnh và đưa vào khung chat');
+  else toast('Đã thêm file/ảnh vào khung chat');
 }
 function renderChatAttachments(){
   const box=$('chatAttachments'); if(!box) return;
   if(!chatAttachments.length){box.innerHTML='';return}
-  box.innerHTML=chatAttachments.map((f,i)=>`<div class="attachment-pill"><span>${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}</span><small>${Math.ceil((f.size||0)/1024)} KB</small><button onclick="removeChatAttachment(${i})">×</button></div>`).join('');
+  box.innerHTML=chatAttachments.map((f,i)=>{
+    const isImg=(f.type||'').startsWith('image/');
+    const thumb=isImg?`<img class="attachment-thumb" src="${f.dataUrl}" alt="Ảnh đã chọn">`:'';
+    const label=isImg?'🖼':'📄';
+    return `<div class="attachment-pill real-attachment">${thumb}<span>${label} ${escapeHtml(f.name)}</span><small>${Math.ceil((f.size||0)/1024)} KB</small><button onclick="removeChatAttachment(${i})" title="Xóa file này">×</button></div>`;
+  }).join('');
 }
 function removeChatAttachment(i){chatAttachments.splice(i,1);renderChatAttachments()}
 function clearChatAttachments(){chatAttachments=[];renderChatAttachments();toast('Đã xóa file đính kèm')}
@@ -427,6 +455,7 @@ async function sendChat(){
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
   chatSending=true;
   input.value='';
+  autoGrowChatInput();
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}${escapeHtml(q||'Phân tích file/ảnh đã tải lên')}${attachLabel}</div>`);
   $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
