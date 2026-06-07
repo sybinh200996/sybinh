@@ -288,7 +288,7 @@ async function callOpenAICompatible({ provider, apiKey, model, prompt }) {
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
-      ...(provider === "openrouter" ? { "HTTP-Referer": "https://synam-ai.local", "X-Title": "SyNam Mystic AI" } : {})
+      ...(provider === "openrouter" ? { "HTTP-Referer": "https://synam-ai.local", "X-Title": "Sỹ Năm Mystic AI" } : {})
     },
     body: JSON.stringify({
       model,
@@ -506,14 +506,14 @@ async function tryModels(parts, preferredModel = "auto") {
 }
 
 app.get("/api", (req, res) => {
-  res.json({ ok: true, app: "SyNam Mystic Phoenix", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
+  res.json({ ok: true, app: "Sỹ Năm Mystic Phoenix", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
 });
 
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
     const cleanEmail = String(email || "").trim().toLowerCase();
-    const cleanName = String(name || "").trim() || "Thành viên SyNam";
+    const cleanName = String(name || "").trim() || "Thành viên Sỹ Năm";
     const cleanPassword = String(password || "");
     if (!cleanEmail || !cleanEmail.includes("@")) return res.status(400).json({ error: "Email không hợp lệ." });
     if (cleanPassword.length < 6) return res.status(400).json({ error: "Mật khẩu cần ít nhất 6 ký tự." });
@@ -696,7 +696,7 @@ app.post("/api/multi-ai/chat", async (req, res) => {
     const { message, provider = "auto", model = "", council = false, context } = req.body || {};
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi cho Multi-AI." });
-    const prompt = `Bạn là SyNam Multi-AI trong app SyNam Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.\n\nNGỮ CẢNH:\n${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}\n\nCÂU HỎI:\n${cleanMessage}`;
+    const prompt = `Bạn là Sỹ Năm Multi-AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.\n\nNGỮ CẢNH:\n${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}\n\nCÂU HỎI:\n${cleanMessage}`;
     const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: provider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
     res.json({ ok: true, ...result });
   } catch (error) {
@@ -713,7 +713,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "SyNam Mystic AI Ultimate Pro NAM20 Multi-AI"
+    app: "Sỹ Năm Mystic AI Ultimate Pro NAM20 Multi-AI"
   });
 });
 
@@ -888,7 +888,7 @@ app.post("/api/chat-ai", async (req, res) => {
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
-Bạn là chatbot Gemini AI thật trong app SyNam Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
+Bạn là chatbot Gemini AI thật trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
@@ -1005,7 +1005,7 @@ app.post("/api/image-ai", async (req, res) => {
     if (isEdit && !mainImage) return res.status(400).json({ error: "Chế độ chỉnh sửa ảnh cần tải ảnh gốc lên trước." });
 
     const parts = [{ text: `
-Bạn là module TẠO ẢNH / CHỈNH SỬA ẢNH AI trong app SyNam Mystic.
+Bạn là module TẠO ẢNH / CHỈNH SỬA ẢNH AI trong app Sỹ Năm Mystic.
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
 NHIỆM VỤ: ${isEdit ? "Chỉnh sửa ảnh người dùng gửi theo yêu cầu" : "Tạo ảnh mới theo mô tả"}
@@ -1040,7 +1040,7 @@ app.post("/api/teacher-ai", async (req, res) => {
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi trước." });
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 7000) : "Không có";
     const parts = [{ text: `
-Bạn là "Thầy Sỹ Năm" trong app SyNam Mystic Ultimate Pro. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
+Bạn là "Thầy Sỹ Năm" trong app Sỹ Năm Mystic Ultimate Pro. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
 
 QUY TẮC:
 - Đây là module riêng của Thầy Sỹ Năm, không phải chatbot Hỏi và Đáp AI.
@@ -1069,7 +1069,7 @@ app.post("/api/love-ai", async (req, res) => {
     const { persons, focus, localReport, geminiModel, name1, birth1, name2, birth2 } = body;
     const finalPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
     const parts = [{ text: `
-Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app SyNam Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
+Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app Sỹ Năm Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
@@ -1204,5 +1204,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 SyNam Mystic AI Ultimate Pro hoạt động thành công trên port ${PORT}.`);
+  console.log(`🚀 Sỹ Năm Mystic AI Ultimate Pro hoạt động thành công trên port ${PORT}.`);
 });

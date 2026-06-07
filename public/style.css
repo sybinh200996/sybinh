@@ -157,3 +157,71 @@ code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:8px;color:#9
 .page.active{scroll-margin-top:18px}
 html,body{scroll-padding-top:18px}
 @media(max-width:920px){.side-menu{width:min(86vw,330px)}}
+
+/* NAM25 MOBILE UX SURGERY: Sỹ Năm brand + quick voice controls */
+.voice-settings-compact{
+  margin-top:10px!important;
+  padding:0!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;
+}
+.voice-settings-compact summary{
+  list-style:none;
+  cursor:pointer;
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid rgba(105,222,255,.28);
+  border-radius:16px;
+  background:rgba(255,255,255,.065);
+  color:#eaf6ff;
+  font-weight:900;
+}
+.voice-settings-compact summary::-webkit-details-marker{display:none}
+.voice-settings-compact:not([open]) > *:not(summary){display:none!important}
+.mobile-voice-input .quick-voice-btn,
+.mobile-voice-input .quick-stop-btn{
+  width:54px;
+  min-width:54px;
+  padding:0!important;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(105,222,255,.28)!important;
+  background:rgba(255,255,255,.075)!important;
+  color:#fff!important;
+  box-shadow:0 0 18px rgba(71,179,255,.13)!important;
+}
+.mobile-voice-input .quick-voice-btn.off{opacity:.65;filter:grayscale(.35)}
+.mobile-voice-input .quick-stop-btn{border-color:rgba(248,113,113,.48)!important;background:rgba(127,29,29,.28)!important}
+.chat-pro-sidebar .mini-provider-list{max-height:300px;overflow:auto;padding-right:2px}
+.chat-pro-sidebar .mini-provider-list::-webkit-scrollbar{width:6px}.chat-pro-sidebar .mini-provider-list::-webkit-scrollbar-thumb{background:rgba(80,190,255,.35);border-radius:99px}
+
+@media(max-width:900px){
+  .chat-pro-sidebar{order:2}
+  .chat-pro-main{order:1}
+  .chat-pro-sidebar .chat-brand,.chat-pro-sidebar .new-chat-btn{display:none}
+  .voice-settings-compact{margin-top:0!important}
+  .chat-pro-sidebar{padding-top:10px!important}
+}
+@media(max-width:560px){
+  .hero-section{min-height:clamp(430px,72vh,560px)!important}
+  .hero-center h1{font-size:clamp(54px,18vw,86px)!important;line-height:.98!important}
+  .hero-center p{font-size:12px!important;letter-spacing:.28em!important}
+  .search-shell{padding:12px!important;border-radius:28px!important}
+  .search-shell input{font-size:16px!important}
+  .search-shell button{height:54px!important;border-radius:22px!important}
+  .quick-row{gap:10px!important}.quick-row button{font-size:13px!important;padding:11px 12px!important}
+  .chat-pro-head{gap:8px!important;margin-bottom:8px!important}
+  .chat-pro-head h2{font-size:25px!important}
+  .chat-head-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+  .chat-mode-tabs{gap:8px!important}
+  .chat-mode-tabs button{font-size:13px!important;padding:10px 8px!important}
+  .pro-toolbar{gap:8px!important;margin:8px 0!important}
+  .voice-status{font-size:12px!important;padding:8px 10px!important;margin:6px 0 8px!important}
+  .pro-chat-log{height:45vh!important;min-height:300px!important}
+  .pro-upload{padding:8px!important}.chat-upload-bar{gap:8px!important}
+  .upload-chip,.clear-attachments{font-size:13px!important;padding:9px 10px!important}
+  .mobile-voice-input{grid-template-columns:50px minmax(0,1fr) 50px 50px!important;gap:8px!important;position:sticky;bottom:92px;z-index:20;background:rgba(4,10,27,.92);backdrop-filter:blur(14px);border:1px solid rgba(105,222,255,.18);border-radius:20px;padding:8px;box-shadow:0 12px 34px rgba(0,0,0,.32)}
+  .mobile-voice-input #chatSendBtn{grid-column:1/5!important;width:100%!important;height:48px!important}
+  .mobile-voice-input input{height:48px!important;font-size:15px!important}
+  .mobile-voice-input .voice-btn,.mobile-voice-input .quick-voice-btn,.mobile-voice-input .quick-stop-btn{width:50px!important;min-width:50px!important;height:48px!important;border-radius:16px!important}
+  .bottom-nav{z-index:30!important}
+}

@@ -60,6 +60,27 @@ function updateVoiceToggleLabels(){
   const mic=$('voiceInputToggle');
   const micText=$('voiceInputLabelText');
   if(micText) micText.textContent=mic?.checked?'🎤 Mic nhập giọng đang bật':'🎤 Mic nhập giọng đã tắt';
+  updateQuickVoiceButtons();
+}
+function updateQuickVoiceButtons(){
+  const reply=$('voiceReplyToggle');
+  const btn=$('voiceReplyQuickBtn');
+  if(btn){
+    const on=reply?.checked!==false;
+    btn.textContent=on?'🔊':'🔇';
+    btn.classList.toggle('off',!on);
+    btn.title=on?'Giọng AI đang bật - bấm để tắt':'Giọng AI đang tắt - bấm để bật';
+  }
+}
+function toggleQuickSpeakReply(){
+  const el=$('voiceReplyToggle');
+  if(el){
+    el.checked=!el.checked;
+    toggleSpeakReply();
+  }else{
+    stopSpeaking();
+  }
+  updateQuickVoiceButtons();
 }
 function toggleVoiceInputEnabled(){
   const el=$('voiceInputToggle');
@@ -164,7 +185,7 @@ function speakText(text, force=false){
   speechSynthesis.speak(u);
 }
 function speakLastResult(){if(!lastResult){toast('Chưa có kết quả để đọc');return} speakText(lastResult,true)}
-function testVoice(){speakText('Xin chào Chủ tịch Năm. Đây là bản Voice Việt Pro. Nếu máy có giọng tiếng Việt, tôi sẽ đọc đúng tiếng Việt.',true)}
+function testVoice(){speakText('Xin chào Chủ tịch Năm. Đây là bản Sỹ Năm Voice Việt Pro. Nếu máy có giọng tiếng Việt, tôi sẽ đọc đúng tiếng Việt.',true)}
 function saveVoicePrefs(){
   const prefs={
     reply:Boolean($('voiceReplyToggle')?.checked),
@@ -378,14 +399,14 @@ async function sendChat(){
     const model=$('chatModel')?.value||'';
     const council=Boolean($('chatCouncil')?.checked);
     if(attachments.length){
-      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'SyNam Mystic AI Chat - file/image'}});
+      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Mystic AI Chat - file/image'}});
     }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'SyNam Multi-AI Chat'}});
+      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,context:{clientTime:new Date().toLocaleString('vi-VN'),source:'Sỹ Năm Multi-AI Chat'}});
     }
     const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
     const providerLabel=data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'';
-    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 ${escapeHtml(data.label||'SyNam AI')}</span>${providerLabel}${markdownish(text)}</div>`;
-    lastResult=text;saveHistory(data.label||'Multi-AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
+    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 ${escapeHtml(data.label||'Sỹ Năm AI')}</span>${providerLabel}${markdownish(text)}</div>`;
+    lastResult=text;saveHistory(data.label||'Sỹ Năm Multi-AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);
     $('typing').outerHTML=`<div class="msg error"><b>AI chưa phản hồi được.</b><br>${escapeHtml(err)}<br><small>Kiểm tra API key / mạng / quota hoặc đổi provider khác rồi thử lại.</small></div>`;scrollChatBottom();

@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#07142f" />
-  <meta name="description" content="SyNam Mystic - AI tử vi, chỉ tay, xem tướng, chiêm tinh, chat, lịch sử và tài khoản." />
+  <meta name="description" content="Sỹ Năm Mystic - AI tử vi, chỉ tay, xem tướng, chiêm tinh, chat, lịch sử và tài khoản." />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/icon.svg" />
   <link rel="stylesheet" href="style.css" />
-  <title>SyNam Mystic</title>
+  <title>Sỹ Năm Mystic</title>
 </head>
 <body>
   <div id="stars"></div>
   <aside id="sideMenu" class="side-menu">
     <button class="close-menu" onclick="toggleMenu(false)">×</button>
-    <h2>SyNam Mystic</h2>
+    <h2>Sỹ Năm Mystic</h2>
     <p>Điều hướng nhanh</p>
     <div id="sideLinks"></div>
   </aside>
@@ -33,7 +33,7 @@
       <img src="assets/hero-left.png" class="hero-person hero-left" alt="Ảnh trái" />
       <img src="assets/hero-right.jpg" class="hero-person hero-right" alt="Ảnh phải" />
       <div class="hero-center">
-        <h1>SyNam Mystic</h1>
+        <h1>Sỹ Năm Mystic</h1>
         <p>AI TỬ VI - CHỈ TAY - XEM TƯỚNG - CHIÊM TINH</p>
         <div class="search-shell">
           <span>⌕</span>
@@ -86,20 +86,20 @@
     <section id="page-chat" class="page"><div class="chat-page chat-pro-page">
         <div class="chat-pro-shell">
           <aside class="chat-pro-sidebar">
-            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>SyNam AI</h2><p>Multi-AI Assistant</p></div></div>
+            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>Sỹ Năm AI</h2><p>Trợ lý Multi-AI</p></div></div>
             <button class="new-chat-btn" onclick="newProChat()">＋ Cuộc chat mới</button>
             <div class="mini-provider-list" id="miniProviderList"><p>Đang tải AI...</p></div>
-            <div class="voice-settings voice-control-pro">
-              <h3>🎤 Voice AI Control</h3>
+            <details class="voice-settings voice-control-pro voice-settings-compact">
+              <summary>🎤 Cài đặt giọng nói</summary>
               <label class="voice-switch"><input id="voiceReplyToggle" type="checkbox" checked onchange="toggleSpeakReply()"> <span id="voiceReplyLabelText">🔊 Giọng AI đang bật</span></label>
               <label class="voice-switch"><input id="voiceInputToggle" type="checkbox" checked onchange="toggleVoiceInputEnabled()"> <span id="voiceInputLabelText">🎤 Mic nhập giọng đang bật</span></label>
               <label><input id="autoListenToggle" type="checkbox" onchange="saveVoicePrefs()"> Tự nghe tiếp sau trả lời</label>
-              <div class="voice-action-row"><button type="button" class="mute-btn" onclick="toggleSpeakReply()">🔇 Bật/Tắt mỏ AI</button><button type="button" class="stop-btn" onclick="stopSpeaking()">⛔ Dừng đọc ngay</button></div>
+              <div class="voice-action-row"><button type="button" class="mute-btn" onclick="toggleQuickSpeakReply()">🔊 Bật/Tắt giọng AI</button><button type="button" class="stop-btn" onclick="stopSpeaking()">⛔ Dừng đọc ngay</button></div>
               <label>Tốc độ đọc<input id="voiceRate" type="range" min="0.7" max="1.35" step="0.05" value="1" onchange="saveVoicePrefs()"></label>
               <label>Giọng đọc<select id="voiceSelect" onchange="saveVoicePrefs()"><option value="auto">Tự động chọn giọng Việt</option></select></label>
-              <p class="voice-note">Nếu máy chưa có giọng Việt, vào cài đặt ngôn ngữ/giọng nói của Chrome, Android hoặc Windows để thêm Tiếng Việt. Bấm 🔇 để khóa mỏ, bấm ⛔ để cắt ngang khi AI đang nói.</p>
+              <p class="voice-note">Nếu máy chưa có giọng Việt, vào cài đặt ngôn ngữ/giọng nói của Chrome, Android hoặc Windows để thêm Tiếng Việt.</p>
               <button type="button" onclick="testVoice()">🔊 Test giọng Việt</button>
-            </div>
+            </details>
           </aside>
           <div class="chat-pro-main">
             <div class="chat-pro-head">
@@ -123,7 +123,7 @@
               <label class="council-toggle"><input id="chatCouncil" type="checkbox"> Hội Đồng AI</label>
             </div>
             <div id="voiceStatus" class="voice-status">🎙️ Sẵn sàng nhận giọng nói</div>
-            <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là SyNam AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
+            <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
             <div class="chat-upload-bar pro-upload">
               <label class="upload-chip">📷 Tải ảnh<input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)"></label>
               <label class="upload-chip">📸 Chụp ảnh<input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)"></label>
@@ -131,9 +131,11 @@
               <button class="clear-attachments" onclick="clearChatAttachments()">Xóa file</button>
             </div>
             <div id="chatAttachments" class="chat-attachments"></div>
-            <div class="chat-input pro-input">
-              <button id="voiceBtn" class="voice-btn" type="button" onclick="toggleVoiceInput()">🎤</button>
+            <div class="chat-input pro-input mobile-voice-input">
+              <button id="voiceBtn" class="voice-btn" type="button" onclick="toggleVoiceInput()" title="Bấm để nói">🎤</button>
               <input id="chatText" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." onkeydown="if(event.key==='Enter')sendChat()">
+              <button id="voiceReplyQuickBtn" class="quick-voice-btn" type="button" onclick="toggleQuickSpeakReply()" title="Bật/tắt giọng đọc">🔊</button>
+              <button id="stopSpeakQuickBtn" class="quick-stop-btn" type="button" onclick="stopSpeaking()" title="Dừng đọc ngay">⛔</button>
               <button id="chatSendBtn" onclick="sendChat()">Gửi ✈</button>
             </div>
           </div>
