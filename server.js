@@ -1494,6 +1494,81 @@ Hãy viết bài luận giải cuối cùng theo cấu trúc:
   }
 });
 
+
+// ===== NAM36 WEATHER REAL FALLBACK + NO TECH ERROR =====
+function weatherCodeViNam36(code) {
+  const m = {0:'Trời quang',1:'Ít mây',2:'Có mây',3:'Nhiều mây/u ám',45:'Sương mù',48:'Sương mù',51:'Mưa phùn nhẹ',53:'Mưa phùn vừa',55:'Mưa phùn dày',61:'Mưa nhỏ',63:'Mưa vừa',65:'Mưa to',80:'Mưa rào nhẹ',81:'Mưa rào vừa',82:'Mưa rào mạnh',95:'Dông',96:'Dông kèm mưa đá',99:'Dông kèm mưa đá'};
+  return m[Number(code)] || 'Không rõ';
+}
+function weatherLocNam36(message=''){
+  const q=String(message||'').toLowerCase().normalize('NFC');
+  const known=[
+    [/việt\s*trì|viet\s*tri|vinh\s*que/i,{name:'Việt Trì, Phú Thọ, Việt Nam',latitude:21.3227,longitude:105.4020,wttr:'Viet Tri, Phu Tho, Vietnam'}],
+    [/phú\s*thọ|phu\s*tho/i,{name:'Phú Thọ, Việt Nam',latitude:21.3980,longitude:105.2240,wttr:'Phu Tho, Vietnam'}],
+    [/hà\s*nội|ha\s*noi|hanoi/i,{name:'Hà Nội, Việt Nam',latitude:21.0278,longitude:105.8342,wttr:'Hanoi, Vietnam'}],
+    [/hồ\s*chí\s*minh|ho\s*chi\s*minh|sài\s*gòn|sai\s*gon|tp\s*hcm/i,{name:'TP. Hồ Chí Minh, Việt Nam',latitude:10.8231,longitude:106.6297,wttr:'Ho Chi Minh City, Vietnam'}],
+    [/đà\s*nẵng|da\s*nang/i,{name:'Đà Nẵng, Việt Nam',latitude:16.0544,longitude:108.2022,wttr:'Da Nang, Vietnam'}]
+  ];
+  for(const [re,loc] of known){ if(re.test(q)) return loc; }
+  return {name:'Hà Nội, Việt Nam',latitude:21.0278,longitude:105.8342,wttr:'Hanoi, Vietnam'};
+}
+function formatOpenMeteoNam36(loc,data){
+  const cur=data?.current||{};
+  const daily=data?.daily||{};
+  const lines=[
+    `### 🌦️ Thời tiết ${loc.name}`,
+    `- **Hiện tại:** ${Math.round(cur.temperature_2m ?? 0)}°C, cảm giác như ${Math.round(cur.apparent_temperature ?? cur.temperature_2m ?? 0)}°C, ${weatherCodeViNam36(cur.weather_code)}.`,
+    `- **Độ ẩm:** ${cur.relative_humidity_2m ?? '?'}% · **Gió:** ${cur.wind_speed_10m ?? '?'} km/h · **Mây:** ${cur.cloud_cover ?? '?'}%.`,
+    `- **Hôm nay:** khoảng ${Math.round(daily.temperature_2m_min?.[0] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[0] ?? 0)}°C, khả năng mưa cao nhất ${daily.precipitation_probability_max?.[0] ?? '?'}%.`
+  ];
+  if(daily.time?.[1]) lines.push(`- **Ngày mai (${daily.time[1]}):** khoảng ${Math.round(daily.temperature_2m_min?.[1] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[1] ?? 0)}°C, ${weatherCodeViNam36(daily.weather_code?.[1])}.`);
+  lines.push('', '_Nguồn: Open-Meteo theo tọa độ địa điểm._');
+  return lines.join('\n');
+}
+function pickWeatherDescNam36(condition=[]){
+  const first=Array.isArray(condition)?condition[0]:null;
+  return first?.lang_vi?.[0]?.value || first?.value || 'Không rõ';
+}
+function formatWttrNam36(loc,data){
+  const cur=data?.current_condition?.[0]||{};
+  const today=data?.weather?.[0]||{};
+  const tomorrow=data?.weather?.[1]||{};
+  const lines=[
+    `### 🌦️ Thời tiết ${loc.name}`,
+    `- **Hiện tại:** ${cur.temp_C ?? '?'}°C, cảm giác như ${cur.FeelsLikeC ?? '?'}°C, ${pickWeatherDescNam36(cur.weatherDesc)}.`,
+    `- **Độ ẩm:** ${cur.humidity ?? '?'}% · **Gió:** ${cur.windspeedKmph ?? '?'} km/h · **Mây:** ${cur.cloudcover ?? '?'}%.`,
+    `- **Hôm nay:** khoảng ${today.mintempC ?? '?'}°C - ${today.maxtempC ?? '?'}°C.`
+  ];
+  if(tomorrow?.date) lines.push(`- **Ngày mai (${tomorrow.date}):** khoảng ${tomorrow.mintempC ?? '?'}°C - ${tomorrow.maxtempC ?? '?'}°C.`);
+  lines.push('', '_Nguồn dự phòng: wttr.in._');
+  return lines.join('\n');
+}
+async function directWeatherAnswer(message = '') {
+  if (!isWeatherQuestion(message)) return null;
+  const loc=weatherLocNam36(message);
+  try{
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&timezone=Asia%2FBangkok&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,cloud_cover,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=3`;
+    const r=await withTimeout(fetch(url,{headers:{'User-Agent':'SyNamMysticAI/36 weather fix'}}),15000);
+    if(!r.ok) throw new Error('OPEN_METEO_HTTP_'+r.status);
+    return formatOpenMeteoNam36(loc, await r.json());
+  }catch(_openMeteoErr){
+    try{
+      const url=`https://wttr.in/${encodeURIComponent(loc.wttr||loc.name)}?format=j1&lang=vi`;
+      const r=await withTimeout(fetch(url,{headers:{'User-Agent':'SyNamMysticAI/36 weather fallback'}}),15000);
+      if(!r.ok) throw new Error('WTTR_HTTP_'+r.status);
+      return formatWttrNam36(loc, await r.json());
+    }catch(_wttrErr){
+      return [
+        `### 🌦️ Thời tiết ${loc.name}`,
+        `Mình đã nhận đúng địa điểm **${loc.name}**. Hiện máy chủ chưa lấy được dữ liệu thời tiết trực tiếp ngay lúc này.`,
+        ``,
+        `Bạn bấm gửi lại sau vài giây, hoặc thử trên trình duyệt khác. App sẽ ưu tiên Open-Meteo, sau đó tự chuyển sang nguồn dự phòng và không trả lời lạc sang địa danh khác.`
+      ].join('\n');
+    }
+  }
+}
+// ===== END NAM36 WEATHER REAL FALLBACK =====
+
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });

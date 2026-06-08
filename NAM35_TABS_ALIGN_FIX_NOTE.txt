@@ -1,0 +1,5 @@
+NAM35 - Tabs Align Fix
+- Căn lại thanh tab chức năng để không bị lệch trên màn hình PC.
+- Giữ dạng thanh cuộn ngang gọn, không sổ toàn bộ tab ra nhiều dòng.
+- Đồng bộ kích thước icon, chữ và khoảng cách tab.
+- Giữ các bản vá NAM34: thời tiết server, banner vừa khung, AI memory, ẩn model.

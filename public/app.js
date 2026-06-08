@@ -102,6 +102,7 @@ function hideModelLeak(text=''){
 }
 
 function markdownish(text=''){
+  text=String(text||'').replace(/\\n/g,'\n').replace(/\r/g,'');
   const inline=s=>escapeHtml(String(s||''))
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/_(.+?)_/g,'<em>$1</em>');
@@ -495,9 +496,47 @@ function isWeatherQuestionClient(message=''){
   const q=String(message||'').toLowerCase().normalize('NFC');
   return /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau)/i.test(q);
 }
+
+function weatherLocationClient(message=''){
+  const q=String(message||'').toLowerCase().normalize('NFC');
+  const known=[
+    [/việt\s*trì|viet\s*tri/, {name:'Việt Trì, Phú Thọ, Việt Nam', latitude:21.3227, longitude:105.4020}],
+    [/phú\s*thọ|phu\s*tho/, {name:'Phú Thọ, Việt Nam', latitude:21.3980, longitude:105.2240}],
+    [/hà\s*nội|ha\s*noi|hanoi/, {name:'Hà Nội, Việt Nam', latitude:21.0278, longitude:105.8342}],
+    [/hồ\s*chí\s*minh|ho\s*chi\s*minh|sài\s*gòn|sai\s*gon|tp\s*hcm/, {name:'TP. Hồ Chí Minh, Việt Nam', latitude:10.8231, longitude:106.6297}],
+    [/đà\s*nẵng|da\s*nang/, {name:'Đà Nẵng, Việt Nam', latitude:16.0544, longitude:108.2022}]
+  ];
+  for(const [re,loc] of known){ if(re.test(q)) return loc; }
+  return {name:'Hà Nội, Việt Nam', latitude:21.0278, longitude:105.8342};
+}
+function weatherCodeViClient(code){
+  const m={0:'Trời quang',1:'Ít mây',2:'Có mây',3:'Nhiều mây/u ám',45:'Sương mù',48:'Sương mù',51:'Mưa phùn nhẹ',53:'Mưa phùn vừa',55:'Mưa phùn dày',61:'Mưa nhỏ',63:'Mưa vừa',65:'Mưa to',80:'Mưa rào nhẹ',81:'Mưa rào vừa',82:'Mưa rào mạnh',95:'Dông',96:'Dông kèm mưa đá',99:'Dông kèm mưa đá'};
+  return m[Number(code)]||'Không rõ';
+}
+async function askWeatherBrowserFallback(message){
+  const loc=weatherLocationClient(message);
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&timezone=Asia%2FBangkok&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,cloud_cover,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=3`;
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error('WEATHER_BROWSER_HTTP_'+r.status);
+  const data=await r.json();
+  const cur=data.current||{}, daily=data.daily||{};
+  const lines=[
+    `### 🌦️ Thời tiết ${loc.name}`,
+    `- **Hiện tại:** ${Math.round(cur.temperature_2m ?? 0)}°C, cảm giác như ${Math.round(cur.apparent_temperature ?? cur.temperature_2m ?? 0)}°C, ${weatherCodeViClient(cur.weather_code)}.`,
+    `- **Độ ẩm:** ${cur.relative_humidity_2m ?? '?'}% · **Gió:** ${cur.wind_speed_10m ?? '?'} km/h · **Mây:** ${cur.cloud_cover ?? '?'}%.`,
+    `- **Hôm nay:** khoảng ${Math.round(daily.temperature_2m_min?.[0] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[0] ?? 0)}°C, khả năng mưa cao nhất ${daily.precipitation_probability_max?.[0] ?? '?'}%.`
+  ];
+  if(daily.time?.[1]) lines.push(`- **Ngày mai (${daily.time[1]}):** khoảng ${Math.round(daily.temperature_2m_min?.[1] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[1] ?? 0)}°C, ${weatherCodeViClient(daily.weather_code?.[1])}.`);
+  lines.push('', '_Nguồn: Open-Meteo, lấy trực tiếp từ trình duyệt nếu server hosting bị chặn kết nối._');
+  return lines.join('\n');
+}
 async function askWeatherDirectClient(message){
-  const r=await postJSON('/api/weather',{message});
-  return r?.text||'';
+  try{
+    const r=await postJSON('/api/weather',{message});
+    const text=String(r?.text||'').replace(/\\n/g,'\n');
+    if(text && !/chưa lấy được|thử lại sau|không lấy được/i.test(text)) return text;
+  }catch(_serverWeatherErr){}
+  return await askWeatherBrowserFallback(message);
 }
 // ===== END NAM34 WEATHER FRONTEND GUARD =====
 
