@@ -293,7 +293,7 @@ async function callOpenAICompatible({ provider, apiKey, model, prompt }) {
     body: JSON.stringify({
       model,
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7
+      temperature: 0.35
     })
   }), 90000);
   const json = await response.json().catch(() => ({}));
@@ -324,7 +324,8 @@ async function callGeminiText({ apiKey, model, parts }) {
   const client = apiKey === process.env.GEMINI_API_KEY && ai ? ai : new GoogleGenAI({ apiKey });
   const response = await withTimeout(client.models.generateContent({
     model,
-    contents: [{ role: "user", parts }]
+    contents: [{ role: "user", parts }],
+    config: { temperature: 0.35, topP: 0.85 }
   }), 90000);
   return response?.text || response?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("") || "";
 }
@@ -464,6 +465,174 @@ function attachmentToPart(file) {
 function currentVietnamTime() {
   return new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
+
+
+
+// ===== NAM27 CLEAN AI CORE STABLE FIX =====
+const VN_WEEKDAYS = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+function vietnamDateFromNow(offsetDays = 0) {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  }).formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {});
+  const isoNoon = `${parts.year}-${parts.month}-${parts.day}T12:00:00+07:00`;
+  const vnDate = new Date(isoNoon);
+  return { date: vnDate, day: parts.day, month: parts.month, year: parts.year, hour: parts.hour, minute: parts.minute, weekday: VN_WEEKDAYS[vnDate.getUTCDay()] };
+}
+function formatVietnamDate(offsetDays = 0) {
+  const x = vietnamDateFromNow(offsetDays);
+  return `${x.weekday}, ngày ${x.day}/${x.month}/${x.year}`;
+}
+function directDateTimeAnswer(message = '') {
+  const q = String(message || '').toLowerCase().normalize('NFC');
+
+  // Không chặn các câu hỏi cần AI/API trả lời như thời tiết, lịch sự kiện, dự báo, giá cả...
+  // Lỗi cũ: câu "dự báo thời tiết 3 ngày" có chữ "ngày" nên bị local date handler nuốt mất.
+  const needsLiveOrKnowledgeAnswer = /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau|lịch thi đấu|lich thi dau|tin tức|tin tuc|giá|gia|tỷ giá|ty gia)/i.test(q);
+  if (needsLiveOrKnowledgeAnswer) return null;
+
+  const asksDate = /(hôm nay|hom nay|ngày mai|ngay mai|ngày kia|ngay kia|hôm qua|hom qua|thứ mấy|thu may|ngày bao nhiêu|ngay bao nhieu|mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q);
+  if (!asksDate) return null;
+
+  let offset = 0;
+  let label = 'Hôm nay';
+  if (/(ngày kia|ngay kia)/i.test(q)) { offset = 2; label = 'Ngày kia'; }
+  else if (/(ngày mai|ngay mai|\bmai\b)/i.test(q)) { offset = 1; label = 'Ngày mai'; }
+  else if (/(hôm qua|hom qua)/i.test(q)) { offset = -1; label = 'Hôm qua'; }
+
+  const x = vietnamDateFromNow(offset);
+  if (/(mấy giờ|may gio|bây giờ|bay gio|giờ hiện tại|gio hien tai)/i.test(q)) {
+    return `${label} là **${x.weekday}, ngày ${x.day}/${x.month}/${x.year}**. Hiện tại ở Việt Nam khoảng **${x.hour}:${x.minute}**.`;
+  }
+  return `${label} là **${x.weekday}, ngày ${x.day}/${x.month}/${x.year}**.`;
+}
+
+function isWeatherQuestion(message = '') {
+  const q = String(message || '').toLowerCase().normalize('NFC');
+  return /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau)/i.test(q);
+}
+
+function normalizeWeatherLocation(message = '') {
+  const raw = String(message || '').trim();
+  const q = raw.toLowerCase().normalize('NFC');
+  let loc = '';
+  const patterns = [
+    /(?:thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do)\s+(?:ở|o|tại|tai|cho|khu vực|khu vuc)?\s*([^?.,!\n]+)/i,
+    /(?:ở|o|tại|tai)\s+([^?.,!\n]+)\s*(?:hôm nay|hom nay|ngày mai|ngay mai|3 ngày|ba ngày|tuần này|tuan nay)?/i
+  ];
+  for (const re of patterns) {
+    const m = raw.match(re);
+    if (m && m[1]) { loc = m[1].trim(); break; }
+  }
+  loc = loc
+    .replace(/^(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio)\s+/i, '')
+    .replace(/\s+(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio|như thế nào|the nao|ra sao)$/i, '')
+    .trim();
+  if (!loc || /^(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio|ngoài trời|ngoai troi)$/i.test(loc)) loc = 'Hanoi, Vietnam';
+  const map = {
+    'hà nội': 'Hanoi, Vietnam', 'ha noi': 'Hanoi, Vietnam', 'hanoi': 'Hanoi, Vietnam',
+    'tp hcm': 'Ho Chi Minh City, Vietnam', 'hồ chí minh': 'Ho Chi Minh City, Vietnam', 'ho chi minh': 'Ho Chi Minh City, Vietnam', 'sài gòn': 'Ho Chi Minh City, Vietnam', 'sai gon': 'Ho Chi Minh City, Vietnam',
+    'phú thọ': 'Phu Tho, Vietnam', 'phu tho': 'Phu Tho, Vietnam',
+    'việt nam': 'Vietnam', 'viet nam': 'Vietnam'
+  };
+  const key = loc.toLowerCase().normalize('NFC');
+  return map[key] || loc;
+}
+
+function pickWeatherDesc(condition = []) {
+  const first = Array.isArray(condition) ? condition[0] : null;
+  return first?.lang_vi?.[0]?.value || first?.value || 'Không rõ';
+}
+
+async function directWeatherAnswer(message = '') {
+  if (!isWeatherQuestion(message)) return null;
+  const location = normalizeWeatherLocation(message);
+  const url = `https://wttr.in/${encodeURIComponent(location)}?format=j1&lang=vi`;
+  try {
+    const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/28 weather fix' } }), 12000);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const area = data?.nearest_area?.[0];
+    const place = [area?.areaName?.[0]?.value, area?.region?.[0]?.value, area?.country?.[0]?.value].filter(Boolean).join(', ') || location;
+    const cur = data?.current_condition?.[0] || {};
+    const today = data?.weather?.[0] || {};
+    const tomorrow = data?.weather?.[1] || {};
+    const lines = [
+      `### 🌦️ Thời tiết ${place}`,
+      `- **Hiện tại:** ${cur.temp_C ?? '?'}°C, cảm giác như ${cur.FeelsLikeC ?? '?'}°C, ${pickWeatherDesc(cur.weatherDesc)}.`,
+      `- **Độ ẩm:** ${cur.humidity ?? '?'}% · **Gió:** ${cur.windspeedKmph ?? '?'} km/h · **Mây:** ${cur.cloudcover ?? '?'}%.`,
+      `- **Hôm nay:** khoảng ${today.mintempC ?? '?'}°C - ${today.maxtempC ?? '?'}°C, khả năng mưa theo giờ có thể thay đổi.`,
+    ];
+    if (tomorrow?.date) lines.push(`- **Ngày mai (${tomorrow.date}):** khoảng ${tomorrow.mintempC ?? '?'}°C - ${tomorrow.maxtempC ?? '?'}°C.`);
+    lines.push('', '_Nguồn thời tiết lấy trực tiếp lúc hỏi; nếu cần chính xác theo xã/huyện, hãy hỏi kèm địa điểm cụ thể._');
+    return lines.join('\n');
+  } catch (error) {
+    return `### 🌦️ Thời tiết\nMình chưa lấy được dữ liệu thời tiết trực tiếp cho **${location}** lúc này.\n\nBạn thử hỏi rõ hơn như: **“Thời tiết Hà Nội hôm nay”**, **“Thời tiết Phú Thọ ngày mai”** hoặc kiểm tra mạng/API trên server. Lõi app đã nhận diện đây là câu hỏi thời tiết nên sẽ không trả lời lạc sang ngày/giờ nữa.`;
+  }
+}
+
+function chatHistoryToText(history, limit = 30) {
+  if (!Array.isArray(history)) return '';
+  const cleaned = history.slice(-limit)
+    .filter(m => m && String(m.text || '').trim() && !/AI đang phân tích|Đang trả lời|typing/i.test(String(m.text || '')))
+    .map(m => {
+      const role = m.role === 'assistant' || m.role === 'model' || m.role === 'ai' ? 'AI' : 'Người dùng';
+      const text = String(m.text || '')
+        .replace(/Trả lời bởi:.*?(\n|$)/g, '')
+        .replace(/🤖 Sỹ Năm AI/g, '')
+        .replace(/👤 .*?(Free|Pro|Guest)?/g, '')
+        .replace(/👥 Khách/g, '')
+        .trim()
+        .slice(0, 2200);
+      return text ? `${role}: ${text}` : '';
+    })
+    .filter(Boolean);
+  return cleaned.join('\n');
+}
+
+function nam30MemoryRules() {
+  return `
+BỘ NHỚ HỘI THOẠI NAM30 - BẮT BUỘC:
+- Hãy coi LỊCH SỬ HỘI THOẠI là ngữ cảnh thật của cuộc nói chuyện hiện tại.
+- Nếu người dùng hỏi ngắn như: "tiếp", "nói rõ hơn", "câu 2", "ý trên", "vậy còn", "nó", "ở đó", "chỗ tôi", phải suy ra từ câu trước gần nhất.
+- Không tự đổi chủ đề khi câu hỏi mới còn liên quan lịch sử.
+- Nếu lịch sử có thông tin người dùng đã cung cấp như tên, địa điểm, phiên bản app, lỗi đang sửa... hãy dùng lại, không hỏi lại.
+- Chỉ hỏi lại khi lịch sử thật sự không có thông tin cần thiết.
+`;
+}
+const CAN = ['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
+const CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+const NAP_AM_60 = [
+  'Hải Trung Kim','Hải Trung Kim','Lư Trung Hỏa','Lư Trung Hỏa','Đại Lâm Mộc','Đại Lâm Mộc','Lộ Bàng Thổ','Lộ Bàng Thổ','Kiếm Phong Kim','Kiếm Phong Kim',
+  'Sơn Đầu Hỏa','Sơn Đầu Hỏa','Giản Hạ Thủy','Giản Hạ Thủy','Thành Đầu Thổ','Thành Đầu Thổ','Bạch Lạp Kim','Bạch Lạp Kim','Dương Liễu Mộc','Dương Liễu Mộc',
+  'Tuyền Trung Thủy','Tuyền Trung Thủy','Ốc Thượng Thổ','Ốc Thượng Thổ','Tích Lịch Hỏa','Tích Lịch Hỏa','Tùng Bách Mộc','Tùng Bách Mộc','Trường Lưu Thủy','Trường Lưu Thủy',
+  'Sa Trung Kim','Sa Trung Kim','Sơn Hạ Hỏa','Sơn Hạ Hỏa','Bình Địa Mộc','Bình Địa Mộc','Bích Thượng Thổ','Bích Thượng Thổ','Kim Bạch Kim','Kim Bạch Kim',
+  'Phú Đăng Hỏa','Phú Đăng Hỏa','Thiên Hà Thủy','Thiên Hà Thủy','Đại Trạch Thổ','Đại Trạch Thổ','Thoa Xuyến Kim','Thoa Xuyến Kim','Tang Đố Mộc','Tang Đố Mộc',
+  'Đại Khê Thủy','Đại Khê Thủy','Sa Trung Thổ','Sa Trung Thổ','Thiên Thượng Hỏa','Thiên Thượng Hỏa','Thạch Lựu Mộc','Thạch Lựu Mộc','Đại Hải Thủy','Đại Hải Thủy'
+];
+function elementFromNapAm(nap = '') {
+  if (nap.includes('Kim')) return 'Kim';
+  if (nap.includes('Mộc')) return 'Mộc';
+  if (nap.includes('Thủy')) return 'Thủy';
+  if (nap.includes('Hỏa')) return 'Hỏa';
+  if (nap.includes('Thổ')) return 'Thổ';
+  return 'Không rõ';
+}
+function parseBirthYear(birth) {
+  const m = String(birth || '').match(/(19|20)\d{2}/);
+  return m ? parseInt(m[0], 10) : null;
+}
+function fixedLunarProfile(person = {}, idx = 1) {
+  const birthDate = person.birthDate || person.birth || person.date || '';
+  const year = parseBirthYear(birthDate);
+  if (!year) return { name: person.name || `Người ${idx}`, birthDate, error: 'Thiếu năm sinh hợp lệ' };
+  const cycleIndex = ((year - 1924) % 60 + 60) % 60;
+  const canChi = `${CAN[((year - 4) % 10 + 10) % 10]} ${CHI[((year - 4) % 12 + 12) % 12]}`;
+  const napAm = NAP_AM_60[cycleIndex];
+  return { name: person.name || `Người ${idx}`, birthDate, year, canChi, napAm, nguHanh: elementFromNapAm(napAm), note: 'Can Chi/Nạp âm/Ngũ hành được tính cố định bằng code, AI không được tự tính lại.' };
+}
+// ===== END NAM27 CLEAN AI CORE STABLE FIX =====
 
 function cleanError(error) {
   const msg = error?.message || "Có lỗi không xác định.";
@@ -693,10 +862,44 @@ app.post("/api/ai/user-keys", async (req, res) => {
 app.post("/api/multi-ai/chat", async (req, res) => {
   try {
     const user = await currentUserFromRequest(req).catch(() => null);
-    const { message, provider = "auto", model = "", council = false, context } = req.body || {};
+    const { message, provider = "auto", model = "", council = false, context, history } = req.body || {};
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi cho Multi-AI." });
-    const prompt = `Bạn là Sỹ Năm Multi-AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.\n\nNGỮ CẢNH:\n${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}\n\nCÂU HỎI:\n${cleanMessage}`;
+
+    const weatherAnswer = await directWeatherAnswer(cleanMessage);
+    if (weatherAnswer) {
+      return res.json({ ok: true, provider: "local", label: "Sỹ Năm Weather Core", model: "local-live-weather", text: weatherAnswer });
+    }
+
+    const dateAnswer = directDateTimeAnswer(cleanMessage);
+    if (dateAnswer) {
+      return res.json({ ok: true, provider: "local", label: "Sỹ Năm AI", model: "local-date-time", text: dateAnswer });
+    }
+
+    const historyText = chatHistoryToText(history, 24);
+    const prompt = `Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic. Trả lời bằng tiếng Việt, rõ ràng, có Markdown đẹp.
+
+THỜI GIAN HỆ THỐNG VIỆT NAM:
+- Hôm nay: ${formatVietnamDate(0)}
+- Ngày mai: ${formatVietnamDate(1)}
+- Ngày kia: ${formatVietnamDate(2)}
+
+QUY TẮC BẮT BUỘC:
+${nam30MemoryRules()}
+- Luôn bám theo lịch sử hội thoại bên dưới nếu câu hỏi mới có liên quan câu trước.
+- Không hỏi ngược người dùng hôm nay là ngày nào/thứ mấy; dữ liệu thời gian đã có ở trên.
+- Nếu câu hỏi là ngày giờ đơn giản, trả lời trực tiếp theo thời gian hệ thống.
+- Câu hỏi thời tiết đã có lõi riêng xử lý trước khi gọi AI; nếu vẫn nhận câu thời tiết thì không được bịa, hãy yêu cầu địa điểm cụ thể hoặc nói thiếu dữ liệu thời tiết trực tiếp.
+- Không bịa dữ kiện. Nếu thiếu dữ liệu thật sự, nói rõ thiếu dữ liệu nào.
+
+NGỮ CẢNH APP:
+${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
+
+LỊCH SỬ HỘI THOẠI GẦN ĐÂY:
+${historyText || "Chưa có"}
+
+CÂU HỎI MỚI:
+${cleanMessage}`;
     const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: provider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
     res.json({ ok: true, ...result });
   } catch (error) {
@@ -713,7 +916,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "Sỹ Năm Mystic AI Ultimate Pro NAM20 Multi-AI"
+    app: "Sỹ Năm Mystic AI NAM30 Memory Pro"
   });
 });
 
@@ -881,24 +1084,41 @@ app.post("/api/chat-ai", async (req, res) => {
       return res.status(400).json({ error: "Bạn cần nhập câu hỏi hoặc tải ảnh/file lên trước." });
     }
 
-    const historyText = Array.isArray(history)
-      ? history.slice(-8).map(m => `${m.role === "assistant" ? "AI" : "Người dùng"}: ${String(m.text || "").slice(0, 2000)}`).join("\n")
-      : "";
+    const weatherAnswer = files.length === 0 ? await directWeatherAnswer(cleanMessage) : null;
+    if (weatherAnswer) {
+      return res.json({ ok: true, model: "local-live-weather", label: "Sỹ Năm Weather Core", text: weatherAnswer });
+    }
+
+    const dateAnswer = directDateTimeAnswer(cleanMessage);
+    if (dateAnswer && files.length === 0) {
+      return res.json({ ok: true, model: "local-date-time", text: dateAnswer });
+    }
+
+    const historyText = chatHistoryToText(history, 24);
 
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
 Bạn là chatbot Gemini AI thật trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
 
-THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
+THỜI GIAN HỆ THỐNG VIỆT NAM:
+- Hiện tại: ${currentVietnamTime()}
+- Hôm nay: ${formatVietnamDate(0)}
+- Ngày mai: ${formatVietnamDate(1)}
+- Ngày kia: ${formatVietnamDate(2)}
 
 QUY TẮC:
+${nam30MemoryRules()}
 - Trả lời bằng tiếng Việt, dễ hiểu, có Markdown đẹp.
 - Có thể phân tích ảnh/file người dùng tải lên nếu file đọc được.
 - Nếu file không đủ dữ liệu để đọc, hãy nói rõ và hướng dẫn người dùng gửi file dạng txt/csv/json/md hoặc ảnh rõ hơn.
 - Không bịa nội dung file nếu không đọc được.
 - Với nội dung tử vi/xem tướng, chỉ xem là tham khảo văn hóa, không phán chắc số phận/sức khỏe/tài chính/pháp lý.
 - Nếu câu hỏi là kỹ thuật, trả lời theo từng bước cụ thể.
+- Luôn bám theo LỊCH SỬ CHAT GẦN ĐÂY nếu câu hỏi mới liên quan câu trước.
+- Không hỏi ngược người dùng hôm nay/ngày mai là thứ mấy; dữ liệu thời gian đã có ở trên.
+- Câu hỏi thời tiết đã có lõi riêng xử lý trước khi gọi AI; nếu vẫn nhận câu thời tiết thì không được bịa, hãy yêu cầu địa điểm cụ thể hoặc nói thiếu dữ liệu thời tiết trực tiếp.
+- Không bịa dữ kiện; thiếu dữ liệu thì nói rõ thiếu gì.
 
 NGỮ CẢNH APP HIỆN TẠI:
 ${contextText}
@@ -1068,20 +1288,29 @@ app.post("/api/love-ai", async (req, res) => {
     const body = req.body || {};
     const { persons, focus, localReport, geminiModel, name1, birth1, name2, birth2 } = body;
     const finalPersons = persons || [{name:name1||"Người 1", birthDate:birth1||""},{name:name2||"Người 2", birthDate:birth2||""}];
+    const fixedProfiles = finalPersons.map((p, i) => fixedLunarProfile(p, i + 1));
+    const fixedSummary = fixedProfiles.map(p => `- ${p.name}: ${p.birthDate || 'chưa nhập'} => ${p.year || 'thiếu năm'}${p.canChi ? `, tuổi ${p.canChi}, nạp âm ${p.napAm}, ngũ hành ${p.nguHanh}` : ''}`).join("\n");
     const parts = [{ text: `
 Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app Sỹ Năm Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
-YÊU CẦU:
-- Dựa trên ngày tháng năm sinh dương lịch của 2 người, Can Chi, Ngũ hành, nạp âm, Địa Chi, cung phi, cung hoàng đạo.
-- Giải thích vì sao hợp/chưa hợp, không chỉ chấm điểm.
+DỮ LIỆU NỀN ĐÃ ĐƯỢC CODE TÍNH CỐ ĐỊNH - TUYỆT ĐỐI KHÔNG TỰ TÍNH LẠI:
+${fixedSummary}
+
+JSON DỮ LIỆU NỀN:
+${JSON.stringify(fixedProfiles, null, 2)}
+
+QUY TẮC BẮT BUỘC:
+- Không được tự đổi Can Chi/Nạp âm/Ngũ hành. Ví dụ 2004 là Giáp Thân, không được nói Giáp Thìn.
+- Nếu người dùng nhập thiếu/ngày sinh sai định dạng, nói rõ thiếu dữ liệu thay vì bịa.
+- AI chỉ được luận giải dựa trên DỮ LIỆU NỀN ĐÃ ĐƯỢC CODE TÍNH CỐ ĐỊNH ở trên.
 - Có mục điểm mạnh, điểm dễ xung đột, cách hóa giải/hòa hợp, lời khuyên thực tế.
 - Không phán chắc cưới/ly hôn/chia tay/giàu nghèo/số phận. Chỉ nói theo hướng tham khảo văn hóa và tự nhận thức.
 - Nếu dữ liệu thiếu giờ sinh thì nói rõ phần giờ sinh chỉ tham khảo/không có.
 - Trả về Markdown đẹp.
 
-DỮ LIỆU 2 NGƯỜI:
+DỮ LIỆU GỐC NGƯỜI DÙNG NHẬP:
 ${JSON.stringify(finalPersons, null, 2)}
 
 TRỌNG TÂM MUỐN XEM:
@@ -1095,11 +1324,10 @@ Hãy trả về theo cấu trúc:
 2. Điểm hợp tổng quan và mức độ tương hợp
 3. Phân tích Can Chi - Địa Chi
 4. Phân tích Ngũ hành/Nạp âm
-5. Phân tích cung phi và khí gia đạo
-6. Tính cách yêu, cách giao tiếp, điểm hút nhau
-7. Điểm dễ xung đột
-8. Cách hòa hợp và phát triển lâu dài
-9. Lưu ý tham khảo
+5. Tính cách yêu, cách giao tiếp, điểm hút nhau
+6. Điểm dễ xung đột
+7. Cách hòa hợp và phát triển lâu dài
+8. Lưu ý tham khảo
 ` }];
     const result = await tryModels(parts, geminiModel);
     res.json(result);
