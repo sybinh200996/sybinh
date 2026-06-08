@@ -564,7 +564,7 @@ function weatherCodeVi(code) {
 async function geocodeWeatherLocation(loc) {
   if (loc.latitude && loc.longitude) return loc;
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(loc.name)}&count=1&language=vi&format=json`;
-  const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/32 weather fix' } }), 12000);
+  const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/34 weather fix' } }), 12000);
   const json = await response.json().catch(() => ({}));
   const hit = json?.results?.[0];
   if (!hit?.latitude || !hit?.longitude) throw new Error('Không tìm thấy tọa độ địa điểm: ' + loc.name);
@@ -578,7 +578,7 @@ async function directWeatherAnswer(message = '') {
   try {
     const loc = await geocodeWeatherLocation(normalized);
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&timezone=Asia%2FBangkok&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,cloud_cover,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=3`;
-    const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/32 weather fix' } }), 12000);
+    const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/34 weather fix' } }), 12000);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     const cur = data?.current || {};
@@ -593,7 +593,15 @@ async function directWeatherAnswer(message = '') {
     lines.push('', '_Nguồn: Open-Meteo theo tọa độ địa điểm, tránh lỗi nhầm Việt Trì thành địa danh khác._');
     return lines.join('\n');
   } catch (error) {
-    return `### 🌦️ Thời tiết\nMình chưa lấy được dữ liệu thời tiết trực tiếp cho **${normalized.name}** lúc này.\n\nBạn thử hỏi rõ hơn như: **“Thời tiết Việt Trì Phú Thọ hôm nay”**, **“Thời tiết Hà Nội hôm nay”** hoặc kiểm tra kết nối mạng server.`;
+    const loc = normalized || { name: 'địa điểm bạn hỏi' };
+    return [
+      `### 🌦️ Thời tiết ${loc.name}`,
+      `Mình đã nhận đúng địa điểm **${loc.name}**, nhưng server hiện chưa lấy được dữ liệu Open-Meteo trực tiếp.`,
+      ``,
+      `Nguyên nhân thường gặp: hosting chặn kết nối ra ngoài, mạng server lỗi tạm thời, hoặc API thời tiết bị timeout.`,
+      ``,
+      `Bạn thử lại sau vài giây. Lõi NAM34 đã chặn không cho AI trả lời lạc sang địa danh khác.`
+    ].join('\\n');
   }
 }
 
@@ -890,6 +898,21 @@ app.post("/api/ai/user-keys", async (req, res) => {
     }
     await writeUsers(users);
     res.json({ ok: true, providers: enabledProvidersForUser(saved), note: "Đã lưu API key cá nhân vào data/users.json. Bản demo chưa mã hóa key, chỉ dùng test cá nhân." });
+  } catch (error) {
+    res.status(500).json({ error: cleanError(error) });
+  }
+});
+
+
+// NAM34: route thời tiết riêng để AI Chat lấy trực tiếp trước khi gọi model.
+app.post("/api/weather", async (req, res) => {
+  try {
+    const { message } = req.body || {};
+    const cleanMessage = String(message || "").trim();
+    if (!cleanMessage) return res.status(400).json({ error: "Thiếu câu hỏi thời tiết." });
+    const answer = await directWeatherAnswer(cleanMessage);
+    if (!answer) return res.status(400).json({ error: "Không phải câu hỏi thời tiết." });
+    res.json({ ok: true, provider: "local", label: "Sỹ Năm Weather Core", model: "hidden", text: answer });
   } catch (error) {
     res.status(500).json({ error: cleanError(error) });
   }

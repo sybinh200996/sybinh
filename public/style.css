@@ -266,3 +266,103 @@ html,body{scroll-padding-top:18px}
 @media(max-width:560px){
   .hero-right{right:0!important;width:58%!important;height:88%!important;max-height:88%!important;object-fit:contain!important;object-position:right bottom!important;transform:none!important;opacity:.92!important}
 }
+
+/* NAM33 REAL DASHBOARD + BANNER BLEND FIX */
+.hero-section{isolation:isolate!important}
+.hero-right{
+  content:url('assets/hero-right.jpg')!important;
+  right:0!important;
+  bottom:0!important;
+  width:36%!important;
+  height:94%!important;
+  max-height:94%!important;
+  object-fit:contain!important;
+  object-position:right bottom!important;
+  transform:none!important;
+  opacity:.96!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 26px rgba(103,97,255,.42)) drop-shadow(0 0 44px rgba(45,213,255,.18))!important;
+  mix-blend-mode:screen!important;
+  -webkit-mask-image:radial-gradient(ellipse at 70% 56%,#000 0%,#000 47%,rgba(0,0,0,.82) 61%,rgba(0,0,0,.38) 76%,transparent 96%)!important;
+  mask-image:radial-gradient(ellipse at 70% 56%,#000 0%,#000 47%,rgba(0,0,0,.82) 61%,rgba(0,0,0,.38) 76%,transparent 96%)!important;
+}
+.hero-section:after{
+  content:""!important;
+  position:absolute!important;
+  z-index:3!important;
+  right:0!important;
+  bottom:0!important;
+  width:43%!important;
+  height:100%!important;
+  pointer-events:none!important;
+  background:linear-gradient(90deg,rgba(4,11,30,.88) 0%,rgba(4,11,30,.28) 18%,transparent 40%),radial-gradient(circle at 92% 68%,rgba(124,77,255,.16),transparent 46%)!important;
+}
+.hero-center,.topbar{position:relative!important;z-index:5!important}
+.nam33-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.nam33-card-actions button{padding:9px 12px!important;font-size:13px!important}.nam33-voice-controls{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}.nam33-voice-controls select,.nam33-voice-controls input{width:100%;border:1px solid rgba(100,200,255,.35);background:rgba(2,12,34,.62);color:#fff;border-radius:14px;padding:10px}.nam33-stats-card .ring{grid-row:span 2;position:relative}.nam33-stats-card .ring span{font-size:32px;font-weight:900}.nam33-stats-card .ring small{display:block;font-size:12px;color:#dbe7ff;font-weight:600}.history-mini-item{cursor:pointer;border-radius:12px;padding:10px!important}.history-mini-item:hover{background:rgba(80,180,255,.12)}
+@media(max-width:920px){.hero-right{right:-4px!important;width:48%!important;height:91%!important;max-height:91%!important;object-fit:contain!important;opacity:.9!important}.hero-section:after{width:58%!important;background:linear-gradient(90deg,rgba(4,11,30,.75) 0%,rgba(4,11,30,.22) 20%,transparent 48%)!important}}
+@media(max-width:560px){.hero-right{right:-10px!important;width:62%!important;height:86%!important;max-height:86%!important;object-position:right bottom!important;opacity:.84!important}.hero-section:after{width:74%!important}.nam33-card-actions button{flex:1}.stats-card{grid-template-columns:1fr!important}.nam33-stats-card .ring{margin:auto}}
+
+/* NAM34: weather server guard + banner giữ ảnh gốc vừa khớp + tabs gọn */
+.hero-right{
+  content:normal!important;
+  right:0!important;
+  bottom:0!important;
+  width:34%!important;
+  height:94%!important;
+  max-height:94%!important;
+  object-fit:contain!important;
+  object-position:right bottom!important;
+  transform:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 24px rgba(85,180,255,.28))!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.7) 10%,#000 24%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.7) 10%,#000 24%,#000 100%)!important;
+}
+.hero-section:after{
+  width:38%!important;
+  background:linear-gradient(90deg,rgba(4,11,30,.78) 0%,rgba(4,11,30,.25) 18%,transparent 44%)!important;
+}
+.feature-tabs-wrap{
+  padding:10px 10px!important;
+  margin:12px 8px 14px!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+}
+.feature-tabs{
+  display:flex!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-snap-type:x mandatory!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:2px 4px 8px!important;
+}
+.feature-tabs::-webkit-scrollbar{height:4px}.feature-tabs::-webkit-scrollbar-thumb{background:rgba(100,200,255,.45);border-radius:99px}
+.tab-card{
+  flex:0 0 112px!important;
+  min-height:74px!important;
+  padding:8px 8px!important;
+  gap:4px!important;
+  font-size:13px!important;
+  transform:none!important;
+}
+.tab-card .holo-icon{transform:scale(.82)!important;margin-bottom:0!important}.tab-card.active,.tab-card:hover{transform:translateY(-2px)!important}
+@media(max-width:920px){
+  .hero-right{width:46%!important;height:90%!important;max-height:90%!important;right:-2px!important;opacity:1!important}
+  .hero-section:after{width:54%!important}
+  .tab-card{flex-basis:96px!important;min-height:68px!important;font-size:12px!important}
+}
+@media(max-width:560px){
+  .hero-right{width:58%!important;height:84%!important;max-height:84%!important;right:-4px!important;opacity:1!important;object-fit:contain!important;object-position:right bottom!important}
+  .hero-section:after{width:68%!important}
+  .feature-tabs-wrap{padding:8px 8px!important;margin:10px 4px 12px!important}
+  .slide-btn{display:none!important}
+  .tab-card{flex:0 0 86px!important;min-height:62px!important;font-size:11px!important;border-radius:14px!important}
+  .tab-card span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78px!important}
+}

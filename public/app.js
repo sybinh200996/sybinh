@@ -489,6 +489,18 @@ function getChatHistoryForAI(limit=30){
   }).slice(-limit);
 }
 // ===== END NAM30 MEMORY PRO CORE =====
+
+// ===== NAM34 WEATHER FRONTEND GUARD =====
+function isWeatherQuestionClient(message=''){
+  const q=String(message||'').toLowerCase().normalize('NFC');
+  return /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau)/i.test(q);
+}
+async function askWeatherDirectClient(message){
+  const r=await postJSON('/api/weather',{message});
+  return r?.text||'';
+}
+// ===== END NAM34 WEATHER FRONTEND GUARD =====
+
 async function sendChat(){
   if(chatMode!=='chat') return sendImageAI();
   const input=$('chatText');
@@ -509,10 +521,22 @@ async function sendChat(){
     const model=$('chatModel')?.value||'';
     const council=Boolean($('chatCouncil')?.checked);
     const context={clientTime:new Date().toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}),source:'Sỹ Năm AI Chat',today:new Date().toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})};
-    if(attachments.length){
-      data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context});
-    }else{
-      data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context});
+    if(!attachments.length && isWeatherQuestionClient(q)){
+      try{
+        const weatherText=await askWeatherDirectClient(q);
+        if(weatherText){
+          data={ok:true,provider:'local',label:'Sỹ Năm Weather Core',model:'hidden',text:weatherText};
+        }
+      }catch(_weatherErr){
+        // Nếu route thời tiết riêng lỗi, vẫn fallback sang multi-ai/chat bên dưới.
+      }
+    }
+    if(!data){
+      if(attachments.length){
+        data=await postJSON('/api/chat-ai',{message:q,question:q,attachments,history,context});
+      }else{
+        data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context});
+      }
     }
     const text=hideModelLeak(data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.');
     $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${markdownish(text)}</div>`;
@@ -776,3 +800,111 @@ async function saveAIKeys(){
 }
 
 setTimeout(autoResizeChatText, 300);
+
+// ===== NAM33 REAL DASHBOARD + FUNCTIONAL CARDS =====
+function nam33Stats(){
+  try{return JSON.parse(localStorage.getItem('synam_stats')||'{}')}catch{return {}}
+}
+function saveNam33Stats(s){localStorage.setItem('synam_stats',JSON.stringify(s||{}))}
+function incNam33Stat(key,amount=1){
+  const s=nam33Stats();
+  if(!s.startedAt) s.startedAt=new Date().toISOString();
+  s[key]=(Number(s[key]||0)+amount);
+  s.updatedAt=new Date().toISOString();
+  saveNam33Stats(s);
+  renderNam33Stats();
+}
+const nam33OldSaveHistory = typeof saveHistory==='function' ? saveHistory : null;
+saveHistory=function(type,content){
+  const t=String(type||'Phân tích');
+  if(nam33OldSaveHistory) nam33OldSaveHistory(t,content); else {
+    const list=JSON.parse(localStorage.getItem('synam_history')||'[]');
+    list.unshift({type:t,content,at:new Date().toLocaleString('vi-VN')});
+    localStorage.setItem('synam_history',JSON.stringify(list.slice(0,80)));
+  }
+  const low=t.toLowerCase();
+  incNam33Stat('analysis',1);
+  if(/chat|ai/i.test(t)) incNam33Stat('chat',1);
+  if(/ảnh|image|chỉ tay|tướng|file|vision/i.test(t)) incNam33Stat('image',1);
+  renderHistory();
+};
+renderHistory=function(){
+  let list=[];
+  try{list=JSON.parse(localStorage.getItem('synam_history')||'[]')}catch{}
+  const mini=$('historyMini');
+  if($('statCount')) $('statCount').textContent=list.length;
+  if(mini){
+    mini.innerHTML=list.length?list.slice(0,4).map((x,i)=>`<div class="history-mini-item" onclick="event.stopPropagation();showHistory('${encodeURIComponent(x.content||'')}')"><span>${escapeHtml(x.type||'Phân tích')}</span><small>${escapeHtml(x.at||'')}</small></div>`).join(''):'<p>Chưa có lịch sử.</p><small>Hãy chat AI / xem chỉ tay / xem tướng, kết quả sẽ lưu ở đây.</small>';
+  }
+  const full=$('historyList');
+  if(full){
+    full.innerHTML=list.length?list.map((x,i)=>`<div class="history-item"><div><b>${escapeHtml(x.type||'Phân tích')}</b><br><small>${escapeHtml(x.at||'')}</small></div><button onclick="showHistory('${encodeURIComponent(x.content||'')}')">Chi tiết</button></div>`).join(''):'<p>Chưa có lịch sử phân tích.</p>';
+  }
+  renderNam33Stats();
+};
+function exportHistoryTxt(event){
+  event?.stopPropagation?.();
+  let list=[];try{list=JSON.parse(localStorage.getItem('synam_history')||'[]')}catch{}
+  if(!list.length){toast('Chưa có lịch sử để xuất');return}
+  const text=list.map((x,i)=>`# ${i+1}. ${x.type||'Phân tích'}\nThời gian: ${x.at||''}\n\n${x.content||''}\n`).join('\n-------------------------\n\n');
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='synam-lich-su-phan-tich.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast('Đã xuất lịch sử TXT');
+}
+const nam33OldClearHistory = typeof clearHistory==='function' ? clearHistory : null;
+clearHistory=function(){
+  if(!confirm('Xóa toàn bộ lịch sử phân tích?')) return;
+  localStorage.removeItem('synam_history');
+  renderHistory();
+  toast('Đã xóa lịch sử');
+};
+function renderNam33Stats(){
+  const s=nam33Stats();
+  const history=JSON.parse(localStorage.getItem('synam_history')||'[]');
+  const started=s.startedAt?new Date(s.startedAt):new Date();
+  const days=Math.max(1,Math.ceil((Date.now()-started.getTime())/86400000));
+  const analysis=Number(s.analysis||history.length||0);
+  const chat=Number(s.chat||history.filter(x=>/chat|ai/i.test(x.type||'')).length||0);
+  const img=Number(s.image||history.filter(x=>/ảnh|image|chỉ tay|tướng|file|vision/i.test(x.type||'')).length||0);
+  if($('statCount')) $('statCount').textContent=analysis;
+  if($('statChatCount')) $('statChatCount').textContent=chat;
+  if($('statImageCount')) $('statImageCount').textContent=img;
+  if($('statDaysUsed')) $('statDaysUsed').textContent=days;
+  if($('nam33StatPercent')) $('nam33StatPercent').textContent=Math.min(100,Math.round((analysis/20)*100))+'%';
+}
+function resetNam33Stats(event){
+  event?.stopPropagation?.();
+  if(!confirm('Reset thống kê? Lịch sử vẫn giữ nguyên.')) return;
+  localStorage.removeItem('synam_stats');renderNam33Stats();toast('Đã reset thống kê');
+}
+function syncHomeVoiceSelect(){
+  const home=$('homeVoiceSelect'), main=$('voiceSelect');
+  if(home && main){main.value=home.value;saveVoicePrefs();toast('Đã chọn giọng: '+home.options[home.selectedIndex].text)}
+}
+function syncHomeVoiceRate(){
+  const home=$('homeVoiceRate'), main=$('voiceRate');
+  if(home && main){main.value=home.value;saveVoicePrefs()}
+}
+function syncNam33VoiceHome(){
+  try{
+    refreshVoiceList?.();
+    const main=$('voiceSelect'), home=$('homeVoiceSelect');
+    if(main && home){home.innerHTML=main.innerHTML;home.value=main.value||'auto'}
+    const rate=$('voiceRate'), homeRate=$('homeVoiceRate');
+    if(rate && homeRate) homeRate.value=rate.value||'1';
+  }catch{}
+}
+const nam33OldSpeakLastResult = typeof speakLastResult==='function' ? speakLastResult : null;
+speakLastResult=function(){
+  if(!lastResult){
+    let list=[];try{list=JSON.parse(localStorage.getItem('synam_history')||'[]')}catch{}
+    if(list[0]?.content) lastResult=list[0].content;
+  }
+  if(!lastResult){toast('Chưa có kết quả để đọc. Hãy chat hoặc phân tích trước nhé.');return}
+  speakText(lastResult,true);
+};
+window.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{renderHistory();renderNam33Stats();syncNam33VoiceHome();},350);
+  setTimeout(syncNam33VoiceHome,1400);
+});
+// ===== END NAM33 =====
