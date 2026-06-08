@@ -241,3 +241,65 @@ html,body{scroll-padding-top:18px}
 }
 @media(max-width:920px){.hero-right{transform:scale(.8)!important;transform-origin:right bottom!important}}
 @media(max-width:560px){.hero-right{transform:scale(.8)!important;transform-origin:right bottom!important}}
+
+
+/* NAM32: Banner phải hiển thị rõ, đầy đủ ảnh và khớp trong banner */
+.hero-right{
+  content:url('assets/hero-right.jpg')!important;
+  right:0!important;
+  bottom:0!important;
+  width:32%!important;
+  height:96%!important;
+  max-height:96%!important;
+  object-fit:contain!important;
+  object-position:right bottom!important;
+  transform:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.72) 12%,#000 26%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.72) 12%,#000 26%,#000 100%)!important;
+  filter:drop-shadow(0 0 28px rgba(72,198,255,.32)) drop-shadow(0 0 44px rgba(138,73,255,.20))!important;
+}
+@media(max-width:920px){
+  .hero-right{right:0!important;width:46%!important;height:92%!important;max-height:92%!important;object-fit:contain!important;object-position:right bottom!important;transform:none!important;opacity:.96!important}
+}
+@media(max-width:560px){
+  .hero-right{right:0!important;width:58%!important;height:88%!important;max-height:88%!important;object-fit:contain!important;object-position:right bottom!important;transform:none!important;opacity:.92!important}
+}
+
+/* NAM33 REAL DASHBOARD + BANNER BLEND FIX */
+.hero-section{isolation:isolate!important}
+.hero-right{
+  content:url('assets/hero-right.jpg')!important;
+  right:0!important;
+  bottom:0!important;
+  width:36%!important;
+  height:94%!important;
+  max-height:94%!important;
+  object-fit:contain!important;
+  object-position:right bottom!important;
+  transform:none!important;
+  opacity:.96!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 26px rgba(103,97,255,.42)) drop-shadow(0 0 44px rgba(45,213,255,.18))!important;
+  mix-blend-mode:screen!important;
+  -webkit-mask-image:radial-gradient(ellipse at 70% 56%,#000 0%,#000 47%,rgba(0,0,0,.82) 61%,rgba(0,0,0,.38) 76%,transparent 96%)!important;
+  mask-image:radial-gradient(ellipse at 70% 56%,#000 0%,#000 47%,rgba(0,0,0,.82) 61%,rgba(0,0,0,.38) 76%,transparent 96%)!important;
+}
+.hero-section:after{
+  content:""!important;
+  position:absolute!important;
+  z-index:3!important;
+  right:0!important;
+  bottom:0!important;
+  width:43%!important;
+  height:100%!important;
+  pointer-events:none!important;
+  background:linear-gradient(90deg,rgba(4,11,30,.88) 0%,rgba(4,11,30,.28) 18%,transparent 40%),radial-gradient(circle at 92% 68%,rgba(124,77,255,.16),transparent 46%)!important;
+}
+.hero-center,.topbar{position:relative!important;z-index:5!important}
+.nam33-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.nam33-card-actions button{padding:9px 12px!important;font-size:13px!important}.nam33-voice-controls{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}.nam33-voice-controls select,.nam33-voice-controls input{width:100%;border:1px solid rgba(100,200,255,.35);background:rgba(2,12,34,.62);color:#fff;border-radius:14px;padding:10px}.nam33-stats-card .ring{grid-row:span 2;position:relative}.nam33-stats-card .ring span{font-size:32px;font-weight:900}.nam33-stats-card .ring small{display:block;font-size:12px;color:#dbe7ff;font-weight:600}.history-mini-item{cursor:pointer;border-radius:12px;padding:10px!important}.history-mini-item:hover{background:rgba(80,180,255,.12)}
+@media(max-width:920px){.hero-right{right:-4px!important;width:48%!important;height:91%!important;max-height:91%!important;object-fit:contain!important;opacity:.9!important}.hero-section:after{width:58%!important;background:linear-gradient(90deg,rgba(4,11,30,.75) 0%,rgba(4,11,30,.22) 20%,transparent 48%)!important}}
+@media(max-width:560px){.hero-right{right:-10px!important;width:62%!important;height:86%!important;max-height:86%!important;object-position:right bottom!important;opacity:.84!important}.hero-section:after{width:74%!important}.nam33-card-actions button{flex:1}.stats-card{grid-template-columns:1fr!important}.nam33-stats-card .ring{margin:auto}}

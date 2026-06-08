@@ -513,62 +513,87 @@ function isWeatherQuestion(message = '') {
   return /(thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do|mưa|mua|nắng|nang|bão|bao|gió|gio|độ ẩm|do am|khí hậu|khi hau)/i.test(q);
 }
 
-function normalizeWeatherLocation(message = '') {
-  const raw = String(message || '').trim();
-  const q = raw.toLowerCase().normalize('NFC');
-  let loc = '';
-  const patterns = [
-    /(?:thời tiết|thoi tiet|dự báo|du bao|nhiệt độ|nhiet do)\s+(?:ở|o|tại|tai|cho|khu vực|khu vuc)?\s*([^?.,!\n]+)/i,
-    /(?:ở|o|tại|tai)\s+([^?.,!\n]+)\s*(?:hôm nay|hom nay|ngày mai|ngay mai|3 ngày|ba ngày|tuần này|tuan nay)?/i
-  ];
-  for (const re of patterns) {
-    const m = raw.match(re);
-    if (m && m[1]) { loc = m[1].trim(); break; }
-  }
-  loc = loc
-    .replace(/^(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio)\s+/i, '')
-    .replace(/\s+(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio|như thế nào|the nao|ra sao)$/i, '')
+
+function stripVietnameseWeatherWords(text = '') {
+  return String(text || '')
+    .replace(/(dự báo|du bao|thời tiết|thoi tiet|nhiệt độ|nhiet do|khí hậu|khi hau)/ig, ' ')
+    .replace(/(hôm nay|hom nay|ngày mai|ngay mai|ngày kia|ngay kia|bây giờ|bay gio|hiện tại|hien tai|ra sao|như thế nào|nhu the nao|thế nào|the nao)/ig, ' ')
+    .replace(/(ở|o|tại|tai|cho|khu vực|khu vuc)/ig, ' ')
+    .replace(/[?.,!\n\r]+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
-  if (!loc || /^(hôm nay|hom nay|ngày mai|ngay mai|bây giờ|bay gio|ngoài trời|ngoai troi)$/i.test(loc)) loc = 'Hanoi, Vietnam';
-  const map = {
-    'hà nội': 'Hanoi, Vietnam', 'ha noi': 'Hanoi, Vietnam', 'hanoi': 'Hanoi, Vietnam',
-    'tp hcm': 'Ho Chi Minh City, Vietnam', 'hồ chí minh': 'Ho Chi Minh City, Vietnam', 'ho chi minh': 'Ho Chi Minh City, Vietnam', 'sài gòn': 'Ho Chi Minh City, Vietnam', 'sai gon': 'Ho Chi Minh City, Vietnam',
-    'phú thọ': 'Phu Tho, Vietnam', 'phu tho': 'Phu Tho, Vietnam',
-    'việt nam': 'Vietnam', 'viet nam': 'Vietnam'
-  };
-  const key = loc.toLowerCase().normalize('NFC');
-  return map[key] || loc;
 }
 
-function pickWeatherDesc(condition = []) {
-  const first = Array.isArray(condition) ? condition[0] : null;
-  return first?.lang_vi?.[0]?.value || first?.value || 'Không rõ';
+function normalizeWeatherLocation(message = '') {
+  const raw = String(message || '').trim();
+  const lower = raw.toLowerCase().normalize('NFC');
+
+  // Ưu tiên map các địa danh Việt Nam hay bị wttr/geocode đoán sai.
+  const known = [
+    [/việt\s*trì|viet\s*tri|vinh\s*que/i, { name: 'Việt Trì, Phú Thọ, Việt Nam', latitude: 21.3227, longitude: 105.4020 }],
+    [/phú\s*thọ|phu\s*tho/i, { name: 'Phú Thọ, Việt Nam', latitude: 21.3980, longitude: 105.2240 }],
+    [/hà\s*nội|ha\s*noi|hanoi/i, { name: 'Hà Nội, Việt Nam', latitude: 21.0278, longitude: 105.8342 }],
+    [/hồ\s*chí\s*minh|ho\s*chi\s*minh|sài\s*gòn|sai\s*gon|tp\s*hcm/i, { name: 'TP. Hồ Chí Minh, Việt Nam', latitude: 10.8231, longitude: 106.6297 }],
+    [/đà\s*nẵng|da\s*nang/i, { name: 'Đà Nẵng, Việt Nam', latitude: 16.0544, longitude: 108.2022 }]
+  ];
+  for (const [re, loc] of known) {
+    if (re.test(lower)) return loc;
+  }
+
+  let name = stripVietnameseWeatherWords(raw);
+  if (!name || /^(ngoài trời|ngoai troi|việt nam|viet nam)$/i.test(name)) name = 'Hà Nội, Việt Nam';
+  if (!/việt nam|viet nam|vietnam/i.test(name)) name += ', Việt Nam';
+  return { name, latitude: null, longitude: null };
+}
+
+function weatherCodeVi(code) {
+  const c = Number(code);
+  const map = {
+    0:'Trời quang', 1:'Ít mây', 2:'Có mây', 3:'Nhiều mây/u ám',
+    45:'Sương mù', 48:'Sương mù đóng băng',
+    51:'Mưa phùn nhẹ', 53:'Mưa phùn vừa', 55:'Mưa phùn dày',
+    61:'Mưa nhỏ', 63:'Mưa vừa', 65:'Mưa to',
+    66:'Mưa lạnh nhẹ', 67:'Mưa lạnh mạnh',
+    71:'Tuyết nhẹ', 73:'Tuyết vừa', 75:'Tuyết dày',
+    80:'Mưa rào nhẹ', 81:'Mưa rào vừa', 82:'Mưa rào mạnh',
+    95:'Dông', 96:'Dông kèm mưa đá nhẹ', 99:'Dông kèm mưa đá mạnh'
+  };
+  return map[c] || 'Không rõ';
+}
+
+async function geocodeWeatherLocation(loc) {
+  if (loc.latitude && loc.longitude) return loc;
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(loc.name)}&count=1&language=vi&format=json`;
+  const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/32 weather fix' } }), 12000);
+  const json = await response.json().catch(() => ({}));
+  const hit = json?.results?.[0];
+  if (!hit?.latitude || !hit?.longitude) throw new Error('Không tìm thấy tọa độ địa điểm: ' + loc.name);
+  const display = [hit.name, hit.admin1, hit.country].filter(Boolean).join(', ');
+  return { name: display || loc.name, latitude: hit.latitude, longitude: hit.longitude };
 }
 
 async function directWeatherAnswer(message = '') {
   if (!isWeatherQuestion(message)) return null;
-  const location = normalizeWeatherLocation(message);
-  const url = `https://wttr.in/${encodeURIComponent(location)}?format=j1&lang=vi`;
+  const normalized = normalizeWeatherLocation(message);
   try {
-    const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/28 weather fix' } }), 12000);
+    const loc = await geocodeWeatherLocation(normalized);
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&timezone=Asia%2FBangkok&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,cloud_cover,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=3`;
+    const response = await withTimeout(fetch(url, { headers: { 'User-Agent': 'SyNamMysticAI/32 weather fix' } }), 12000);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
-    const area = data?.nearest_area?.[0];
-    const place = [area?.areaName?.[0]?.value, area?.region?.[0]?.value, area?.country?.[0]?.value].filter(Boolean).join(', ') || location;
-    const cur = data?.current_condition?.[0] || {};
-    const today = data?.weather?.[0] || {};
-    const tomorrow = data?.weather?.[1] || {};
+    const cur = data?.current || {};
+    const daily = data?.daily || {};
     const lines = [
-      `### 🌦️ Thời tiết ${place}`,
-      `- **Hiện tại:** ${cur.temp_C ?? '?'}°C, cảm giác như ${cur.FeelsLikeC ?? '?'}°C, ${pickWeatherDesc(cur.weatherDesc)}.`,
-      `- **Độ ẩm:** ${cur.humidity ?? '?'}% · **Gió:** ${cur.windspeedKmph ?? '?'} km/h · **Mây:** ${cur.cloudcover ?? '?'}%.`,
-      `- **Hôm nay:** khoảng ${today.mintempC ?? '?'}°C - ${today.maxtempC ?? '?'}°C, khả năng mưa theo giờ có thể thay đổi.`,
+      `### 🌦️ Thời tiết ${loc.name}`,
+      `- **Hiện tại:** ${Math.round(cur.temperature_2m ?? 0)}°C, cảm giác như ${Math.round(cur.apparent_temperature ?? cur.temperature_2m ?? 0)}°C, ${weatherCodeVi(cur.weather_code)}.`,
+      `- **Độ ẩm:** ${cur.relative_humidity_2m ?? '?'}% · **Gió:** ${cur.wind_speed_10m ?? '?'} km/h · **Mây:** ${cur.cloud_cover ?? '?'}%.`,
+      `- **Hôm nay:** khoảng ${Math.round(daily.temperature_2m_min?.[0] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[0] ?? 0)}°C, khả năng mưa cao nhất ${daily.precipitation_probability_max?.[0] ?? '?'}%.`
     ];
-    if (tomorrow?.date) lines.push(`- **Ngày mai (${tomorrow.date}):** khoảng ${tomorrow.mintempC ?? '?'}°C - ${tomorrow.maxtempC ?? '?'}°C.`);
-    lines.push('', '_Nguồn thời tiết lấy trực tiếp lúc hỏi; nếu cần chính xác theo xã/huyện, hãy hỏi kèm địa điểm cụ thể._');
+    if (daily.time?.[1]) lines.push(`- **Ngày mai (${daily.time[1]}):** khoảng ${Math.round(daily.temperature_2m_min?.[1] ?? 0)}°C - ${Math.round(daily.temperature_2m_max?.[1] ?? 0)}°C, ${weatherCodeVi(daily.weather_code?.[1])}.`);
+    lines.push('', '_Nguồn: Open-Meteo theo tọa độ địa điểm, tránh lỗi nhầm Việt Trì thành địa danh khác._');
     return lines.join('\n');
   } catch (error) {
-    return `### 🌦️ Thời tiết\nMình chưa lấy được dữ liệu thời tiết trực tiếp cho **${location}** lúc này.\n\nBạn thử hỏi rõ hơn như: **“Thời tiết Hà Nội hôm nay”**, **“Thời tiết Phú Thọ ngày mai”** hoặc kiểm tra mạng/API trên server. Lõi app đã nhận diện đây là câu hỏi thời tiết nên sẽ không trả lời lạc sang ngày/giờ nữa.`;
+    return `### 🌦️ Thời tiết\nMình chưa lấy được dữ liệu thời tiết trực tiếp cho **${normalized.name}** lúc này.\n\nBạn thử hỏi rõ hơn như: **“Thời tiết Việt Trì Phú Thọ hôm nay”**, **“Thời tiết Hà Nội hôm nay”** hoặc kiểm tra kết nối mạng server.`;
   }
 }
 
