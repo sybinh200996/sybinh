@@ -1,0 +1,5 @@
+NAM31
+- Ẩn tên model/provider/API trong khung trả lời AI.
+- Server thêm luật không tiết lộ model và lọc lại text trước khi gửi về frontend.
+- Frontend bỏ dòng "Trả lời bởi: provider · model" trong chat.
+- Thu nhỏ hình banner bên phải còn 80% bằng CSS transform scale(.8).

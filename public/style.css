@@ -232,3 +232,12 @@ html,body{scroll-padding-top:18px}
 #chatText{width:100%;white-space:pre-wrap}
 #chatText::placeholder{color:#9fb4d6}
 @media(max-width:560px){#chatText{max-height:170px!important}}
+
+
+/* NAM31: ẩn lộ model/provider trong chat + thu nhỏ ảnh banner phải còn 80% */
+.hero-right{
+  transform:scale(.8)!important;
+  transform-origin:right bottom!important;
+}
+@media(max-width:920px){.hero-right{transform:scale(.8)!important;transform-origin:right bottom!important}}
+@media(max-width:560px){.hero-right{transform:scale(.8)!important;transform-origin:right bottom!important}}

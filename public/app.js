@@ -92,6 +92,15 @@ function toggleVoiceInputEnabled(){
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400)}
 function setLoading(id,on=true){$(id)?.classList.toggle('loading',on)}
 function htmlResult(title,text){lastResult=text||'';return `<h2>${title}</h2>${markdownish(text)}`}
+
+function hideModelLeak(text=''){
+  return String(text||'')
+    .replace(/^\s*(Trả lời bởi|Powered by|Model|Provider)\s*[:：].*$/gmi,'')
+    .replace(/\b(gemini|google gemini|groq|openrouter|openai|chatgpt|gpt-4o(?:-mini)?|gpt-4\.1(?:-mini)?|claude|anthropic|deepseek|qwen|mistral|grok|llama-3(?:\.\d)?[^\s,.]*)\b/gi, 'AI')
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+}
+
 function markdownish(text=''){return text.split('\n').map(line=>{if(line.startsWith('### '))return `<h3>${line.slice(4)}</h3>`;if(line.startsWith('## '))return `<h2>${line.slice(3)}</h2>`;if(line.startsWith('- '))return `<li>${line.slice(2)}</li>`;return line.trim()?`<p>${line}</p>`:''}).join('').replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>')}
 function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,50)));renderHistory();}
 function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');if($('statCount'))$('statCount').textContent=list.length;if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
@@ -399,7 +408,7 @@ async function sendImageAI(){
   try{
     const data=await postJSON('/api/image-ai',{mode:isEdit?'edit':'create',prompt,image:imageEditDataUrl,attachments,context:{clientTime:new Date().toLocaleString('vi-VN')}});
     const images=data.images||[];
-    const text=data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng ${data.model||'Gemini'}.`;
+    const text=hideModelLeak(data.text||`Đã ${isEdit?'chỉnh sửa':'tạo'} ảnh bằng AI.`);
     $('typing').outerHTML=`<div class="msg image-ai-result">${markdownish(text)}${renderGeneratedImages(images)}</div>`;
     lastResult=text;saveHistory(title,text);checkGeminiStatus();
   }catch(e){
@@ -489,9 +498,8 @@ async function sendChat(){
     }else{
       data=await postJSON('/api/multi-ai/chat',{message:q,provider,model,council,history,context});
     }
-    const text=data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.';
-    const providerLabel=data.provider==='local'?'':(data.label?`<small>Trả lời bởi: ${escapeHtml(data.label)} · ${escapeHtml(data.model||'auto')}</small><br>`:'');
-    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${providerLabel}${markdownish(text)}</div>`;
+    const text=hideModelLeak(data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.');
+    $('typing').outerHTML=`<div class="msg ai-msg"><span class="msg-role">🤖 Sỹ Năm AI</span>${markdownish(text)}</div>`;
     lastResult=text;rememberChatTurn('assistant',text);saveHistory(data.label||'Sỹ Năm AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);

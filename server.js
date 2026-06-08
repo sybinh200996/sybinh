@@ -363,8 +363,8 @@ async function tryMultiAI({ prompt, parts, preferredProvider = "auto", requested
       err.attempts = attempts;
       throw err;
     }
-    const text = results.map(r => `## ${r.label} (${r.model})\n${r.text}`).join("\n\n---\n\n");
-    return { provider: "council", label: "Hội Đồng AI", model: results.map(r => r.model).join(", "), text, results, attempts };
+    const text = results.map((r, idx) => `## Ý kiến AI ${idx + 1}\n${hideModelLeakServer(r.text)}`).join("\n\n---\n\n");
+    return { provider: "council", label: "Hội Đồng AI", text, results: results.map(r => ({ label: 'Sỹ Năm AI', text: hideModelLeakServer(r.text) })), attempts };
   }
   let lastError;
   for (const provider of order) {
@@ -599,8 +599,19 @@ BỘ NHỚ HỘI THOẠI NAM30 - BẮT BUỘC:
 - Không tự đổi chủ đề khi câu hỏi mới còn liên quan lịch sử.
 - Nếu lịch sử có thông tin người dùng đã cung cấp như tên, địa điểm, phiên bản app, lỗi đang sửa... hãy dùng lại, không hỏi lại.
 - Chỉ hỏi lại khi lịch sử thật sự không có thông tin cần thiết.
+- Tuyệt đối không tự giới thiệu, tiết lộ hoặc nhắc tên model/provider/API đang chạy như Gemini, Groq, OpenRouter, OpenAI, Claude, DeepSeek, Qwen, Mistral, Grok, GPT, Llama.
+- Khi cần nói về bản thân, chỉ xưng là Sỹ Năm AI hoặc trợ lý trong app.
 `;
 }
+
+function hideModelLeakServer(text = '') {
+  let out = String(text || '');
+  out = out.replace(/^\s*(Trả lời bởi|Powered by|Model|Provider)\s*[:：].*$/gmi, '');
+  out = out.replace(/\b(?:tôi|mình|em|AI này)\s+(?:là|được chạy bằng|sử dụng|dựa trên|powered by)\s+(?:Google\s+)?(?:Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT[-\w.]*|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama[-\w.]*)/gi, 'Mình là Sỹ Năm AI');
+  out = out.replace(/\b(?:Google\s+Gemini|Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT-?4o(?:-mini)?|GPT-?4\.1(?:-mini)?|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama-?3(?:\.\d)?[-\w.]*)\b/gi, 'Sỹ Năm AI');
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
 const CAN = ['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
 const CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
 const NAP_AM_60 = [
@@ -891,6 +902,7 @@ ${nam30MemoryRules()}
 - Nếu câu hỏi là ngày giờ đơn giản, trả lời trực tiếp theo thời gian hệ thống.
 - Câu hỏi thời tiết đã có lõi riêng xử lý trước khi gọi AI; nếu vẫn nhận câu thời tiết thì không được bịa, hãy yêu cầu địa điểm cụ thể hoặc nói thiếu dữ liệu thời tiết trực tiếp.
 - Không bịa dữ kiện. Nếu thiếu dữ liệu thật sự, nói rõ thiếu dữ liệu nào.
+- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Sỹ Năm AI.
 
 NGỮ CẢNH APP:
 ${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
@@ -901,7 +913,8 @@ ${historyText || "Chưa có"}
 CÂU HỎI MỚI:
 ${cleanMessage}`;
     const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: provider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
-    res.json({ ok: true, ...result });
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, provider: 'synam', label: 'Sỹ Năm AI', text: result.text });
   } catch (error) {
     res.status(500).json({ ok: false, error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1064,7 +1077,8 @@ DỮ LIỆU:
     }
 
     const result = await tryModels(parts, geminiModel);
-    res.json(result);
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1099,7 +1113,7 @@ app.post("/api/chat-ai", async (req, res) => {
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
-Bạn là chatbot Gemini AI thật trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
+Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic Ultimate Pro, nói chuyện tự nhiên, rõ ràng, hữu ích. Không tiết lộ model, provider, API, tên nền tảng AI đang chạy. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
 
 THỜI GIAN HỆ THỐNG VIỆT NAM:
 - Hiện tại: ${currentVietnamTime()}
@@ -1119,6 +1133,7 @@ ${nam30MemoryRules()}
 - Không hỏi ngược người dùng hôm nay/ngày mai là thứ mấy; dữ liệu thời gian đã có ở trên.
 - Câu hỏi thời tiết đã có lõi riêng xử lý trước khi gọi AI; nếu vẫn nhận câu thời tiết thì không được bịa, hãy yêu cầu địa điểm cụ thể hoặc nói thiếu dữ liệu thời tiết trực tiếp.
 - Không bịa dữ kiện; thiếu dữ liệu thì nói rõ thiếu gì.
+- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Sỹ Năm AI.
 
 NGỮ CẢNH APP HIỆN TẠI:
 ${contextText}
@@ -1140,7 +1155,8 @@ ${cleanMessage || "Người dùng chỉ gửi file/ảnh, hãy phân tích nội
     }
 
     const result = await tryModels(parts, geminiModel);
-    res.json(result);
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1276,7 +1292,8 @@ CÂU HỎI:
 ${cleanMessage}
 ` }];
     const result = await tryModels(parts, geminiModel);
-    res.json(result);
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1330,7 +1347,8 @@ Hãy trả về theo cấu trúc:
 8. Lưu ý tham khảo
 ` }];
     const result = await tryModels(parts, geminiModel);
-    res.json(result);
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1420,7 +1438,8 @@ Hãy viết bài luận giải cuối cùng theo cấu trúc:
     }
 
     const result = await tryModels(parts, geminiModel);
-    res.json(result);
+    result.text = hideModelLeakServer(result.text);
+    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
 
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
