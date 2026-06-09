@@ -572,7 +572,7 @@ async function geocodeWeatherLocation(loc) {
   return { name: display || loc.name, latitude: hit.latitude, longitude: hit.longitude };
 }
 
-async function directWeatherAnswer(message = '') {
+async function directWeatherAnswerLegacy(message = '') {
   if (!isWeatherQuestion(message)) return null;
   const normalized = normalizeWeatherLocation(message);
   try {
