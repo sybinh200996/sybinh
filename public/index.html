@@ -94,7 +94,7 @@
     <section id="page-chat" class="page"><div class="chat-page chat-pro-page">
         <div class="chat-pro-shell">
           <aside class="chat-pro-sidebar">
-            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>Sỹ Năm AI</h2><p>Trợ lý Multi-AI</p></div></div>
+            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>Sỹ Năm AI</h2><p>Trợ lý chuyên nghiệp</p></div></div>
             <button class="new-chat-btn" onclick="newProChat()">＋ Cuộc chat mới</button>
             <div class="mini-provider-list" id="miniProviderList"><p>Đang tải AI...</p></div>
             <details class="voice-settings voice-control-pro voice-settings-compact">
@@ -131,7 +131,7 @@
               <label class="council-toggle"><input id="chatCouncil" type="checkbox"> Hội Đồng AI</label>
             </div>
             <div id="voiceStatus" class="voice-status">🎙️ Sẵn sàng nhận giọng nói</div>
-            <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Nếu chưa đăng nhập bạn sẽ là Khách; đăng nhập rồi chat sẽ hiện tên thành viên. Bấm 🎤 để nói, hoặc gõ câu hỏi rồi gửi.</div></div>
+            <div id="chatLog" class="chat-log pro-chat-log"><div class="msg ai-welcome"><b>👋 Chào bạn!</b><br>Mình là Sỹ Năm AI Pro. Hỏi gì cũng được: app, code, thời tiết, ảnh/file, ý tưởng. Mình sẽ trả lời rõ ràng, đúng trọng tâm hơn.</div></div>
             <div class="chat-upload-bar pro-upload">
               <label class="upload-chip">📷 Tải ảnh<input id="chatImageInput" type="file" accept="image/*" multiple onchange="handleChatFiles(event)"></label>
               <label class="upload-chip">📸 Chụp ảnh<input id="chatCameraInput" type="file" accept="image/*" capture="environment" onchange="handleChatFiles(event)"></label>
@@ -141,7 +141,7 @@
             <div id="chatAttachments" class="chat-attachments"></div>
             <div class="chat-input pro-input mobile-voice-input">
               <button id="voiceBtn" class="voice-btn" type="button" onclick="toggleVoiceInput()" title="Bấm để nói">🎤</button>
-              <textarea id="chatText" rows="1" placeholder="Gõ hoặc bấm 🎤 để nói với AI..." oninput="autoResizeChatText()" onkeydown="handleChatTextKey(event)"></textarea>
+              <textarea id="chatText" rows="1" placeholder="Hỏi Sỹ Năm AI như ChatGPT/Gemini..." oninput="autoResizeChatText()" onkeydown="handleChatTextKey(event)"></textarea>
               <button id="voiceReplyQuickBtn" class="quick-voice-btn" type="button" onclick="toggleQuickSpeakReply()" title="Bật/tắt giọng đọc">🔊</button>
               <button id="stopSpeakQuickBtn" class="quick-stop-btn" type="button" onclick="stopSpeaking()" title="Dừng đọc ngay">⛔</button>
               <button id="chatSendBtn" onclick="sendChat()">Gửi ✈</button>
