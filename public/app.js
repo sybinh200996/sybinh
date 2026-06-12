@@ -78,7 +78,7 @@ function App() {
       {tab === 'palm' && <VisionTool mode="palm" title="Xem chỉ tay AI" icon="✋" />}
       {tab === 'face' && <VisionTool mode="face" title="Xem tướng AI" icon="🙂" />}
       {tab === 'love' && <LoveTool />}
-      {tab === 'horoscope' && <SimpleTool kind="horoscope" title="Tử vi / Luận giải" icon="🔮" preset="Luận tử vi hôm nay, công việc, tình cảm, tài chính theo thông tin sau:" />}
+      {tab === 'horoscope' && <HoroscopeTool />}
       {tab === 'astrology' && <AstrologyTool />}
       {tab === 'numerology' && <NumerologyTool />}
       {tab === 'multi' && <Chat providers={providers} initialPrompt={quickPrompt} clearInitialPrompt={() => setQuickPrompt('')} />}
@@ -218,6 +218,89 @@ function LoveTool() {
   return <section className="tool-grid"><div className="premium-panel"><h2>💞 Tình duyên</h2><input value={a} onChange={e=>setA(e.target.value)} placeholder="Ngày sinh người 1: 01/01/2000"/><input value={b} onChange={e=>setB(e.target.value)} placeholder="Ngày sinh người 2: 02/02/2004"/><button className="primary" onClick={run}>Luận giải</button></div><Result text={out}/></section>;
 }
 function SimpleTool({kind,title,icon,preset='',placeholder='Bạn muốn hỏi điều gì?'}){const [q,setQ]=useState('');const [out,setOut]=useState('Nhập nội dung rồi bấm luận giải.');async function run(){setOut('AI đang luận giải...');try{const d=await apiJSON('/api/multi-ai/chat',{message:`${preset||title} ${q}`, provider:'auto'});setOut(d.text||d.reply||'Không có kết quả')}catch(e){setOut('⚠️ '+e.message)}}return <section className="tool-grid"><div className="premium-panel"><h2>{icon} {title}</h2><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder={placeholder}/><button className="primary" onClick={run}>Luận giải</button></div><Result text={out}/></section>}
+
+
+function HoroscopeTool(){
+  const [name,setName]=useState('');
+  const [birthDate,setBirthDate]=useState('');
+  const [birthTime,setBirthTime]=useState('');
+  const [gender,setGender]=useState('Nam');
+  const [focus,setFocus]=useState('Tổng quan hôm nay, công việc, tình cảm, tài chính');
+  const [out,setOut]=useState('Nhập họ tên, ngày sinh, giờ sinh rồi bấm **AI luận giải** hoặc **Luận local**.');
+
+  const can=['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
+  const chi=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+  const zodiac=[['Ma Kết',1,19],['Bảo Bình',2,18],['Song Ngư',3,20],['Bạch Dương',4,19],['Kim Ngưu',5,20],['Song Tử',6,21],['Cự Giải',7,22],['Sư Tử',8,22],['Xử Nữ',9,22],['Thiên Bình',10,23],['Bọ Cạp',11,22],['Nhân Mã',12,21],['Ma Kết',12,31]];
+  function parseDate(v){
+    if(!v) return null;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v)){const [y,m,d]=v.split('-').map(Number);return {y,m,d};}
+    const parts=String(v).match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/);
+    if(parts) return {d:+parts[1],m:+parts[2],y:+parts[3]};
+    return null;
+  }
+  function getCanChiYear(y){return `${can[(y+6)%10]} ${chi[(y+8)%12]}`;}
+  function getElement(y){return ['Kim','Thủy','Hỏa','Thổ','Mộc'][(Math.floor(((y-4)%60)/2)%5+5)%5];}
+  function getZodiac(d,m){for(const [name,mm,last] of zodiac){if(m===mm && d<=last) return name;}return 'Ma Kết';}
+  function localText(){
+    const bd=parseDate(birthDate);
+    if(!bd) return '⚠️ Bạn cần nhập ngày sinh hợp lệ. Ví dụ: 2000-01-01 hoặc 01/01/2000.';
+    const age=new Date().getFullYear()-bd.y;
+    const canchi=getCanChiYear(bd.y);
+    const element=getElement(bd.y);
+    const cung=getZodiac(bd.d,bd.m);
+    const displayName=name.trim()||'Bạn';
+    return `### 📜 Tổng quan tử vi cho ${displayName}
+
+| Mục | Thông tin |
+|---|---|
+| Ngày sinh | ${String(bd.d).padStart(2,'0')}/${String(bd.m).padStart(2,'0')}/${bd.y} |
+| Giờ sinh | ${birthTime || 'Chưa nhập'} |
+| Giới tính | ${gender} |
+| Tuổi tham khảo | ${age} |
+| Can chi năm sinh | ${canchi} |
+| Ngũ hành tham khảo | ${element} |
+| Cung hoàng đạo | ${cung} |
+
+### 🔮 Luận giải hôm nay
+- **Tổng quan:** năng lượng hiện tại hợp với việc sắp xếp lại mục tiêu, giảm ôm đồm và chọn việc quan trọng nhất để làm trước.
+- **Công việc:** nên đi theo hướng chắc chắn, kiểm tra kỹ chi tiết, tránh quyết định vội vì cảm xúc nhất thời.
+- **Tài chính:** ưu tiên giữ ổn định, hạn chế chi tiêu bốc đồng; khoản nào chưa rõ thì nên chậm lại một nhịp.
+- **Tình cảm:** cần nói rõ cảm xúc, tránh im lặng quá lâu. Một lời hỏi han đúng lúc có thể làm dịu nhiều hiểu lầm.
+- **Sức khỏe tinh thần:** nên ngủ đủ hơn, bớt căng não vì nhiều kế hoạch cùng lúc.
+
+### ✨ Lời khuyên riêng theo trọng tâm
+${focus || 'Tập trung vào điều thực tế, dễ làm ngay trong hôm nay.'}
+
+> Kết quả mang tính tham khảo văn hóa/giải trí, không thay thế quyết định thực tế.`;
+  }
+  function localRun(){ setOut(localText()); }
+  async function run(){
+    const localReport=localText();
+    if(localReport.startsWith('⚠️')) return setOut(localReport);
+    setOut('AI đang luận giải tử vi chi tiết...');
+    const bd=parseDate(birthDate);
+    const computed=bd?{canChiYear:getCanChiYear(bd.y), element:getElement(bd.y), westernZodiac:getZodiac(bd.d,bd.m), focus}:{};
+    try{
+      const d=await apiJSON('/api/mystic-ai',{name:name||'Bạn',birthDate,birthTime,gender,profile:{name,birthDate,birthTime,gender,focus},computed,localReport});
+      setOut(d.text||d.result||d.answer||localReport);
+    }catch(e){
+      setOut(localReport + `\n\n---\n\n⚠️ AI server chưa trả lời nên app đã dùng bản luận local ổn định. Lỗi kỹ thuật: ${e.message}`);
+    }
+  }
+  return <section className="tool-grid horoscope-tool">
+    <div className="premium-panel">
+      <h2>🔮 Tử vi / Luận giải</h2>
+      <label>Họ tên<input value={name} onChange={e=>setName(e.target.value)} placeholder="Đặng Văn Năm" /></label>
+      <label>Ngày sinh<input value={birthDate} onChange={e=>setBirthDate(e.target.value)} type="date" /></label>
+      <label>Giờ sinh<input value={birthTime} onChange={e=>setBirthTime(e.target.value)} type="time" /></label>
+      <label>Giới tính<select value={gender} onChange={e=>setGender(e.target.value)}><option>Nam</option><option>Nữ</option><option>Khác</option></select></label>
+      <label>Trọng tâm luận giải<textarea value={focus} onChange={e=>setFocus(e.target.value)} placeholder="Ví dụ: tình cảm, công việc, tài chính hôm nay" /></label>
+      <button className="primary" onClick={run}>🤖 AI luận giải</button>
+      <button onClick={localRun}>🔎 Luận local</button>
+    </div>
+    <Result text={out}/>
+  </section>;
+}
 
 function AstrologyTool(){return <SimpleTool kind="astrology" title="Chiêm tinh" icon="🪐" preset="Luận chiêm tinh theo cung hoàng đạo, thời điểm hiện tại và câu hỏi sau:" placeholder="Ví dụ: Song Tử, tình duyên tháng này thế nào?"/>}
 function FengShuiTool(){return <SimpleTool kind="fengshui" title="Phong thủy" icon="☯️" preset="Phân tích phong thủy thực tế, màu hợp, hướng hợp, bố trí không gian theo thông tin sau:" placeholder="Ví dụ: sinh năm 1995, muốn xem hướng bàn làm việc và màu hợp."/>}

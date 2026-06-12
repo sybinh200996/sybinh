@@ -1,0 +1,5 @@
+NAM48 - Fix Tử vi / Luận giải
+- Khôi phục form tử vi giống các bản trước: họ tên, ngày sinh, giờ sinh, giới tính, trọng tâm luận giải.
+- Dùng endpoint /api/mystic-ai chuyên cho tử vi thay vì SimpleTool chat thường.
+- Thêm Luận local ổn định khi AI/server/API key lỗi.
+- Có tính Can Chi năm sinh, ngũ hành tham khảo, cung hoàng đạo và bảng tổng quan.
