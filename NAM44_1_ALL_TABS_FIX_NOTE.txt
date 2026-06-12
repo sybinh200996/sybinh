@@ -1,0 +1,4 @@
+NAM44.1 ALL TABS FIX
+- Fixed mobile bottom navigation: show all 7 tabs instead of first 5.
+- Bottom nav is now horizontally scrollable, avoiding hidden Horoscope and AI Keys tabs.
+- Kept top function tabs and banner layout intact.

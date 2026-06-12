@@ -2,11 +2,16 @@ const { useEffect, useMemo, useRef, useState } = React;
 
 const TABS = [
   { id: 'home', icon: '🏠', label: 'Trang chủ' },
-  { id: 'chat', icon: '🤖', label: 'AI Chat' },
+  { id: 'horoscope', icon: '🔮', label: 'Tử vi' },
   { id: 'palm', icon: '✋', label: 'Chỉ tay' },
   { id: 'face', icon: '🙂', label: 'Xem tướng' },
+  { id: 'astrology', icon: '🪐', label: 'Chiêm tinh' },
   { id: 'love', icon: '💞', label: 'Tình duyên' },
-  { id: 'horoscope', icon: '✨', label: 'Tử vi' },
+  { id: 'numerology', icon: '🔢', label: 'Thần số học' },
+  { id: 'chat', icon: '🤖', label: 'AI Chat' },
+  { id: 'multi', icon: '🧠', label: 'Multi AI' },
+  { id: 'fengshui', icon: '☯️', label: 'Phong thủy' },
+  { id: 'tarot', icon: '🃏', label: 'Bói bài' },
   { id: 'settings', icon: '⚙️', label: 'AI Keys' }
 ];
 
@@ -71,10 +76,15 @@ function App() {
       {tab === 'palm' && <VisionTool mode="palm" title="Xem chỉ tay AI" icon="✋" />}
       {tab === 'face' && <VisionTool mode="face" title="Xem tướng AI" icon="🙂" />}
       {tab === 'love' && <LoveTool />}
-      {tab === 'horoscope' && <SimpleTool kind="horoscope" title="Tử vi / Luận giải" icon="✨" />}
+      {tab === 'horoscope' && <SimpleTool kind="horoscope" title="Tử vi / Luận giải" icon="🔮" preset="Luận tử vi hôm nay, công việc, tình cảm, tài chính theo thông tin sau:" />}
+      {tab === 'astrology' && <AstrologyTool />}
+      {tab === 'numerology' && <NumerologyTool />}
+      {tab === 'multi' && <Chat providers={providers} />}
+      {tab === 'fengshui' && <FengShuiTool />}
+      {tab === 'tarot' && <TarotTool />}
       {tab === 'settings' && <Settings providers={providers} reload={loadProviders} />}
     </section>
-    <nav className="bottom-nav">{TABS.slice(0,5).map(t => <button key={t.id} onClick={() => setTab(t.id)} className={tab===t.id?'active':''}><span>{t.icon}</span><small>{t.label}</small></button>)}</nav>
+    <nav className="bottom-nav">{TABS.map(t => <button key={t.id} onClick={() => setTab(t.id)} className={tab===t.id?'active':''}><span>{t.icon}</span><small>{t.label}</small></button>)}</nav>
   </main>;
 }
 
@@ -84,9 +94,10 @@ function Hero({ setTab, health, providers }) {
     <div className="hero-img hero-left"><img src="assets/hero-left.png" /></div>
     <div className="hero-content">
       <div className="status-row"><span className="dot"></span>{health}<span className="chip">{configured || 0} AI đang bật</span></div>
-      <h1>SyNam AI <b>Ultra Premium</b></h1>
-      <p>Giao diện React mobile-first, chat box hiện đại, AI Router thông minh qua Claude/Anthropic, Gemini, Groq, OpenRouter, ChatGPT, Grok...</p>
-      <div className="hero-actions"><button onClick={() => setTab('chat')}>Mở AI Chat 🚀</button><button className="ghost" onClick={() => setTab('settings')}>Cài API Key</button></div>
+      <h1>Sỹ Năm <b>Mystic</b></h1>
+      <p>AI • Tử vi • Chỉ tay • Xem tướng • Chiêm tinh</p>
+      <div className="hero-search"><span>⌕</span><input readOnly value="Hỏi về tử vi, chỉ tay, tướng số, chiêm tinh..."/><button onClick={() => setTab('chat')}>✦ AI phân tích</button></div>
+      <div className="hero-actions quick"><button onClick={() => setTab('horoscope')}>🔮 Tử vi hôm nay</button><button onClick={() => setTab('astrology')}>🪐 Cung hoàng đạo</button><button onClick={() => setTab('palm')}>✋ Xem chỉ tay</button><button onClick={() => setTab('face')}>🙂 Xem tướng</button><button onClick={() => setTab('tarot')}>🃏 Đổi bài</button></div>
     </div>
     <div className="hero-img hero-right"><img src="assets/hero-right.jpg" /></div>
   </header>;
@@ -98,15 +109,20 @@ function TabRail({ tab, setTab }) {
 
 function Home({ setTab, providers }) {
   const cards = [
-    ['🤖','AI Chat Pro','Trả lời kiểu ChatGPT/Claude/Gemini, có nhớ ngữ cảnh, copy, thử lại.', 'chat'],
+    ['🔮','Tử vi','Luận giải hôm nay, công việc, tình cảm, tài chính.', 'horoscope'],
     ['✋','Xem chỉ tay','Upload ảnh bàn tay để AI phân tích rõ hơn.', 'palm'],
     ['🙂','Xem tướng','Upload ảnh khuôn mặt, nhận luận giải nhẹ nhàng.', 'face'],
+    ['🪐','Chiêm tinh','Cung hoàng đạo, vận trình tháng, tình cảm.', 'astrology'],
     ['💞','Tình duyên','Tính tuổi, ngũ hành, thần số học bằng code trước khi AI luận.', 'love'],
-    ['✨','Tử vi','Luận giải cuộc sống, công việc, tình cảm.', 'horoscope'],
-    ['⚙️','Multi AI Keys','Nhập key để bật Claude/Anthropic, Gemini, Groq...', 'settings']
+    ['🔢','Thần số học','Tính số chủ đạo, linh hồn, biểu đạt và luận AI.', 'numerology'],
+    ['🤖','AI Chat Pro','Trả lời kiểu ChatGPT/Claude/Gemini, có nhớ ngữ cảnh, copy, thử lại.', 'chat'],
+    ['🧠','Multi AI','Tự chọn Claude, Gemini, Groq, OpenRouter, ChatGPT, Grok.', 'multi'],
+    ['☯️','Phong thủy','Màu hợp, hướng hợp, bố trí phòng/bàn làm việc.', 'fengshui'],
+    ['🃏','Bói bài / Đổi bài','Bốc bài tham khảo và đổi bài nhanh.', 'tarot'],
+    ['⚙️','AI Keys','Nhập key để bật Claude/Anthropic, Gemini, Groq...', 'settings']
   ];
   return <div className="home-grid">
-    <section className="premium-panel wide"><h2>📱 Màn hình chính mobile</h2><p>Banner và tab chức năng được ưu tiên hiển thị gọn trên điện thoại. Ảnh hai bên giữ rõ, có lớp mờ viền để hòa cùng banner.</p><div className="provider-pills">{providers.slice(0,8).map(p => <span className={p.configured?'on':''} key={p.id}>{p.configured?'●':'○'} {p.label}</span>)}</div></section>
+    <section className="premium-panel wide"><h2>📱 Màn hình chính mobile</h2><p>Đã khôi phục đủ tab: Chiêm tinh, Thần số học, Phong thủy, Bói bài/Đổi bài. Banner chuyển về phong cách NAM22: ảnh rõ, viền mờ hòa nền, tab chức năng cuộn ngang chuyên nghiệp.</p><div className="provider-pills">{providers.slice(0,8).map(p => <span className={p.configured?'on':''} key={p.id}>{p.configured?'●':'○'} {p.label}</span>)}</div></section>
     {cards.map(c => <button key={c[3]} className="feature-card" onClick={() => setTab(c[3])}><b>{c[0]}</b><h3>{c[1]}</h3><p>{c[2]}</p></button>)}
   </div>;
 }
@@ -178,7 +194,36 @@ function LoveTool() {
   async function run(){ setOut('Đang tính bằng code và AI luận giải...'); try{const d=await apiJSON('/api/love-ai',{ persons:[{name:'Người 1',birthDate:a},{name:'Người 2',birthDate:b}]}); setOut(d.text||d.reply||'Không có kết quả');}catch(e){setOut('⚠️ '+e.message)} }
   return <section className="tool-grid"><div className="premium-panel"><h2>💞 Tình duyên</h2><input value={a} onChange={e=>setA(e.target.value)} placeholder="Ngày sinh người 1: 01/01/2000"/><input value={b} onChange={e=>setB(e.target.value)} placeholder="Ngày sinh người 2: 02/02/2004"/><button className="primary" onClick={run}>Luận giải</button></div><Result text={out}/></section>;
 }
-function SimpleTool({kind,title,icon}){const [q,setQ]=useState('');const [out,setOut]=useState('Nhập nội dung rồi bấm luận giải.');async function run(){setOut('AI đang luận giải...');try{const d=await apiJSON('/api/multi-ai/chat',{message:`${title}: ${q}`, provider:'auto'});setOut(d.text||d.reply||'Không có kết quả')}catch(e){setOut('⚠️ '+e.message)}}return <section className="tool-grid"><div className="premium-panel"><h2>{icon} {title}</h2><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Bạn muốn hỏi điều gì?"/><button className="primary" onClick={run}>Luận giải</button></div><Result text={out}/></section>}
+function SimpleTool({kind,title,icon,preset='',placeholder='Bạn muốn hỏi điều gì?'}){const [q,setQ]=useState('');const [out,setOut]=useState('Nhập nội dung rồi bấm luận giải.');async function run(){setOut('AI đang luận giải...');try{const d=await apiJSON('/api/multi-ai/chat',{message:`${preset||title} ${q}`, provider:'auto'});setOut(d.text||d.reply||'Không có kết quả')}catch(e){setOut('⚠️ '+e.message)}}return <section className="tool-grid"><div className="premium-panel"><h2>{icon} {title}</h2><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder={placeholder}/><button className="primary" onClick={run}>Luận giải</button></div><Result text={out}/></section>}
+
+function AstrologyTool(){return <SimpleTool kind="astrology" title="Chiêm tinh" icon="🪐" preset="Luận chiêm tinh theo cung hoàng đạo, thời điểm hiện tại và câu hỏi sau:" placeholder="Ví dụ: Song Tử, tình duyên tháng này thế nào?"/>}
+function FengShuiTool(){return <SimpleTool kind="fengshui" title="Phong thủy" icon="☯️" preset="Phân tích phong thủy thực tế, màu hợp, hướng hợp, bố trí không gian theo thông tin sau:" placeholder="Ví dụ: sinh năm 1995, muốn xem hướng bàn làm việc và màu hợp."/>}
+function TarotTool(){
+  const cards=['The Fool - Khởi đầu mới','The Magician - Chủ động tạo cơ hội','The High Priestess - Lắng nghe trực giác','The Lovers - Lựa chọn trong tình cảm','The Chariot - Tiến lên quyết đoán','Strength - Bình tĩnh và mềm mỏng','The Hermit - Cần thời gian suy ngẫm','Wheel of Fortune - Vận trình đang xoay chuyển','The Star - Hy vọng và chữa lành','The Sun - Rõ ràng, vui vẻ, tích cực'];
+  const [q,setQ]=useState(''); const [picked,setPicked]=useState([]); const [out,setOut]=useState('Nhập câu hỏi rồi bấm bốc bài. Có thể bấm Đổi bài để bốc lại.');
+  async function draw(){
+    const deck=[...cards].sort(()=>Math.random()-.5).slice(0,3); setPicked(deck); setOut('AI đang luận 3 lá bài...');
+    try{
+      const d=await apiJSON('/api/multi-ai/chat',{provider:'auto',message:`Bói bài tarot tham khảo, không khẳng định tuyệt đối. Câu hỏi: ${q}. Ba lá: ${deck.join(', ')}. Hãy luận rõ: hiện tại, lời khuyên, kết quả gần.`});
+      setOut(d.text||d.reply||deck.join('\n'));
+    }catch(e){
+      setOut(`### 🃏 Ba lá bài\n- ${deck.join('\n- ')}\n\nLời khuyên: xem như tham khảo để bình tĩnh lựa chọn, không quyết định thay thực tế.`);
+    }
+  }
+  return <section className="tool-grid"><div className="premium-panel"><h2>🃏 Bói bài / Đổi bài</h2><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Bạn muốn hỏi điều gì?"/><button className="primary" onClick={draw}>{picked.length?'🔄 Đổi bài':'🃏 Bốc bài'}</button><div className="tarot-cards">{picked.map(c=><span key={c}>{c}</span>)}</div></div><Result text={out}/></section>
+}
+function NumerologyTool(){
+  const [name,setName]=useState(''); const [birth,setBirth]=useState(''); const [out,setOut]=useState('Nhập họ tên và ngày sinh để tính thần số học.');
+  function sumDigits(v){let n=String(v).replace(/\D/g,'').split('').reduce((a,b)=>a+Number(b),0); while(n>9 && ![11,22,33].includes(n)) n=String(n).split('').reduce((a,b)=>a+Number(b),0); return n||0}
+  async function run(){const life=sumDigits(birth); setOut('Đang tính local và AI luận giải...'); try{const d=await apiJSON('/api/multi-ai/chat',{provider:'auto',message:`Thần số học cho tên ${name||'chưa nhập'}, ngày sinh ${birth||'chưa nhập'}, số chủ đạo local là ${life}. Luận rõ tính cách, tình duyên, công việc, lời khuyên.`}); setOut(d.text||d.reply||`Số chủ đạo: ${life}`)}catch(e){setOut(`### 🔢 Kết quả local
+- Họ tên: ${name||'Chưa nhập'}
+- Ngày sinh: ${birth||'Chưa nhập'}
+- Số chủ đạo: ${life||'Chưa đủ dữ liệu'}
+
+Kết quả chỉ mang tính tham khảo.`)}}
+  return <section className="tool-grid"><div className="premium-panel"><h2>🔢 Thần số học AI</h2><input value={name} onChange={e=>setName(e.target.value)} placeholder="Họ và tên"/><input value={birth} onChange={e=>setBirth(e.target.value)} placeholder="Ngày sinh: 01/01/2000"/><button className="primary" onClick={run}>🤖 Luận thần số học</button></div><Result text={out}/></section>
+}
+
 function Result({text}){return <article className="premium-panel result"><h2>📌 Kết quả</h2><div dangerouslySetInnerHTML={{__html: markdownLite(text)}} /></article>}
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
