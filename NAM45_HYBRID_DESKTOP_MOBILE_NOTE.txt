@@ -1,0 +1,8 @@
+NAM45 Hybrid Desktop/Mobile
+
+- Desktop: giữ giao diện từ file thứ nhất (NAM42) để không mất layout desktop.
+- Mobile: dùng giao diện từ file thứ hai (NAM44 React Ultra Premium) qua public/mobile.html.
+- Khi mở trên điện thoại, app tự chuyển sang mobile.html.
+- Muốn ép xem desktop trên điện thoại: mở /index.html?desktop=1.
+- Server dùng bản NAM44 để giữ hỗ trợ Claude/Anthropic API và các route AI cũ.
+- Giữ đủ tab: Tử vi, Chỉ tay, Xem tướng, Chiêm tinh, Tình duyên, Thần số học, AI Chat, Multi AI, Phong thủy, Bói bài, AI Keys.
