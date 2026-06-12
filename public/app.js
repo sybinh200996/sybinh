@@ -104,70 +104,21 @@ function hideModelLeak(text=''){
 
 function markdownish(text=''){
   text=String(text||'').replace(/\\n/g,'\n').replace(/\r/g,'');
-  const escape=val=>escapeHtml(String(val??''));
-  const inline=val=>escape(val)
-    .replace(/`([^`]+?)`/g,'<code>$1</code>')
-    .replace(/\*\*([^*]+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/(^|\s)_([^_]+?)_(?=\s|$|[.,!?])/g,'$1<em>$2</em>');
-  const closeLists=()=>{let x=''; if(inUl){x+='</ul>';inUl=false} if(inOl){x+='</ol>';inOl=false} return x};
-  let out='', inUl=false, inOl=false, inCode=false, codeLang='', code=[];
-  const flushCode=()=>{const raw=code.join('\n'); out+=`<div class="code-block"><div class="code-head"><span>${escape(codeLang||'code')}</span><button type="button" onclick="copyTextById('${storeNam43Copy(raw)}')">Copy</button></div><pre><code>${escape(raw)}</code></pre></div>`; code=[]; codeLang='';};
-  text.split('\n').forEach(raw=>{
-    const line=String(raw||'');
-    const trim=line.trim();
-    const fence=trim.match(/^```\s*([\w.+-]*)\s*$/);
-    if(fence){
-      if(inCode){flushCode(); inCode=false;} else {out+=closeLists(); inCode=true; codeLang=fence[1]||'code'; code=[];}
-      return;
-    }
-    if(inCode){code.push(line); return;}
-    if(!trim){out+=closeLists(); return;}
-    const h=trim.match(/^(#{1,6})\s+(.+)$/);
-    if(h){out+=closeLists(); const level=Math.min(4,h[1].length); out+=`<h${level}>${inline(h[2])}</h${level}>`; return;}
-    const ol=trim.match(/^(\d+)\.\s+(.+)$/);
-    if(ol){ if(inUl){out+='</ul>';inUl=false} if(!inOl){out+='<ol>';inOl=true} out+=`<li>${inline(ol[2])}</li>`; return;}
-    const ul=trim.match(/^[-*•]\s+(.+)$/);
-    if(ul){ if(inOl){out+='</ol>';inOl=false} if(!inUl){out+='<ul>';inUl=true} out+=`<li>${inline(ul[1])}</li>`; return;}
-    out+=closeLists();
-    out+=`<p>${inline(trim)}</p>`;
+  const inline=s=>escapeHtml(String(s||''))
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/_(.+?)_/g,'<em>$1</em>');
+  let inList=false, out='';
+  String(text||'').split('\n').forEach(raw=>{
+    const line=raw.trim();
+    if(!line){ if(inList){out+='</ul>';inList=false} return; }
+    if(line.startsWith('### ')){ if(inList){out+='</ul>';inList=false} out+=`<h3>${inline(line.slice(4))}</h3>`; return; }
+    if(line.startsWith('## ')){ if(inList){out+='</ul>';inList=false} out+=`<h2>${inline(line.slice(3))}</h2>`; return; }
+    if(line.startsWith('- ')){ if(!inList){out+='<ul>';inList=true} out+=`<li>${inline(line.slice(2))}</li>`; return; }
+    if(inList){out+='</ul>';inList=false}
+    out+=`<p>${inline(line)}</p>`;
   });
-  if(inCode){flushCode(); inCode=false;}
-  out+=closeLists();
-  return out || '<p></p>';
-}
-
-// ===== NAM43 CHATGPT STYLE UX PATCH =====
-window.__nam43CopyStore = window.__nam43CopyStore || {};
-let __nam43Seq = 0;
-let __nam43LastPrompt = '';
-function storeNam43Copy(text){
-  const id='nam43_'+Date.now()+'_'+(++__nam43Seq);
-  window.__nam43CopyStore[id]=String(text||'');
-  return id;
-}
-async function copyTextById(id){
-  const text=window.__nam43CopyStore?.[id]||'';
-  if(!text){toast('Không có nội dung để copy');return;}
-  try{await navigator.clipboard.writeText(text);toast('Đã copy nội dung ✅')}
-  catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Đã copy nội dung ✅')}
-}
-function nam43Time(){return new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}
-function renderNam43Msg(role,text='',opts={}){
-  const raw=String(text||'');
-  const copyId=storeNam43Copy(raw);
-  const isMe=role==='user';
-  const avatar=isMe?'👤':'🤖';
-  const title=isMe?'Bạn':'Sỹ Năm AI';
-  const body=isMe?escapeHtml(raw):markdownish(raw);
-  const files=opts.files||'';
-  const regen=!isMe?`<button type="button" onclick="regenerateLastChat()">↻ Thử lại</button>`:'';
-  return `<div class="msg ${isMe?'me':'ai-msg'} nam43-msg"><div class="msg-avatar">${avatar}</div><div class="msg-main"><div class="msg-meta"><span>${title}</span><time>${nam43Time()}</time></div><div class="msg-body">${body}${files}</div><div class="msg-actions"><button type="button" onclick="copyTextById('${copyId}')">📋 Copy</button>${regen}</div></div></div>`;
-}
-function regenerateLastChat(){
-  const q=__nam43LastPrompt || (loadChatMemory().filter(x=>x.role==='user').slice(-1)[0]?.text||'');
-  if(!q){toast('Chưa có câu hỏi để thử lại');return;}
-  setChatTextValue(q);
-  sendChat(true);
+  if(inList) out+='</ul>';
+  return out;
 }
 function saveHistory(type,content){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');list.unshift({type,content,at:new Date().toLocaleString('vi-VN')});localStorage.setItem('synam_history',JSON.stringify(list.slice(0,50)));renderHistory();}
 function renderHistory(){const list=JSON.parse(localStorage.getItem('synam_history')||'[]');if($('statCount'))$('statCount').textContent=list.length;if($('historyMini'))$('historyMini').innerHTML=(list.slice(0,3).map(x=>`<div class="history-mini-item"><span>${x.type}</span><small>Chi tiết</small></div>`).join('')||'<p>Chưa có lịch sử.</p>');if($('historyList'))$('historyList').innerHTML=(list.map(x=>`<div class="history-item"><div><b>${x.type}</b><br><small>${x.at}</small></div><button onclick="showHistory('${encodeURIComponent(x.content)}')">Chi tiết</button></div>`).join('')||'<p>Chưa có lịch sử phân tích.</p>')}
@@ -359,6 +310,24 @@ function startVoiceInput(){
 function stopVoiceInput(){try{voiceRecognizer?.stop?.()}catch{} voiceListening=false;setVoiceStatus('🎙️ Đã dừng nghe',false)}
 function toggleVoiceInput(){voiceListening?stopVoiceInput():startVoiceInput()}
 function scrollChatBottom(){const el=$('chatLog'); if(el) el.scrollTop=el.scrollHeight}
+let lastChatRequest=null;
+let lastAssistantText='';
+function renderAIMessage(text, extraClass='ai-msg'){
+  lastAssistantText=String(text||'');
+  return `<div class="msg ${extraClass}"><span class="msg-role">🤖 Sỹ Năm AI</span>${markdownish(text)}<div class="msg-actions"><button type="button" onclick="copyAssistantText()">📋 Copy</button><button type="button" onclick="regenerateLastChat()">↻ Thử lại</button></div></div>`;
+}
+async function copyAssistantText(){
+  const text=lastAssistantText||lastResult||'';
+  if(!text){toast('Chưa có câu trả lời để copy');return}
+  try{await navigator.clipboard.writeText(text);toast('Đã copy câu trả lời')}catch(_e){toast('Máy không cho copy tự động, hãy bôi đen để copy nhé')}
+}
+function regenerateLastChat(){
+  if(!lastChatRequest){toast('Chưa có câu hỏi để thử lại');return}
+  setChatTextValue(lastChatRequest.message||'');
+  chatAttachments=[...(lastChatRequest.attachments||[])];
+  renderChatAttachments();
+  sendChat();
+}
 function newProChat(){if(!confirm('Tạo cuộc chat mới? Bộ nhớ hội thoại hiện tại sẽ được làm mới, lịch sử cũ vẫn nằm trong mục Lịch sử.'))return; clearChatMemory(); const log=$('chatLog'); if(log) log.innerHTML='<div class="msg ai-welcome"><b>✨ Cuộc chat mới</b><br>Năm muốn hỏi gì tiếp? Bấm 🎤 để nói hoặc gõ nội dung bên dưới.</div>'; lastResult='';}
 
 function previewImage(e,id){const f=e.target.files[0];if(!f)return;const img=$(id);img.src=URL.createObjectURL(f);img.style.display='block'}
@@ -597,13 +566,13 @@ async function sendChat(){
   const attachments=[...chatAttachments];
   if(!q && !attachments.length){toast('Nhập câu hỏi hoặc tải ảnh/file lên đã nhé');return}
   const history=getChatHistoryForAI(30);
+  lastChatRequest={message:q,attachments:[...attachments]};
   rememberChatTurn('user', q||'Phân tích file/ảnh đã tải lên');
   input.value='';
   autoResizeChatText();
   const attachLabel=attachments.length?`<div class="msg-files">${attachments.map(f=>`${f.type.startsWith('image/')?'🖼':'📄'} ${escapeHtml(f.name)}`).join('<br>')}</div>`:'';
-  __nam43LastPrompt=q||'Phân tích file/ảnh đã tải lên';
-  $('chatLog').insertAdjacentHTML('beforeend',renderNam43Msg('user',q||'Phân tích file/ảnh đã tải lên',{files:attachLabel}));
-  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing nam43-typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
+  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg me">${getChatUserRoleHtml()}${escapeHtml(q||'Phân tích file/ảnh đã tải lên')}${attachLabel}</div>`);
+  $('chatLog').insertAdjacentHTML('beforeend',`<div class="msg typing" id="typing"><span class="typing-dots"><i></i><i></i><i></i></span> AI đang phân tích${attachments.length?' ảnh/file':''}...</div>`);scrollChatBottom();
   chatAttachments=[];renderChatAttachments();
   try{
     let data;
@@ -629,7 +598,7 @@ async function sendChat(){
       }
     }
     const text=hideModelLeak(data.text||data.answer||data.result||'AI đã phản hồi nhưng server không trả text.');
-    $('typing').outerHTML=renderNam43Msg('assistant',text);
+    $('typing').outerHTML=renderAIMessage(text);
     lastResult=text;rememberChatTurn('assistant',text);saveHistory(data.label||'Sỹ Năm AI Chat',text);checkGeminiStatus();scrollChatBottom();speakText(text); 
   }catch(e){
     const err=parseError(e);

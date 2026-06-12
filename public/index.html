@@ -45,6 +45,7 @@
           <button onclick="routeTo('astrology')">♈ Cung hoàng đạo</button>
           <button onclick="routeTo('palm')">🖐 Xem chỉ tay</button>
           <button onclick="routeTo('face')">♙ Xem tướng</button>
+          <button onclick="routeTo('chat'); setTimeout(()=>setChatMode('edit-image'),80)">🎨 Chỉnh sửa ảnh AI</button>
         </div>
       </div>
     </header>
@@ -93,7 +94,7 @@
     <section id="page-chat" class="page"><div class="chat-page chat-pro-page">
         <div class="chat-pro-shell">
           <aside class="chat-pro-sidebar">
-            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>Sỹ Năm AI</h2><p>Trợ lý chuyên nghiệp</p></div></div>
+            <div class="chat-brand"><span class="brand-orb">✦</span><div><h2>Sỹ Năm AI</h2><p>Trợ lý mobile premium</p></div></div>
             <button class="new-chat-btn" onclick="newProChat()">＋ Cuộc chat mới</button>
             <div class="mini-provider-list" id="miniProviderList"><p>Đang tải AI...</p></div>
             <details class="voice-settings voice-control-pro voice-settings-compact">
@@ -110,7 +111,7 @@
           </aside>
           <div class="chat-pro-main">
             <div class="chat-pro-head">
-              <div><h2>🤖 AI Chat Pro</h2><p>Nhập bằng bàn phím hoặc giọng nói. AI trả lời text + đọc thành tiếng.</p></div>
+              <div><h2>🤖 AI Chat Pro</h2><p>Chat mobile-first: hiểu ngữ cảnh, trả lời rõ mục, copy/thử lại nhanh.</p></div>
               <div class="chat-head-actions"><button onclick="routeTo('ai')">⚙️ AI Keys</button><button onclick="speakLastResult()">🔊 Đọc lại</button></div>
             </div>
             <div class="chat-mode-tabs pro-tabs">
