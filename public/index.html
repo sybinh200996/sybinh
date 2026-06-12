@@ -9,18 +9,6 @@
   <link rel="icon" href="assets/icon.svg" />
   <link rel="stylesheet" href="style.css" />
   <title>Sỹ Năm Mystic</title>
-
-  <script>
-    // NAM45 Hybrid: Desktop dùng giao diện file 1, Mobile dùng giao diện file 2.
-    (function(){
-      var params = new URLSearchParams(location.search);
-      var forceDesktop = params.get('desktop') === '1';
-      var isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-      if (isMobile && !forceDesktop && !location.pathname.endsWith('/mobile.html')) {
-        location.replace('mobile.html');
-      }
-    })();
-  </script>
 </head>
 <body>
   <div id="stars"></div>
@@ -47,20 +35,25 @@
       <div class="hero-center">
         <h1>Sỹ Năm Mystic</h1>
         <p>AI TỬ VI - CHỈ TAY - XEM TƯỚNG - CHIÊM TINH</p>
-        <div class="search-shell">
-          <span>⌕</span>
-          <input id="globalAsk" placeholder="Hỏi về tử vi, chỉ tay, tướng số, chiêm tinh..." onkeydown="if(event.key==='Enter') quickAsk()" />
-          <button onclick="quickAsk()">✦ AI PHÂN TÍCH</button>
-        </div>
-        <div class="quick-row">
-          <button onclick="routeTo('tuvi')">⚙ Tử vi hôm nay</button>
-          <button onclick="routeTo('astrology')">♈ Cung hoàng đạo</button>
+        <div class="quick-row banner-actions">
+          <button onclick="routeTo('tuvi')">🔮 Tử vi hôm nay</button>
+          <button onclick="routeTo('astrology')">🪐 Cung hoàng đạo</button>
           <button onclick="routeTo('palm')">🖐 Xem chỉ tay</button>
-          <button onclick="routeTo('face')">♙ Xem tướng</button>
-          <button onclick="routeTo('chat'); setTimeout(()=>setChatMode('edit-image'),80)">🎨 Chỉnh sửa ảnh AI</button>
+          <button onclick="routeTo('face')">🙂 Xem tướng</button>
         </div>
       </div>
     </header>
+
+    <section class="home-ask-panel">
+      <div class="home-ask-card">
+        <div class="home-ask-title">💬 Hỏi AI ngay bây giờ</div>
+        <p>Sỹ Năm AI sẵn sàng trả lời như ChatGPT/Gemini: hỏi thời tiết, code app, ý tưởng, tử vi hoặc phân tích ảnh/file.</p>
+        <div class="home-ask-box">
+          <textarea id="homeAsk" rows="1" placeholder="Hỏi bất cứ điều gì..." oninput="autoResizeHomeAsk()" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();quickAsk()}"></textarea>
+          <button onclick="quickAsk()">Gửi ✈</button>
+        </div>
+      </div>
+    </section>
 
     <section class="feature-tabs-wrap">
       <button class="slide-btn">‹</button>
