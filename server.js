@@ -236,11 +236,10 @@ function maskKey(key = "") {
 function pickProviderKey(provider, user = null) {
   const info = AI_PROVIDERS[provider];
   if (!info) return "";
-  const userKey = user?.aiKeys?.[provider] || "";
-  const envKey = process.env[info.keyEnv] || "";
-  // NAM43: Claude hay dùng tên ANTHROPIC_API_KEY, hỗ trợ song song với CLAUDE_API_KEY.
-  const anthropicAlias = provider === "claude" ? (process.env.ANTHROPIC_API_KEY || "") : "";
-  return userKey || envKey || anthropicAlias || "";
+  if (provider === "claude") {
+    return user?.aiKeys?.[provider] || process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY || "";
+  }
+  return user?.aiKeys?.[provider] || process.env[info.keyEnv] || "";
 }
 
 function pickProviderModel(provider, requestedModel = "", user = null) {
@@ -723,7 +722,7 @@ async function tryModels(parts, preferredModel = "auto") {
 }
 
 app.get("/api", (req, res) => {
-  res.json({ ok: true, app: "Sỹ Năm Mystic Phoenix", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
+  res.json({ ok: true, app: "SyNam NAM44 React Ultra Premium", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
 });
 
 app.post("/api/auth/register", async (req, res) => {
@@ -985,7 +984,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "Sỹ Năm Mystic AI NAM30 Memory Pro"
+    app: "SyNam NAM44 React Ultra Premium"
   });
 });
 
@@ -1140,64 +1139,18 @@ DỮ LIỆU:
   }
 });
 
-
-async function fallbackTextChatAI({ cleanMessage, files, context, history, user }) {
-  const historyText = chatHistoryToText(history, 24);
-  const fileText = files.map((file, index) => {
-    const preview = file.textPreview ? String(file.textPreview).slice(0, 12000) : "";
-    return `File ${index + 1}: ${file.name || "không tên"} | MIME: ${file.type || "không rõ"} | ${file.size || 0} bytes\n${preview}`;
-  }).join("\n\n");
-  const prompt = `Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic Ultimate Pro. Hãy trả lời như trợ lý AI chuyên nghiệp: đúng trọng tâm, có cấu trúc, không vòng vo, không bịa và không tiết lộ model/provider/API.
-
-THỜI GIAN VIỆT NAM:
-- Hiện tại: ${currentVietnamTime()}
-- Hôm nay: ${formatVietnamDate(0)}
-- Ngày mai: ${formatVietnamDate(1)}
-
-QUY TẮC:
-${nam30MemoryRules()}
-- Bám sát lịch sử hội thoại nếu câu hỏi mới liên quan câu trước.
-- Nếu có file nhưng chỉ đọc được tên/kích thước, nói rõ chưa đọc được nội dung; không bịa.
-- Nếu file có textPreview, phân tích dựa trên phần textPreview đó.
-- Trả lời tiếng Việt, Markdown rõ ràng, thực tế.
-
-NGỮ CẢNH APP:
-${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
-
-LỊCH SỬ CHAT:
-${historyText || "Chưa có"}
-
-FILE/ẢNH ĐÍNH KÈM DẠNG TEXT ĐỌC ĐƯỢC:
-${fileText || "Không có textPreview"}
-
-CÂU HỎI:
-${cleanMessage || "Người dùng chỉ gửi file/ảnh, hãy phân tích phần dữ liệu đọc được và nói rõ giới hạn nếu không đủ."}`;
-  const result = await tryMultiAI({
-    prompt,
-    parts: [{ text: prompt }],
-    preferredProvider: process.env.DEFAULT_AI_PROVIDER || "auto",
-    requestedModel: "",
-    user,
-    council: false
-  });
-  result.text = hideModelLeakServer(result.text);
-  return { ok: true, label: "Sỹ Năm AI", text: result.text, provider: "synam" };
-}
-
 app.post("/api/chat-ai", async (req, res) => {
   try {
+    if (!ai) {
+      return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Chatbot AI cần server Gemini." });
+    }
+
     const { message, attachments, context, history, geminiModel } = req.body || {};
-    const user = await currentUserFromRequest(req).catch(() => null);
     const cleanMessage = String(message || "").trim();
     const files = Array.isArray(attachments) ? attachments.slice(0, 6) : [];
 
     if (!cleanMessage && files.length === 0) {
       return res.status(400).json({ error: "Bạn cần nhập câu hỏi hoặc tải ảnh/file lên trước." });
-    }
-
-    if (!ai) {
-      const noGeminiText = await fallbackTextChatAI({ cleanMessage, files, context, history, user });
-      return res.json(noGeminiText);
     }
 
     const weatherAnswer = files.length === 0 ? await directWeatherAnswer(cleanMessage) : null;
