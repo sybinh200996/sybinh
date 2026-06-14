@@ -2,14 +2,14 @@ const { useEffect, useMemo, useRef, useState } = React;
 
 const TABS = [
   { id: 'home', icon: '🏠', label: 'Trang chủ' },
-  { id: 'chat', icon: '💬', label: 'Đặng Năm AI' },
+  { id: 'chat', icon: '💬', label: 'SyNam AI' },
   { id: 'horoscope', icon: '🔮', label: 'Tử vi' },
   { id: 'love', icon: '💞', label: 'Tình duyên' },
   { id: 'settings', icon: '⚙️', label: 'Cài đặt' }
 ];
 
 const DEFAULT_MESSAGES = [
-  { role: 'assistant', text: 'Chào anh 👋 Mình là Đặng Năm AI trong SyNam Mystic. Anh có thể hỏi như ChatGPT/Gemini về Mystic, tử vi, thần số học, chiêm tinh, tình duyên, phong thủy, xem tay/xem tướng, thời tiết hoặc lỗi app. Mình sẽ trả lời rõ ràng, có cấu trúc, giữ ngữ cảnh và không nói lan man.' }
+  { role: 'assistant', text: 'Chào anh 👋 Mình là SyNam AI trong SyNam Mystic. Anh có thể hỏi như ChatGPT/Gemini: trả lời rõ ý, có cấu trúc, giữ ngữ cảnh, không nói lan man. Em cũng hỗ trợ tử vi, thần số học, chiêm tinh, tình duyên, phong thủy, xem tay/xem tướng và thời tiết.' }
 ];
 
 function authHeaders() {
@@ -88,8 +88,8 @@ function Hero({ setTab, health, providers }) {
     <div className="hero-content">
       <div className="status-row"><span className="dot"></span>{health}<span className="chip">{configured || 0} AI</span></div>
       <p className="eyebrow">SyNam Mystic</p>
-      <h1>Đặng Năm AI</h1>
-      <p className="hero-sub">Luận giải Mystic • Thời tiết • AI Chat chuyên nghiệp</p>
+      <h1>SyNam Mystic</h1>
+      <p className="hero-sub">AI Chat thông minh • Tử vi chuyên sâu • Thần số học • Tình duyên</p>
       <div className="hero-actions quick">
         <button onClick={() => setTab('chat')}>💬 Hỏi AI</button>
         <button onClick={() => setTab('horoscope')}>🔮 Tử vi</button>
@@ -97,7 +97,7 @@ function Hero({ setTab, health, providers }) {
         <button onClick={() => setTab('palm')}>✋ Xem tay</button>
       </div>
     </div>
-    <div className="hero-img hero-right"><img src="assets/hero-right.jpg" /></div>
+    <div className="hero-img hero-right"><img src="assets/hero-right-cut.png" /></div>
   </header>;
 }
 
@@ -112,8 +112,8 @@ function QuickAsk({ setTab, setQuickPrompt }) {
     setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 80);
   }
   return <section className="quick-ask premium-panel">
-    <div className="quick-ask-title"><span>💬</span><div><h2>Hỏi Đặng Năm AI</h2><p>Chat AI là trung tâm. Nhập câu hỏi, bấm gửi là chuyển vào cuộc trò chuyện.</p></div></div>
-    <div className="quick-ask-box"><textarea value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit();}}} placeholder="Hỏi Đặng Năm AI về Mystic, thời tiết, tình duyên..." rows="1"/><button onClick={submit}>Gửi ✈</button></div>
+    <div className="quick-ask-title"><span>💬</span><div><h2>Hỏi SyNam AI</h2><p>Chat AI là trung tâm. Nhập câu hỏi, bấm gửi là chuyển vào cuộc trò chuyện.</p></div></div>
+    <div className="quick-ask-box"><textarea value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit();}}} placeholder="Hỏi SyNam AI về Mystic, thời tiết, tình duyên..." rows="1"/><button onClick={submit}>Gửi ✈</button></div>
   </section>;
 }
 
@@ -123,7 +123,7 @@ function TabRail({ tab, setTab }) {
 
 function Home({ setTab, providers }) {
   const cards = [
-    ['💬','Đặng Năm AI','Chat chuyên nghiệp kiểu ChatGPT/Gemini, nhớ ngữ cảnh, copy, đọc, thử lại.', 'chat'],
+    ['💬','SyNam AI','Chat chuyên nghiệp kiểu ChatGPT/Gemini, nhớ ngữ cảnh, copy, đọc, thử lại.', 'chat'],
     ['🔮','Tử vi','Luận giải chi tiết công việc, tình cảm, tài chính và định hướng.', 'horoscope'],
     ['💞','Tình duyên','Phân tích nhiều lớp: tuổi, ngũ hành, thần số học và cách hòa hợp.', 'love'],
     ['🪐','Chiêm tinh','Cung hoàng đạo, vận trình tháng, tính cách và cảm xúc.', 'astrology'],
@@ -165,7 +165,7 @@ function Chat({ providers, initialPrompt = '', clearInitialPrompt = () => {} }) 
     try {
       const data = await apiJSON('/api/multi-ai/chat', { message: content, history: next.slice(-20), provider, council });
       const answer = data.reply || data.text || 'AI chưa trả về nội dung.';
-      setMessages([...next, { role: 'assistant', text: answer, meta: data.label || 'Đặng Năm AI' }]);
+      setMessages([...next, { role: 'assistant', text: answer, meta: data.label || 'SyNam AI' }]);
     } catch (e) {
       setMessages([...next, { role: 'assistant', text: `⚠️ ${e.message}\n\nGợi ý: vào tab Cài đặt AI kiểm tra CLAUDE_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY hoặc chọn provider khác.` }]);
     } finally { setBusy(false); }
@@ -177,9 +177,9 @@ function Chat({ providers, initialPrompt = '', clearInitialPrompt = () => {} }) 
   return <section className="chat-layout">
     <aside className="chat-side premium-panel"><h2>🧠 AI Router</h2><p>Auto chọn provider có key. Ưu tiên nhanh, chính xác, không lộ model.</p><select value={provider} onChange={e=>setProvider(e.target.value)}><option value="auto">Auto Router</option>{providers.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select><label className="switch"><input type="checkbox" checked={council} onChange={e=>setCouncil(e.target.checked)} /> Hội Đồng AI</label><button onClick={()=>setMessages(DEFAULT_MESSAGES)}>＋ Chat mới</button><div className="mini-list">{providers.map(p => <span className={p.configured?'ok':''} key={p.id}>{p.configured?'●':'○'} {p.label}</span>)}</div></aside>
     <div className="chat-main premium-panel">
-      <div className="chat-head"><div><h2>🤖 Đặng Năm AI Chat</h2><p>Chat box hiện đại, copy, đọc, thử lại, giữ ngữ cảnh.</p></div><button onClick={()=>speak(messages.filter(m=>m.role==='assistant').at(-1)?.text || '')}>🔊 Đọc</button></div>
+      <div className="chat-head"><div><h2>🤖 SyNam AI Chat</h2><p>Chat box hiện đại, copy, đọc, thử lại, giữ ngữ cảnh.</p></div><button onClick={()=>speak(messages.filter(m=>m.role==='assistant').at(-1)?.text || '')}>🔊 Đọc</button></div>
       <div className="chat-box" ref={boxRef}>{messages.map((m,i) => <div key={i} className={`bubble ${m.role} ${m.loading?'loading':''}`}><div className="avatar">{m.role==='user'?'👤':'✦'}</div><div className="bubble-body"><div dangerouslySetInnerHTML={{__html: markdownLite(m.text)}} />{m.role==='assistant' && !m.loading && <div className="msg-actions"><button onClick={()=>copy(m.text)}>Copy</button><button onClick={()=>speak(m.text)}>Đọc</button><button onClick={()=>send(lastPrompt)}>Thử lại</button></div>}</div></div>)}</div>
-      <div className="composer"><textarea value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Nhắn Đặng Năm AI như ChatGPT..." rows="1"/><button disabled={busy} onClick={()=>send()}>{busy?'…':'Gửi ✈'}</button></div>
+      <div className="composer"><textarea value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Nhắn SyNam AI như ChatGPT..." rows="1"/><button disabled={busy} onClick={()=>send()}>{busy?'…':'Gửi ✈'}</button></div>
     </div>
   </section>;
 }
