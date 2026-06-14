@@ -1,7 +1,0 @@
-NAM49 Merge - NAM46 Desktop + NAM48 Mobile
-
-- Base source: NAM46, giữ index/app.js giao diện desktop và toàn bộ tab/chức năng cũ.
-- Server: lấy server.js từ NAM48 để giữ fix Claude/Anthropic key và endpoint tử vi/luận giải mới.
-- Tử vi / Luận giải: thêm ô Trọng tâm luận giải, local report tính ngày sinh, tuổi, Can Chi năm, ngũ hành tham khảo, cung hoàng đạo trước khi gửi AI.
-- Mobile UI: thêm lớp CSS override NAM49 lấy tinh thần NAM48 Ultra Premium: hero/banner rõ 2 ảnh, mờ viền hòa nền, tab ngang cuộn, card kính, chat mobile gọn, bottom nav cố định.
-- Desktop: không thay layout NAM46; override chỉ chạy dưới 760px.
