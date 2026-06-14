@@ -1,0 +1,17 @@
+NAM46 Mobile Premium Fix
+
+Đã chỉnh theo yêu cầu Sỹ Năm:
+- Giao diện nền giữ phong cách NAM42.
+- Banner mobile bỏ nút AI PHÂN TÍCH.
+- Banner không đưa Đổi bài/Bói bài lên khu vực banner.
+- Banner chỉ giữ: Tử vi hôm nay, Cung hoàng đạo, Xem chỉ tay, Xem tướng.
+- Mở rộng và làm rõ 2 ảnh trên banner, vẫn giữ hiệu ứng mờ viền hòa nền.
+- Sau banner thêm ngay khối: 💬 Hỏi AI ngay bây giờ + ô nhập câu hỏi.
+- Xóa hướng đi đưa ghi chú kỹ thuật/changelog lên giao diện chính.
+- Mobile mặc định vào Trang chủ thay vì nhảy thẳng vào Chat.
+- Sửa bottom nav tránh tràn/cắt chữ trên màn hình nhỏ.
+
+Cách chạy:
+1. npm install
+2. npm start
+3. Mở http://localhost:3000
