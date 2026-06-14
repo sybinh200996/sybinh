@@ -291,7 +291,7 @@ async function callOpenAICompatible({ provider, apiKey, model, prompt }) {
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
-      ...(provider === "openrouter" ? { "HTTP-Referer": "https://synam-ai.local", "X-Title": "Sỹ Năm Mystic AI" } : {})
+      ...(provider === "openrouter" ? { "HTTP-Referer": "https://synam-ai.local", "X-Title": "SyNam Mystic" } : {})
     },
     body: JSON.stringify({
       model,
@@ -367,7 +367,7 @@ async function tryMultiAI({ prompt, parts, preferredProvider = "auto", requested
       throw err;
     }
     const text = results.map((r, idx) => `## Ý kiến AI ${idx + 1}\n${hideModelLeakServer(r.text)}`).join("\n\n---\n\n");
-    return { provider: "council", label: "Hội Đồng AI", text, results: results.map(r => ({ label: 'Sỹ Năm AI', text: hideModelLeakServer(r.text) })), attempts };
+    return { provider: "council", label: "Hội Đồng AI", text, results: results.map(r => ({ label: 'Đặng Năm', text: hideModelLeakServer(r.text) })), attempts };
   }
   let lastError;
   for (const provider of order) {
@@ -616,7 +616,7 @@ function chatHistoryToText(history, limit = 30) {
       const role = m.role === 'assistant' || m.role === 'model' || m.role === 'ai' ? 'AI' : 'Người dùng';
       const text = String(m.text || '')
         .replace(/Trả lời bởi:.*?(\n|$)/g, '')
-        .replace(/🤖 Sỹ Năm AI/g, '')
+        .replace(/🤖 Đặng Năm/g, '')
         .replace(/👤 .*?(Free|Pro|Guest)?/g, '')
         .replace(/👥 Khách/g, '')
         .trim()
@@ -636,15 +636,15 @@ BỘ NHỚ HỘI THOẠI NAM30 - BẮT BUỘC:
 - Nếu lịch sử có thông tin người dùng đã cung cấp như tên, địa điểm, phiên bản app, lỗi đang sửa... hãy dùng lại, không hỏi lại.
 - Chỉ hỏi lại khi lịch sử thật sự không có thông tin cần thiết.
 - Tuyệt đối không tự giới thiệu, tiết lộ hoặc nhắc tên model/provider/API đang chạy như Gemini, Groq, OpenRouter, OpenAI, Claude, DeepSeek, Qwen, Mistral, Grok, GPT, Llama.
-- Khi cần nói về bản thân, chỉ xưng là Sỹ Năm AI hoặc trợ lý trong app.
+- Khi cần nói về bản thân, chỉ xưng là Đặng Năm.
 `;
 }
 
 function hideModelLeakServer(text = '') {
   let out = String(text || '');
   out = out.replace(/^\s*(Trả lời bởi|Powered by|Model|Provider)\s*[:：].*$/gmi, '');
-  out = out.replace(/\b(?:tôi|mình|em|AI này)\s+(?:là|được chạy bằng|sử dụng|dựa trên|powered by)\s+(?:Google\s+)?(?:Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT[-\w.]*|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama[-\w.]*)/gi, 'Mình là Sỹ Năm AI');
-  out = out.replace(/\b(?:Google\s+Gemini|Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT-?4o(?:-mini)?|GPT-?4\.1(?:-mini)?|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama-?3(?:\.\d)?[-\w.]*)\b/gi, 'Sỹ Năm AI');
+  out = out.replace(/\b(?:tôi|mình|em|AI này)\s+(?:là|được chạy bằng|sử dụng|dựa trên|powered by)\s+(?:Google\s+)?(?:Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT[-\w.]*|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama[-\w.]*)/gi, 'Mình là Đặng Năm');
+  out = out.replace(/\b(?:Google\s+Gemini|Gemini|Groq|OpenRouter|OpenAI|ChatGPT|GPT-?4o(?:-mini)?|GPT-?4\.1(?:-mini)?|Claude|Anthropic|DeepSeek|Qwen|Mistral|Grok|Llama-?3(?:\.\d)?[-\w.]*)\b/gi, 'Đặng Năm');
   return out.replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -722,14 +722,14 @@ async function tryModels(parts, preferredModel = "auto") {
 }
 
 app.get("/api", (req, res) => {
-  res.json({ ok: true, app: "SyNam NAM44 React Ultra Premium", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
+  res.json({ ok: true, app: "SyNam Mystic NAM52", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
 });
 
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
     const cleanEmail = String(email || "").trim().toLowerCase();
-    const cleanName = String(name || "").trim() || "Thành viên Sỹ Năm";
+    const cleanName = String(name || "").trim() || "Thành viên";
     const cleanPassword = String(password || "");
     if (!cleanEmail || !cleanEmail.includes("@")) return res.status(400).json({ error: "Email không hợp lệ." });
     if (cleanPassword.length < 6) return res.status(400).json({ error: "Mật khẩu cần ít nhất 6 ký tự." });
@@ -915,7 +915,7 @@ app.post("/api/weather", async (req, res) => {
     if (!cleanMessage) return res.status(400).json({ error: "Thiếu câu hỏi thời tiết." });
     const answer = await directWeatherAnswer(cleanMessage);
     if (!answer) return res.status(400).json({ error: "Không phải câu hỏi thời tiết." });
-    res.json({ ok: true, provider: "local", label: "Sỹ Năm Weather Core", model: "hidden", text: answer });
+    res.json({ ok: true, provider: "local", label: "Đặng Năm Weather Core", model: "hidden", text: answer });
   } catch (error) {
     res.status(500).json({ error: cleanError(error) });
   }
@@ -930,16 +930,16 @@ app.post("/api/multi-ai/chat", async (req, res) => {
 
     const weatherAnswer = await directWeatherAnswer(cleanMessage);
     if (weatherAnswer) {
-      return res.json({ ok: true, provider: "local", label: "Sỹ Năm Weather Core", model: "local-live-weather", text: weatherAnswer });
+      return res.json({ ok: true, provider: "local", label: "Đặng Năm Weather Core", model: "local-live-weather", text: weatherAnswer });
     }
 
     const dateAnswer = directDateTimeAnswer(cleanMessage);
     if (dateAnswer) {
-      return res.json({ ok: true, provider: "local", label: "Sỹ Năm AI", model: "local-date-time", text: dateAnswer });
+      return res.json({ ok: true, provider: "local", label: "Đặng Năm", model: "local-date-time", text: dateAnswer });
     }
 
     const historyText = chatHistoryToText(history, 24);
-    const prompt = `Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic. Hãy trả lời như một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: chính xác, đi thẳng vào vấn đề, có cấu trúc rõ, không nói lan man, không bịa.
+    const prompt = `Bạn là Đặng Năm trong app SyNam Mystic. Hãy trả lời như một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: chính xác, đi thẳng vào vấn đề, có cấu trúc rõ, không nói lan man, không bịa.
 
 THỜI GIAN HỆ THỐNG VIỆT NAM:
 - Hôm nay: ${formatVietnamDate(0)}
@@ -957,7 +957,7 @@ ${nam30MemoryRules()}
 - Với câu hỏi cần thông tin mới theo thời gian thực mà app không có API riêng: nói rõ app chưa có dữ liệu trực tiếp, không tự đoán.
 - Với câu hỏi mơ hồ: nêu giả định hợp lý rồi trả lời; chỉ hỏi lại khi thật sự không thể trả lời.
 - Không bịa dữ kiện. Nếu thiếu dữ liệu thật sự, nói rõ thiếu dữ liệu nào.
-- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Sỹ Năm AI.
+- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Đặng Năm. Với nội dung Mystic luôn nhắc đây là tham khảo/giải trí, không phán chắc chắn.
 
 NGỮ CẢNH APP:
 ${context ? JSON.stringify(context, null, 2).slice(0, 4000) : "Không có"}
@@ -969,7 +969,7 @@ CÂU HỎI MỚI:
 ${cleanMessage}`;
     const result = await tryMultiAI({ prompt, parts: [{ text: prompt }], preferredProvider: provider || process.env.DEFAULT_AI_PROVIDER || "auto", requestedModel: model, user, council: Boolean(council) });
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, provider: 'synam', label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, provider: 'synam', label: 'Đặng Năm', text: result.text });
   } catch (error) {
     res.status(500).json({ ok: false, error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -984,7 +984,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "SyNam NAM44 React Ultra Premium"
+    app: "SyNam Mystic NAM52"
   });
 });
 
@@ -1133,7 +1133,7 @@ DỮ LIỆU:
 
     const result = await tryModels(parts, geminiModel);
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, label: 'Đặng Năm', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1155,7 +1155,7 @@ app.post("/api/chat-ai", async (req, res) => {
 
     const weatherAnswer = files.length === 0 ? await directWeatherAnswer(cleanMessage) : null;
     if (weatherAnswer) {
-      return res.json({ ok: true, model: "local-live-weather", label: "Sỹ Năm Weather Core", text: weatherAnswer });
+      return res.json({ ok: true, model: "local-live-weather", label: "Đặng Năm Weather Core", text: weatherAnswer });
     }
 
     const dateAnswer = directDateTimeAnswer(cleanMessage);
@@ -1168,7 +1168,7 @@ app.post("/api/chat-ai", async (req, res) => {
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
-Bạn là Sỹ Năm AI trong app Sỹ Năm Mystic Ultimate Pro. Phong cách trả lời phải giống một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: hiểu đúng ý, trả lời có cấu trúc, thực tế, không vòng vo, không bịa. Không tiết lộ model, provider, API, tên nền tảng AI đang chạy. Bạn không phải là thầy Sỹ Năm và không tự nhận là thầy Sỹ Năm.
+Bạn là Đặng Năm trong app SyNam Mystic. Phong cách trả lời phải giống một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: hiểu đúng ý, trả lời có cấu trúc, thực tế, không vòng vo, không bịa. Không tiết lộ model, provider, API, tên nền tảng AI đang chạy. Bạn không phải là Đặng Năm và không tự nhận là Đặng Năm.
 
 THỜI GIAN HỆ THỐNG VIỆT NAM:
 - Hiện tại: ${currentVietnamTime()}
@@ -1192,7 +1192,7 @@ ${nam30MemoryRules()}
 - Không hỏi ngược người dùng hôm nay/ngày mai là thứ mấy; dữ liệu thời gian đã có ở trên.
 - Câu hỏi thời tiết đã có lõi riêng xử lý trước khi gọi AI; nếu vẫn nhận câu thời tiết thì không được bịa, hãy yêu cầu địa điểm cụ thể hoặc nói thiếu dữ liệu thời tiết trực tiếp.
 - Không bịa dữ kiện; thiếu dữ liệu thì nói rõ thiếu gì.
-- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Sỹ Năm AI.
+- Không tiết lộ model/provider/API. Không nói các câu như 'tôi là Gemini/GPT/Claude'. Chỉ xưng là Đặng Năm. Với nội dung Mystic luôn nhắc đây là tham khảo/giải trí, không phán chắc chắn.
 
 NGỮ CẢNH APP HIỆN TẠI:
 ${contextText}
@@ -1215,7 +1215,7 @@ ${cleanMessage || "Người dùng chỉ gửi file/ảnh, hãy phân tích nội
 
     const result = await tryModels(parts, geminiModel);
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, label: 'Đặng Năm', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1300,7 +1300,7 @@ app.post("/api/image-ai", async (req, res) => {
     if (isEdit && !mainImage) return res.status(400).json({ error: "Chế độ chỉnh sửa ảnh cần tải ảnh gốc lên trước." });
 
     const parts = [{ text: `
-Bạn là module TẠO ẢNH / CHỈNH SỬA ẢNH AI trong app Sỹ Năm Mystic.
+Bạn là module TẠO ẢNH / CHỈNH SỬA ẢNH AI trong app SyNam Mystic.
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
 NHIỆM VỤ: ${isEdit ? "Chỉnh sửa ảnh người dùng gửi theo yêu cầu" : "Tạo ảnh mới theo mô tả"}
@@ -1329,16 +1329,16 @@ QUY TẮC:
 
 app.post("/api/teacher-ai", async (req, res) => {
   try {
-    if (!ai) return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Thầy Sỹ Năm AI cần server Gemini." });
+    if (!ai) return res.status(400).json({ error: "Chưa có GEMINI_API_KEY. Đặng Năm AI cần server Gemini." });
     const { message, context, geminiModel } = req.body || {};
     const cleanMessage = String(message || "").trim();
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi trước." });
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 7000) : "Không có";
     const parts = [{ text: `
-Bạn là "Thầy Sỹ Năm" trong app Sỹ Năm Mystic Ultimate Pro. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
+Bạn là "Đặng Năm" trong app SyNam Mystic. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
 
 QUY TẮC:
-- Đây là module riêng của Thầy Sỹ Năm, không phải chatbot Hỏi và Đáp AI.
+- Đây là module riêng của Đặng Năm, không phải chatbot Hỏi và Đáp AI.
 - Có thể luận về tử vi, tình duyên, công việc, phong thủy, hướng phát triển bản thân theo hướng tham khảo văn hóa.
 - Không phán chắc tương lai, không khẳng định sức khỏe/bệnh tật/tuổi thọ/tài chính/pháp lý.
 - Chia mục rõ, giải thích chi tiết, có gợi ý thực tế.
@@ -1352,7 +1352,7 @@ ${cleanMessage}
 ` }];
     const result = await tryModels(parts, geminiModel);
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, label: 'Đặng Năm', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1367,7 +1367,7 @@ app.post("/api/love-ai", async (req, res) => {
     const fixedProfiles = finalPersons.map((p, i) => fixedLunarProfile(p, i + 1));
     const fixedSummary = fixedProfiles.map(p => `- ${p.name}: ${p.birthDate || 'chưa nhập'} => ${p.year || 'thiếu năm'}${p.canChi ? `, tuổi ${p.canChi}, nạp âm ${p.napAm}, ngũ hành ${p.nguHanh}` : ''}`).join("\n");
     const parts = [{ text: `
-Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app Sỹ Năm Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
+Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app SyNam Mystic. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
@@ -1381,7 +1381,7 @@ QUY TẮC BẮT BUỘC:
 - Không được tự đổi Can Chi/Nạp âm/Ngũ hành. Ví dụ 2004 là Giáp Thân, không được nói Giáp Thìn.
 - Nếu người dùng nhập thiếu/ngày sinh sai định dạng, nói rõ thiếu dữ liệu thay vì bịa.
 - AI chỉ được luận giải dựa trên DỮ LIỆU NỀN ĐÃ ĐƯỢC CODE TÍNH CỐ ĐỊNH ở trên.
-- Có mục điểm mạnh, điểm dễ xung đột, cách hóa giải/hòa hợp, lời khuyên thực tế.
+- Có mục điểm mạnh, điểm dễ xung đột, cách hóa giải/hòa hợp, lời khuyên thực tế. Viết nhiều lớp, không trả lời cụt.
 - Không phán chắc cưới/ly hôn/chia tay/giàu nghèo/số phận. Chỉ nói theo hướng tham khảo văn hóa và tự nhận thức.
 - Nếu dữ liệu thiếu giờ sinh thì nói rõ phần giờ sinh chỉ tham khảo/không có.
 - Trả về Markdown đẹp.
@@ -1395,19 +1395,23 @@ ${focus || "tong-quan"}
 BẢN LOCAL NỀN:
 ${localReport || ""}
 
-Hãy trả về theo cấu trúc:
-1. Bảng tổng quan 2 người
-2. Điểm hợp tổng quan và mức độ tương hợp
-3. Phân tích Can Chi - Địa Chi
-4. Phân tích Ngũ hành/Nạp âm
-5. Tính cách yêu, cách giao tiếp, điểm hút nhau
-6. Điểm dễ xung đột
-7. Cách hòa hợp và phát triển lâu dài
-8. Lưu ý tham khảo
+Hãy trả về thật chi tiết theo cấu trúc chuyên sâu:
+1. Bảng tổng quan 2 người: tên, ngày sinh, năm sinh, can chi, nạp âm, ngũ hành
+2. Tóm tắt nhanh mức độ hòa hợp bằng thang 10 điểm, kèm giải thích vì sao
+3. Lớp 1 - Nền tính cách: mỗi người yêu theo kiểu nào, cần gì trong tình cảm
+4. Lớp 2 - Can Chi/Địa Chi: điểm thuận, điểm cần tiết chế, tuyệt đối không tự đổi dữ liệu code đã tính
+5. Lớp 3 - Ngũ hành/Nạp âm: tương sinh, tương khắc, cách cân bằng thực tế
+6. Lớp 4 - Giao tiếp: ai dễ im lặng, ai dễ tổn thương, cách nói chuyện bớt hiểu lầm
+7. Lớp 5 - Điểm hút nhau: vì sao hai người có thể bị thu hút
+8. Lớp 6 - Điểm dễ xung đột: thói quen, kỳ vọng, cảm xúc, nhịp sống
+9. Lớp 7 - Khả năng đồng hành lâu dài: điều kiện để bền, không phán chắc cưới/chia tay
+10. Lớp 8 - Lời khuyên 30 ngày: 5 việc nên làm và 5 việc nên tránh
+11. Kết luận mềm: nói như một bài tư vấn tình cảm ấm áp, có chiều sâu
+12. Lưu ý tham khảo/giải trí, không thay thế quyết định thực tế
 ` }];
     const result = await tryModels(parts, geminiModel);
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, label: 'Đặng Năm', text: result.text });
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
   }
@@ -1444,7 +1448,7 @@ Bạn là chuyên gia viết luận giải huyền học AI bằng tiếng Việ
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
 YÊU CẦU BẮT BUỘC:
-- Viết dài, mạch lạc, chia mục rõ như bài tư vấn chuyên nghiệp.
+- Viết dài, mạch lạc, chia mục rõ như bài tư vấn chuyên nghiệp, tối thiểu 900-1500 từ nếu dữ liệu đủ.
 - Có bảng tổng quan bản mệnh ở đầu.
 - Kết hợp Đông phương: Can Chi, Ngũ hành, âm dương, cung phi, giờ sinh.
 - Kết hợp Tây phương: cung hoàng đạo.
@@ -1469,16 +1473,19 @@ ${finalFaceNote || "Không có"}
 BẢN LUẬN GIẢI LOCAL NỀN:
 ${localReport || ""}
 
-Hãy viết bài luận giải cuối cùng theo cấu trúc:
-1. Bảng tổng quan bản mệnh
-2. Phân tích âm dương, ngũ hành và can chi
-3. Cung mệnh, cung phi và hướng khí
-4. Chiêm tinh học phương Tây
-5. Tướng số & khí chất đặc trưng
-6. Chỉ tay/khuôn mặt nếu có ảnh hoặc ghi chú
-7. Luận sự nghiệp, tài lộc, quan hệ
-8. Gợi ý phát triển bản thân
-9. Lưu ý về độ tin cậy và tính tham khảo
+Hãy viết bài luận giải cuối cùng THẬT CHI TIẾT theo cấu trúc:
+1. Bảng tổng quan bản mệnh: họ tên, ngày sinh, giờ sinh, giới tính, can chi/năm sinh, ngũ hành, cung hoàng đạo, dữ liệu thiếu nếu có
+2. Tổng quan khí chất: tính cách bên ngoài, thế giới nội tâm, cách phản ứng khi áp lực
+3. Đông phương chuyên sâu: âm dương, ngũ hành, can chi, nạp âm/cung phi nếu có dữ liệu; giải thích dễ hiểu, không bịa khi thiếu dữ liệu
+4. Tử vi đời sống: công việc, tài chính, tình cảm, gia đình, quan hệ xã hội, tinh thần
+5. Chiêm tinh phương Tây: cung hoàng đạo, nguyên tố, ưu điểm, bóng tối tính cách, cách yêu, cách làm việc
+6. Thần số học liên quan nếu có ngày sinh/tên: số chủ đạo hoặc khuynh hướng phát triển, bài học cần vượt
+7. Tướng số & khí chất đặc trưng: chỉ nhận xét phong thái chung nếu có ghi chú/ảnh, không định danh, không kết luận sức khỏe/tuổi thọ/giàu nghèo
+8. Chỉ tay/khuôn mặt nếu có ảnh hoặc ghi chú: nhận xét thận trọng theo hướng tự nhận thức
+9. Giai đoạn hiện tại: điều nên tập trung trong 7 ngày, 30 ngày và 3 tháng tới
+10. Lời khuyên thực tế: 5 việc nên làm, 5 việc nên tránh
+11. Kết luận ấm áp: viết như một bài tư vấn riêng, có chiều sâu cảm xúc
+12. Lưu ý về độ tin cậy và tính tham khảo/giải trí
 `;
 
     const parts = [{ text: instruction }];
@@ -1498,7 +1505,7 @@ Hãy viết bài luận giải cuối cùng theo cấu trúc:
 
     const result = await tryModels(parts, geminiModel);
     result.text = hideModelLeakServer(result.text);
-    res.json({ ok: true, label: 'Sỹ Năm AI', text: result.text });
+    res.json({ ok: true, label: 'Đặng Năm', text: result.text });
 
   } catch (error) {
     res.status(500).json({ error: cleanError(error), attempts: error.attempts || [] });
@@ -1585,5 +1592,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Sỹ Năm Mystic AI Ultimate Pro hoạt động thành công trên port ${PORT}.`);
+  console.log(`🚀 SyNam Mystic hoạt động thành công trên port ${PORT}.`);
 });

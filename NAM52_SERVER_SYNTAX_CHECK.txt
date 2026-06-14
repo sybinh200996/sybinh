@@ -1,0 +1,4 @@
+node --check server.js
+exit_code=0
+stdout=
+stderr=

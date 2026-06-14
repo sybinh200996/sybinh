@@ -1,0 +1,26 @@
+SyNam Mystic NAM52 - Right Banner + Cache Fix
+
+Đã sửa thật trong app:
+- Thêm ảnh mới:
+  public/assets/hero-right-dangnam-nam52.jpg
+  public/assets/hero-right-dangnam-nam52.png
+
+- Ghi đè dự phòng:
+  public/assets/hero-right.jpg
+  public/assets/hero-right-cut.png
+
+- Sửa app.js:
+  hero bên phải gọi ảnh mới:
+  assets/hero-right-dangnam-nam52.jpg?v=nam52-banner-20260614
+
+- Sửa index.html:
+  style.css và app.js có version query để tránh cache.
+
+- Sửa service-worker.js:
+  đổi CACHE từ tên cũ sang synam-mystic-nam52-banner-20260614-v2.
+  chuyển html/js/css sang network-first để giảm lỗi trình duyệt giữ bản cũ.
+
+Khi test:
+1. Xóa bản deploy cũ hoặc ghi đè toàn bộ file.
+2. Trên trình duyệt/điện thoại bấm tải lại mạnh.
+3. Nếu vẫn thấy ảnh cũ: vào Application/Storage, Clear site data hoặc đổi URL test bằng ?v=nam52.

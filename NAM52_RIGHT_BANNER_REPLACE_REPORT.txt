@@ -1,0 +1,14 @@
+SyNam Mystic NAM52 - Thay ảnh banner bên phải
+
+Đã thay ảnh banner bên phải bằng ảnh người dùng vừa tải lên.
+File được ghi đè:
+- public/assets/hero-right-cut.png
+- public/assets/hero-right.jpg
+
+Backup: hero-right-cut.png -> hero-right-cut_old_backup.png
+Backup: hero-right.jpg -> hero-right_old_backup.jpg
+
+Lưu ý test:
+- Nếu app hiển thị ảnh bên phải qua hero-right-cut.png: sẽ đổi ngay.
+- Nếu app hiển thị qua hero-right.jpg: cũng đã đổi.
+- Nếu CSS dùng tên file khác, cần báo lại ảnh chụp màn hình để rà tiếp.
