@@ -1,6 +1,6 @@
 {
-  "name": "synam-mystic-nam52",
-  "version": "52.0.0",
+  "name": "synam-mystic-nam52-1-hotfix",
+  "version": "52.1.0",
   "type": "module",
   "engines": {
     "node": "20.x"
@@ -16,5 +16,5 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.2"
   },
-  "description": "SyNam Mystic NAM52 Final from NAM48 base - Dang Nam AI, Mystic Deep, Store Ready."
+  "description": "SyNam Mystic NAM52.1 Hotfix - Dang Nam AI, weather detail, banner edge blend."
 }

@@ -15,7 +15,7 @@ const TABS = [
 ];
 
 const DEFAULT_MESSAGES = [
-  { role: 'assistant', text: 'Chào anh 👋 Mình là Đặng Năm trong SyNam Mystic. Anh có thể hỏi về tử vi, thần số học, chiêm tinh, tình duyên, phong thủy, xem chỉ tay, xem tướng hoặc thời tiết. Nội dung Mystic chỉ mang tính tham khảo và giải trí nhé.' }
+  { role: 'assistant', text: 'Chào anh 👋 Mình là Đặng Năm AI trong SyNam Mystic. Anh có thể hỏi về tử vi, thần số học, chiêm tinh, tình duyên, phong thủy, xem tay/xem tướng và thời tiết chi tiết. Nội dung Mystic chỉ mang tính tham khảo và giải trí nhé.' }
 ];
 
 function authHeaders() {
