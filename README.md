@@ -1,4 +1,4 @@
-# SyNam Mystic AI Store Ready 🔮
+# SyNam Mystic AI Professional 🔮
 
 Bản Super Pro gồm:
 
@@ -269,7 +269,7 @@ Restart
 # NAM24 UX Fix
 
 ## Đã chỉnh trong bản NAM24
-- Đổi nhãn trên hero từ **Tài khoản** thành **Tài khoản**.
+- Đổi nhãn trên hero từ **Đặng Năm AI Pro** thành **Tài khoản**.
 - Ẩn các ghi chú kỹ thuật như `/api/health`, `/api/models`, `/api/auth/firebase-config` khỏi giao diện người dùng.
 - Trang tài khoản chỉ còn nội dung dành cho khách/thành viên.
 - Bấm tab/menu sẽ tự nhảy về khu vực nội dung chính.

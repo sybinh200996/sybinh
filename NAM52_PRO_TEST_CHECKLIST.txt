@@ -1,0 +1,13 @@
+Test NAM52 PRO:
+[ ] npm install
+[ ] npm start
+[ ] Desktop có nền động.
+[ ] Mobile vẫn là giao diện điện thoại, không thành desktop.
+[ ] Chat vẫn chuyên nghiệp, xưng Đặng Năm AI.
+[ ] Tiêu đề SyNam Mystic nhỏ hơn.
+[ ] Banner phải có viền mờ.
+[ ] Hỏi thời tiết Việt Trì Phú Thọ hôm nay.
+[ ] Hỏi thời tiết Lào Cai hôm nay.
+[ ] Dự báo có nhiệt độ, cảm nhận, độ ẩm, gió, áp suất, mưa, 8 giờ tới, 4 ngày tới.
+[ ] Tình duyên nhập tên + ngày sinh hai người.
+[ ] Privacy/Terms/Disclaimer mở được.

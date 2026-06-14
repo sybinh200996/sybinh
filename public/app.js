@@ -8,14 +8,14 @@ const TABS = [
   { id: 'astrology', icon: '🪐', label: 'Chiêm tinh' },
   { id: 'love', icon: '💞', label: 'Tình duyên' },
   { id: 'numerology', icon: '🔢', label: 'Thần số học' },
-  { id: 'chat', icon: '💬', label: 'Mystic Chat' },
+  { id: 'chat', icon: '💬', label: 'Đặng Năm AI' },
   { id: 'fengshui', icon: '☯️', label: 'Phong thủy' },
   { id: 'tarot', icon: '🃏', label: 'Bói bài' },
   { id: 'settings', icon: '⚙️', label: 'Cài đặt' }
 ];
 
 const DEFAULT_MESSAGES = [
-  { role: 'assistant', text: 'Chào anh 👋 Mình là Đặng Năm AI trong SyNam Mystic. Anh có thể hỏi về tử vi, thần số học, chiêm tinh, tình duyên, phong thủy, xem tay/xem tướng và thời tiết chi tiết. Nội dung Mystic chỉ mang tính tham khảo và giải trí nhé.' }
+  { role: 'assistant', text: 'Chào anh 👋 Mình là Đặng Năm AI trong SyNam Mystic. Anh có thể hỏi như ChatGPT/Gemini về Mystic, tử vi, thần số học, tình duyên, phong thủy, xem tay/xem tướng, thời tiết chi tiết hoặc lỗi app. Mình sẽ trả lời rõ ràng, có cấu trúc và không nói lan man.' }
 ];
 
 function authHeaders() {
@@ -85,7 +85,6 @@ function App() {
       {tab === 'tarot' && <TarotTool />}
       {tab === 'settings' && <Settings providers={providers} reload={loadProviders} />}
     </section>
-    <StoreTrustFooter />
     <nav className="bottom-nav">{TABS.map(t => <button key={t.id} onClick={() => setTab(t.id)} className={tab===t.id?'active':''}><span>{t.icon}</span><small>{t.label}</small></button>)}</nav>
   </main>;
 }
@@ -95,12 +94,12 @@ function Hero({ setTab, health, providers }) {
   return <header className="hero">
     <div className="hero-img hero-left"><img src="assets/hero-left.png" /></div>
     <div className="hero-content">
-      <div className="status-row"><span className="dot"></span>{health}<span className="chip">Đặng Năm • Store Ready</span></div>
-      <h1>SyNam <b>Mystic</b></h1>
-      <p>Tử vi • Thần số học • Chiêm tinh • Tình duyên • Phong thủy</p>
+      <div className="status-row"><span className="dot"></span>{health}<span className="chip">{configured || 0} AI đang bật</span></div>
+      <h1>Đặng Năm AI <b>Mystic</b></h1>
+      <p>AI • Tử vi • Chỉ tay • Xem tướng • Chiêm tinh</p>
       <div className="hero-actions quick"><button onClick={() => setTab('horoscope')}>🔮 Tử vi hôm nay</button><button onClick={() => setTab('astrology')}>🪐 Cung hoàng đạo</button><button onClick={() => setTab('palm')}>✋ Xem chỉ tay</button><button onClick={() => setTab('face')}>🙂 Xem tướng</button></div>
     </div>
-    <div className="hero-img hero-right"><img src="assets/hero-right-dangnam-nam52.jpg?v=nam52-banner-20260614" /></div>
+    <div className="hero-img hero-right"><img src="assets/hero-right.jpg" /></div>
   </header>;
 }
 
@@ -115,8 +114,8 @@ function QuickAsk({ setTab, setQuickPrompt }) {
     setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 80);
   }
   return <section className="quick-ask premium-panel">
-    <div className="quick-ask-title"><span>💬</span><div><h2>Hỏi Đặng Năm ngay bây giờ</h2><p>Nhập câu hỏi, bấm gửi là chuyển vào Mystic Chat.</p></div></div>
-    <div className="quick-ask-box"><textarea value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit();}}} placeholder="Hỏi tử vi, tình duyên, phong thủy, thời tiết..." rows="1"/><button onClick={submit}>Gửi ✈</button></div>
+    <div className="quick-ask-title"><span>💬</span><div><h2>Hỏi Đặng Năm AI ngay bây giờ</h2><p>Nhập câu hỏi, bấm gửi là chuyển thẳng vào AI Chat.</p></div></div>
+    <div className="quick-ask-box"><textarea value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit();}}} placeholder="Hỏi Đặng Năm AI về Mystic, thời tiết, tình duyên..." rows="1"/><button onClick={submit}>Gửi ✈</button></div>
   </section>;
 }
 
@@ -133,9 +132,10 @@ function Home({ setTab, providers }) {
     ['💞','Tình duyên','Tính tuổi, ngũ hành, thần số học bằng code trước khi AI luận.', 'love'],
     ['🔢','Thần số học','Tính số chủ đạo, linh hồn, biểu đạt và luận AI.', 'numerology'],
     ['🤖','AI Chat Pro','Trả lời kiểu ChatGPT/Claude/Gemini, có nhớ ngữ cảnh, copy, thử lại.', 'chat'],
+    ['🧠','Multi AI','Tự chọn Claude, Gemini, Groq, OpenRouter, ChatGPT, Grok.', 'multi'],
     ['☯️','Phong thủy','Màu hợp, hướng hợp, bố trí phòng/bàn làm việc.', 'fengshui'],
     ['🃏','Bói bài / Đổi bài','Bốc bài tham khảo và đổi bài nhanh.', 'tarot'],
-    ['⚙️','Cài đặt','Thiết lập API key ở server hoặc tài khoản test.', 'settings']
+    ['⚙️','AI Keys','Nhập key để bật Claude/Anthropic, Gemini, Groq...', 'settings']
   ];
   return <div className="home-grid">
     {cards.map(c => <button key={c[3]} className="feature-card" onClick={() => setTab(c[3])}><b>{c[0]}</b><h3>{c[1]}</h3><p>{c[2]}</p></button>)}
@@ -143,14 +143,14 @@ function Home({ setTab, providers }) {
 }
 
 function Chat({ providers, initialPrompt = '', clearInitialPrompt = () => {} }) {
-  const [messages, setMessages] = useState(() => JSON.parse(localStorage.getItem('synam_mystic_nam52_messages') || 'null') || DEFAULT_MESSAGES);
+  const [messages, setMessages] = useState(() => JSON.parse(localStorage.getItem('synam_mystic_nam52_pro_messages') || 'null') || DEFAULT_MESSAGES);
   const [text, setText] = useState('');
   const [provider, setProvider] = useState('auto');
   const [council, setCouncil] = useState(false);
   const [busy, setBusy] = useState(false);
   const [lastPrompt, setLastPrompt] = useState('');
   const boxRef = useRef(null);
-  useEffect(() => { localStorage.setItem('synam_mystic_nam52_messages', JSON.stringify(messages.slice(-50))); boxRef.current?.scrollTo({ top: boxRef.current.scrollHeight, behavior: 'smooth' }); }, [messages]);
+  useEffect(() => { localStorage.setItem('synam_mystic_nam52_pro_messages', JSON.stringify(messages.slice(-50))); boxRef.current?.scrollTo({ top: boxRef.current.scrollHeight, behavior: 'smooth' }); }, [messages]);
   useEffect(() => {
     if (initialPrompt && !busy) {
       const prompt = initialPrompt;
@@ -168,7 +168,7 @@ function Chat({ providers, initialPrompt = '', clearInitialPrompt = () => {} }) 
     try {
       const data = await apiJSON('/api/multi-ai/chat', { message: content, history: next.slice(-20), provider, council });
       const answer = data.reply || data.text || 'AI chưa trả về nội dung.';
-      setMessages([...next, { role: 'assistant', text: answer, meta: data.label || 'Đặng Năm' }]);
+      setMessages([...next, { role: 'assistant', text: answer, meta: data.label || 'Đặng Năm AI' }]);
     } catch (e) {
       setMessages([...next, { role: 'assistant', text: `⚠️ ${e.message}\n\nGợi ý: vào tab AI Keys kiểm tra CLAUDE_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY hoặc chọn provider khác.` }]);
     } finally { setBusy(false); }
@@ -178,11 +178,11 @@ function Chat({ providers, initialPrompt = '', clearInitialPrompt = () => {} }) 
   function speak(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang='vi-VN'; speechSynthesis.speak(u); } catch {} }
 
   return <section className="chat-layout">
-    <aside className="chat-side premium-panel"><h2>🧠 Mystic Core</h2><p>Tự chọn nguồn AI đã cấu hình, không hiển thị model ra giao diện người dùng.</p><select value={provider} onChange={e=>setProvider(e.target.value)}><option value="auto">Auto Router</option>{providers.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select><label className="switch"><input type="checkbox" checked={council} onChange={e=>setCouncil(e.target.checked)} /> Hội Đồng AI</label><button onClick={()=>setMessages(DEFAULT_MESSAGES)}>＋ Chat mới</button><div className="mini-list">{providers.map(p => <span className={p.configured?'ok':''} key={p.id}>{p.configured?'●':'○'} {p.label}</span>)}</div></aside>
+    <aside className="chat-side premium-panel"><h2>🧠 AI Router</h2><p>Auto chọn provider có key. Ưu tiên nhanh, chính xác, không lộ model.</p><select value={provider} onChange={e=>setProvider(e.target.value)}><option value="auto">Auto Router</option>{providers.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select><label className="switch"><input type="checkbox" checked={council} onChange={e=>setCouncil(e.target.checked)} /> Hội Đồng AI</label><button onClick={()=>setMessages(DEFAULT_MESSAGES)}>＋ Chat mới</button><div className="mini-list">{providers.map(p => <span className={p.configured?'ok':''} key={p.id}>{p.configured?'●':'○'} {p.label}</span>)}</div></aside>
     <div className="chat-main premium-panel">
-      <div className="chat-head"><div><h2>💬 Mystic Chat</h2><p>Đặng Năm hỗ trợ luận giải, thời tiết, phong thủy và nội dung cá nhân hóa.</p></div><button onClick={()=>speak(messages.filter(m=>m.role==='assistant').at(-1)?.text || '')}>🔊 Đọc</button></div>
+      <div className="chat-head"><div><h2>🤖 AI Chat Ultra</h2><p>Chat box hiện đại, copy, đọc, thử lại, giữ ngữ cảnh.</p></div><button onClick={()=>speak(messages.filter(m=>m.role==='assistant').at(-1)?.text || '')}>🔊 Đọc</button></div>
       <div className="chat-box" ref={boxRef}>{messages.map((m,i) => <div key={i} className={`bubble ${m.role} ${m.loading?'loading':''}`}><div className="avatar">{m.role==='user'?'👤':'✦'}</div><div className="bubble-body"><div dangerouslySetInnerHTML={{__html: markdownLite(m.text)}} />{m.role==='assistant' && !m.loading && <div className="msg-actions"><button onClick={()=>copy(m.text)}>Copy</button><button onClick={()=>speak(m.text)}>Đọc</button><button onClick={()=>send(lastPrompt)}>Thử lại</button></div>}</div></div>)}</div>
-      <div className="composer"><textarea value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Nhắn Đặng Năm..." rows="1"/><button disabled={busy} onClick={()=>send()}>{busy?'…':'Gửi ✈'}</button></div>
+      <div className="composer"><textarea value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Nhắn Đặng Năm AI như ChatGPT..." rows="1"/><button disabled={busy} onClick={()=>send()}>{busy?'…':'Gửi ✈'}</button></div>
     </div>
   </section>;
 }
@@ -192,11 +192,11 @@ function Settings({ providers, reload }) {
   async function save() {
     try { await apiJSON('/api/ai/user-keys', { keys }); await reload(); alert('Đã lưu AI keys ✅'); } catch(e) { alert(e.message); }
   }
-  return <section className="premium-panel settings"><h2>⚙️ Cài đặt API Keys</h2><p>Khuyến nghị phát hành store: đặt API key ở server `.env`, không lộ key trong frontend. Chỉ dùng lưu key theo tài khoản cho bản test cá nhân.</p><div className="key-grid">{providers.map(p => <label key={p.id}><span>{p.label} {p.configured?'✅':'○'}</span><input placeholder={p.maskedKey || p.keyEnv || 'API key'} onChange={e=>setKeys(k=>({...k,[p.id]:e.target.value}))}/><small>{p.model}</small></label>)}</div><button className="primary" onClick={save}>💾 Lưu keys</button></section>;
+  return <section className="premium-panel settings"><h2>⚙️ Multi-AI API Keys</h2><p>Server ưu tiên đọc từ `.env`, hoặc lưu key theo tài khoản test. Anthropic dùng `CLAUDE_API_KEY` hoặc `ANTHROPIC_API_KEY`.</p><div className="key-grid">{providers.map(p => <label key={p.id}><span>{p.label} {p.configured?'✅':'○'}</span><input placeholder={p.maskedKey || p.keyEnv || 'API key'} onChange={e=>setKeys(k=>({...k,[p.id]:e.target.value}))}/><small>{p.model}</small></label>)}</div><button className="primary" onClick={save}>💾 Lưu keys</button></section>;
 }
 
 function VisionTool({ mode, title, icon }) {
-  const [result, setResult] = useState('Upload ảnh rồi bấm phân tích. Ảnh chỉ dùng để luận giải tham khảo, không định danh người trong ảnh.');
+  const [result, setResult] = useState('Upload ảnh rồi bấm phân tích.');
   const [file, setFile] = useState(null);
   async function run() {
     if (!file) return setResult('Bạn cần chọn ảnh trước nhé.');
@@ -208,7 +208,7 @@ function VisionTool({ mode, title, icon }) {
     };
     reader.readAsDataURL(file);
   }
-  return <section className="tool-grid"><div className="premium-panel"><h2>{icon} {title}</h2><input type="file" accept="image/*" onChange={e=>setFile(e.target.files?.[0])}/><p className="privacy-note">🛡️ Ảnh tay/khuôn mặt là dữ liệu nhạy cảm. Bản phát hành cần khai báo rõ trong Privacy Policy và không dùng để định danh.</p><button className="primary" onClick={run}>Phân tích</button></div><Result text={result}/></section>;
+  return <section className="tool-grid"><div className="premium-panel"><h2>{icon} {title}</h2><input type="file" accept="image/*" onChange={e=>setFile(e.target.files?.[0])}/><button className="primary" onClick={run}>Phân tích</button></div><Result text={result}/></section>;
 }
 
 function LoveTool() {
@@ -263,14 +263,14 @@ function HoroscopeTool(){
 | Ngũ hành tham khảo | ${element} |
 | Cung hoàng đạo | ${cung} |
 
-### 🔮 Luận giải tổng quan
-- **Khí chất bản mệnh:** có xu hướng suy nghĩ sâu, giàu cảm xúc, khi đã đặt tâm vào điều gì thường muốn làm đến nơi đến chốn.\n- **Tổng quan:** năng lượng hiện tại hợp với việc sắp xếp lại mục tiêu, giảm ôm đồm và chọn việc quan trọng nhất để làm trước.
+### 🔮 Luận giải hôm nay
+- **Tổng quan:** năng lượng hiện tại hợp với việc sắp xếp lại mục tiêu, giảm ôm đồm và chọn việc quan trọng nhất để làm trước.
 - **Công việc:** nên đi theo hướng chắc chắn, kiểm tra kỹ chi tiết, tránh quyết định vội vì cảm xúc nhất thời.
 - **Tài chính:** ưu tiên giữ ổn định, hạn chế chi tiêu bốc đồng; khoản nào chưa rõ thì nên chậm lại một nhịp.
 - **Tình cảm:** cần nói rõ cảm xúc, tránh im lặng quá lâu. Một lời hỏi han đúng lúc có thể làm dịu nhiều hiểu lầm.
 - **Sức khỏe tinh thần:** nên ngủ đủ hơn, bớt căng não vì nhiều kế hoạch cùng lúc.
 
-### 💞 Tình cảm & quan hệ\n- Cần nói rõ cảm xúc, tránh im lặng quá lâu. Một lời hỏi han đúng lúc có thể làm dịu nhiều hiểu lầm.\n- Nên tránh suy diễn khi chưa có đủ thông tin.\n\n### ✨ Lời khuyên riêng theo trọng tâm
+### ✨ Lời khuyên riêng theo trọng tâm
 ${focus || 'Tập trung vào điều thực tế, dễ làm ngay trong hôm nay.'}
 
 > Kết quả mang tính tham khảo văn hóa/giải trí, không thay thế quyết định thực tế.`;
@@ -304,7 +304,7 @@ ${focus || 'Tập trung vào điều thực tế, dễ làm ngay trong hôm nay.
   </section>;
 }
 
-function AstrologyTool(){return <SimpleTool kind="astrology" title="Chiêm tinh" icon="🪐" preset="Hãy luận chiêm tinh thật đầy đủ bằng tiếng Việt, có chiều sâu nhưng an toàn. Cấu trúc bắt buộc: 1) tổng quan cung/biểu tượng, 2) nguyên tố và tính cách cốt lõi, 3) cảm xúc và cách yêu, 4) công việc - định hướng, 5) điểm mạnh, 6) bóng tối/tật xấu cần cân bằng, 7) vận trình gần theo thời điểm hiện tại, 8) lời khuyên thực tế. Không phán chắc tương lai. Câu hỏi/ngữ cảnh:" placeholder="Ví dụ: Song Tử, tình duyên tháng này thế nào?"/>}
+function AstrologyTool(){return <SimpleTool kind="astrology" title="Chiêm tinh" icon="🪐" preset="Luận chiêm tinh đầy đủ, chuyên nghiệp: tổng quan cung, nguyên tố, tính cách, cảm xúc, tình yêu, công việc, điểm mạnh, điểm cần cân bằng, vận trình gần và lời khuyên thực tế. Câu hỏi:" placeholder="Ví dụ: Song Tử, tình duyên tháng này thế nào?"/>}
 function FengShuiTool(){return <SimpleTool kind="fengshui" title="Phong thủy" icon="☯️" preset="Phân tích phong thủy thực tế, màu hợp, hướng hợp, bố trí không gian theo thông tin sau:" placeholder="Ví dụ: sinh năm 1995, muốn xem hướng bàn làm việc và màu hợp."/>}
 function TarotTool(){
   const cards=['The Fool - Khởi đầu mới','The Magician - Chủ động tạo cơ hội','The High Priestess - Lắng nghe trực giác','The Lovers - Lựa chọn trong tình cảm','The Chariot - Tiến lên quyết đoán','Strength - Bình tĩnh và mềm mỏng','The Hermit - Cần thời gian suy ngẫm','Wheel of Fortune - Vận trình đang xoay chuyển','The Star - Hy vọng và chữa lành','The Sun - Rõ ràng, vui vẻ, tích cực'];
@@ -323,7 +323,7 @@ function TarotTool(){
 function NumerologyTool(){
   const [name,setName]=useState(''); const [birth,setBirth]=useState(''); const [out,setOut]=useState('Nhập họ tên và ngày sinh để tính thần số học.');
   function sumDigits(v){let n=String(v).replace(/\D/g,'').split('').reduce((a,b)=>a+Number(b),0); while(n>9 && ![11,22,33].includes(n)) n=String(n).split('').reduce((a,b)=>a+Number(b),0); return n||0}
-  async function run(){const life=sumDigits(birth); setOut('Đang tính local và AI luận giải...'); try{const d=await apiJSON('/api/multi-ai/chat',{provider:'auto',message:`Thần số học cho tên ${name||'chưa nhập'}, ngày sinh ${birth||'chưa nhập'}, số chủ đạo local là ${life}. Luận rõ tính cách, tình duyên, công việc, lời khuyên.`}); setOut(d.text||d.reply||`Số chủ đạo: ${life}`)}catch(e){setOut(`### 🔢 Kết quả local
+  async function run(){const life=sumDigits(birth); setOut('Đang tính local và AI luận giải...'); try{const d=await apiJSON('/api/multi-ai/chat',{provider:'auto',message:`Thần số học chuyên sâu cho tên ${name||'chưa nhập'}, ngày sinh ${birth||'chưa nhập'}, số chủ đạo local là ${life}. Luận rõ tính cách, tình duyên, công việc, lời khuyên.`}); setOut(d.text||d.reply||`Số chủ đạo: ${life}`)}catch(e){setOut(`### 🔢 Kết quả local
 - Họ tên: ${name||'Chưa nhập'}
 - Ngày sinh: ${birth||'Chưa nhập'}
 - Số chủ đạo: ${life||'Chưa đủ dữ liệu'}
@@ -332,14 +332,6 @@ Kết quả chỉ mang tính tham khảo.`)}}
   return <section className="tool-grid"><div className="premium-panel"><h2>🔢 Thần số học AI</h2><input value={name} onChange={e=>setName(e.target.value)} placeholder="Họ và tên"/><input value={birth} onChange={e=>setBirth(e.target.value)} placeholder="Ngày sinh: 01/01/2000"/><button className="primary" onClick={run}>🤖 Luận thần số học</button></div><Result text={out}/></section>
 }
 
-function StoreTrustFooter(){
-  return <section className="store-trust premium-panel">
-    <b>🛡️ Minh bạch & an toàn</b>
-    <span>SyNam Mystic chỉ mang tính tham khảo/giải trí, không thay thế tư vấn y tế, pháp lý, tài chính hoặc quyết định cá nhân.</span>
-    <div><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms</a><a href="/disclaimer.html">Disclaimer</a></div>
-  </section>;
-}
-
-function Result({text}){return <article className="premium-panel result"><h2>📌 Kết quả</h2><div dangerouslySetInnerHTML={{__html: markdownLite(text)}} /><p className="privacy-note">Kết quả chỉ mang tính tham khảo và giải trí.</p></article>}
+function Result({text}){return <article className="premium-panel result"><h2>📌 Kết quả</h2><div dangerouslySetInnerHTML={{__html: markdownLite(text)}} /></article>}
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);

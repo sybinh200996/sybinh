@@ -2,7 +2,7 @@
 @media (max-width:900px){.app-shell{padding:10px 10px 84px}.hero{grid-template-columns:82px 1fr 92px;min-height:178px;border-radius:24px}.hero-img{min-height:178px}.hero-content{padding:14px 6px}.hero h1{font-size:29px;letter-spacing:-1px;margin:10px 0}.hero p{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.status-row{font-size:11px;padding:6px 8px}.hero-actions button{padding:10px 12px;border-radius:14px}.tab-rail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 0}.tab-rail button{font-size:12px;padding:10px 6px;white-space:nowrap}.home-grid{grid-template-columns:1fr 1fr;gap:10px}.premium-panel,.feature-card{border-radius:22px;padding:15px}.feature-card{min-height:128px}.feature-card p{font-size:12px}.chat-layout,.tool-grid{grid-template-columns:1fr}.chat-side{position:static;display:none}.chat-head{padding:14px}.chat-head p{font-size:12px}.chat-box{height:calc(100vh - 390px);min-height:360px;padding:13px}.bubble{max-width:96%}.bubble-body{font-size:14px;border-radius:19px}.composer{position:sticky;bottom:68px;padding:10px}.composer button{min-width:72px;padding:10px}.key-grid{grid-template-columns:1fr}.bottom-nav{position:fixed;left:10px;right:10px;bottom:10px;z-index:20;display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;background:rgba(5,10,28,.86);border:1px solid var(--line);backdrop-filter:blur(18px);border-radius:24px;padding:8px;box-shadow:var(--shadow);scrollbar-width:none}.bottom-nav::-webkit-scrollbar{display:none}.bottom-nav button{flex:0 0 76px;scroll-snap-align:center;background:transparent;color:var(--muted);box-shadow:none;padding:7px 4px;border-radius:16px}.bottom-nav button.active{background:rgba(255,255,255,.13);color:#fff}.bottom-nav span{display:block;font-size:20px}.bottom-nav small{display:block;font-size:10px;line-height:1.1;white-space:normal}.hero-left:after{width:80%}.hero-right:before{width:82%}}
 @media (max-width:520px){.hero{grid-template-columns:70px 1fr 78px}.hero-img{min-height:168px}.hero{min-height:168px}.hero h1{font-size:24px}.hero p{font-size:11.5px}.hero-actions{margin-top:10px;gap:6px}.hero-actions .ghost{display:none}.tab-rail{grid-template-columns:repeat(3,1fr)}.home-grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.provider-pills span:nth-child(n+5){display:none}.chat-box{height:calc(100vh - 365px);min-height:330px}.avatar{width:30px;height:30px;border-radius:12px}.composer textarea{font-size:15px}.feature-card b{font-size:28px}}
 
-/* NAM52 — Store Ready Mystic banner */
+/* NAM44.2 — restore NAM22-style banner + all tabs */
 .hero{grid-template-columns:270px 1fr 290px;min-height:330px;border-radius:36px;background:radial-gradient(circle at 50% 12%,rgba(20,242,255,.32),transparent 25%),linear-gradient(135deg,rgba(4,22,92,.96),rgba(5,8,36,.94) 42%,rgba(8,24,94,.92));box-shadow:0 0 0 1px rgba(51,215,255,.22),0 28px 90px rgba(0,16,70,.55),inset 0 0 45px rgba(0,183,255,.16)}
 .hero:after{z-index:1;background:linear-gradient(90deg,rgba(0,8,35,.12),rgba(0,37,120,.50) 23%,rgba(0,25,88,.35) 50%,rgba(0,31,100,.56) 77%,rgba(0,8,35,.10)),radial-gradient(circle at center,rgba(0,229,255,.18),transparent 58%)}
 .hero-img{z-index:0;min-height:330px}.hero-content{position:relative;z-index:2;text-shadow:0 0 20px rgba(0,238,255,.44)}
@@ -11,7 +11,7 @@
 @media (max-width:900px){.hero{grid-template-columns:96px 1fr 104px;min-height:210px}.hero-img{min-height:210px}.hero h1{font-size:34px}.hero p{letter-spacing:2px;font-size:10px}.hero-search{margin-top:14px;padding:6px 6px 6px 12px}.hero-search input{font-size:11px}.hero-search button{font-size:10px;padding:9px 10px}.hero-actions.quick{display:flex;overflow-x:auto;justify-content:flex-start;padding:0 4px}.hero-actions.quick button{flex:0 0 auto;font-size:11px}.status-row{font-size:10px}.tab-rail{display:flex;gap:8px;padding:8px}.tab-rail button{min-width:88px;padding:9px 8px}.home-grid{grid-template-columns:1fr 1fr}.bottom-nav button{flex-basis:82px}}
 @media (max-width:520px){.hero{grid-template-columns:80px 1fr 86px;min-height:188px;border-radius:22px}.hero-img{min-height:188px}.hero h1{font-size:27px}.hero p{font-size:9px;letter-spacing:1.4px;-webkit-line-clamp:1}.hero-search{width:100%;gap:5px}.hero-search span{display:none}.hero-search input{font-size:10px;padding:8px}.hero-search button{padding:8px 8px}.tab-rail button{min-width:84px}.feature-card{min-height:118px}.premium-panel.wide p{font-size:13px}.provider-pills{display:none}}
 
-/* NAM52 — Mobile-first Store Ready */
+/* NAM47 — Mobile giống NAM44, nền lấy cảm giác NAM42, bỏ ghi chú dev */
 :root{
   --bg:#040b1e;
   --panel:rgba(7,22,51,.72);
@@ -48,7 +48,7 @@ body:before{
   border-color:rgba(95,172,255,.30)!important;
   box-shadow:var(--shadow), inset 0 0 35px rgba(58,154,255,.08)!important;
 }
-/* Banner: giữ layout NAM48, ảnh rõ, mobile-first */
+/* Banner: giữ layout NAM44 nhưng bỏ AI phân tích/đổi bài, ảnh rõ hơn */
 .hero{
   background:
     radial-gradient(circle at 50% 12%,rgba(20,242,255,.24),transparent 27%),
@@ -115,78 +115,93 @@ body:before{
 }
 
 
-/* NAM52 Store Trust Add-on */
-.store-trust{margin:18px auto 92px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:rgba(255,255,255,.86)}
-.store-trust div{display:flex;flex-wrap:wrap;gap:10px}
-.store-trust a{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.13);color:#fff;text-decoration:none;font-weight:800}
-.privacy-note{margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.82)}
-@media(max-width:520px){.store-trust{margin-bottom:108px}.store-trust div a{flex:1;min-width:30%}}
-
-
-/* NAM52.1 HOTFIX — desktop animated background + right banner edge blend */
-body::before{
-  content:"";
-  position:fixed;
-  inset:-20%;
-  pointer-events:none;
-  z-index:-2;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255, 126, 228, .18), transparent 34%),
-    radial-gradient(circle at 82% 12%, rgba(255, 220, 120, .13), transparent 32%),
-    radial-gradient(circle at 50% 88%, rgba(98, 144, 255, .16), transparent 36%);
-  filter: blur(16px);
-  animation: nam52MysticBgMove 16s ease-in-out infinite alternate;
+/* NAM52 PRO — mobile-first guard, smaller title, desktop animation, right image blend */
+.hero h1,
+.brand h1,
+.header-title,
+.app-title{
+  font-size: clamp(18px, 4.2vw, 29px) !important;
+  transform: scale(.7);
+  transform-origin: left center;
+  line-height: 1.08 !important;
 }
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:-1;
-  background: linear-gradient(135deg, rgba(255,255,255,.035), transparent 28%, rgba(255,255,255,.025) 58%, transparent);
-  animation: nam52MysticLightSweep 9s ease-in-out infinite alternate;
+@media (max-width: 760px){
+  .hero h1,.brand h1,.header-title,.app-title{
+    font-size: clamp(17px, 6vw, 24px) !important;
+    transform: scale(.7);
+  }
+  .app-shell,.main,.container,.content,.page{
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
-@keyframes nam52MysticBgMove{
+
+/* Desktop-only animated Mystic background */
+@media (min-width: 761px){
+  body::before{
+    content:"";
+    position:fixed;
+    inset:-22%;
+    pointer-events:none;
+    z-index:-2;
+    background:
+      radial-gradient(circle at 16% 24%, rgba(255, 126, 228, .20), transparent 34%),
+      radial-gradient(circle at 82% 14%, rgba(255, 220, 120, .15), transparent 32%),
+      radial-gradient(circle at 48% 86%, rgba(98, 144, 255, .18), transparent 38%);
+    filter: blur(16px);
+    animation: nam52ProMysticBgMove 16s ease-in-out infinite alternate;
+  }
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+    background: linear-gradient(135deg, rgba(255,255,255,.035), transparent 28%, rgba(255,255,255,.025) 58%, transparent);
+    animation: nam52ProMysticLightSweep 9s ease-in-out infinite alternate;
+  }
+}
+@keyframes nam52ProMysticBgMove{
   0%{transform:translate3d(-1.5%, -1%, 0) scale(1)}
   50%{transform:translate3d(1.5%, 1%, 0) scale(1.04)}
   100%{transform:translate3d(2%, -1.5%, 0) scale(1.02)}
 }
-@keyframes nam52MysticLightSweep{
+@keyframes nam52ProMysticLightSweep{
   0%{opacity:.35;transform:translateX(-2%)}
   100%{opacity:.62;transform:translateX(2%)}
 }
 
-/* Làm mờ viền ảnh banner bên phải hòa vào banner */
+/* Right banner photo edge fade */
 .hero-photos .photo-wrap.right,
 .hero-right,
 .banner-right,
-.hero-side.right{
-  position:relative;
-  overflow:hidden;
+.hero-side.right,
+.photo-right{
+  position:relative !important;
+  overflow:hidden !important;
 }
 .hero-photos .photo-wrap.right::before,
 .hero-right::before,
 .banner-right::before,
-.hero-side.right::before{
+.hero-side.right::before,
+.photo-right::before{
   content:"";
   position:absolute;
   inset:0;
   z-index:3;
   pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(6,17,43,.78) 0%, rgba(6,17,43,.22) 18%, transparent 42%),
-    linear-gradient(270deg, rgba(6,17,43,.70) 0%, rgba(6,17,43,.18) 16%, transparent 38%),
-    linear-gradient(180deg, rgba(6,17,43,.65) 0%, transparent 26%, transparent 74%, rgba(6,17,43,.65) 100%);
+    linear-gradient(90deg, rgba(6,17,43,.78) 0%, rgba(6,17,43,.25) 18%, transparent 43%),
+    linear-gradient(270deg, rgba(6,17,43,.68) 0%, rgba(6,17,43,.18) 15%, transparent 38%),
+    linear-gradient(180deg, rgba(6,17,43,.58) 0%, transparent 24%, transparent 76%, rgba(6,17,43,.58) 100%);
 }
 .hero-photos .photo-wrap.right img,
 .hero-right img,
 .banner-right img,
-.hero-side.right img{
+.hero-side.right img,
+.photo-right img{
   width:100%;
   height:100%;
   object-fit:cover;
   filter:saturate(1.08) contrast(1.04);
-}
-@media(max-width:760px){
-  body::before{animation-duration:22s;filter:blur(20px);opacity:.85}
 }

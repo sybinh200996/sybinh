@@ -1,0 +1,23 @@
+SyNam Mystic NAM52 PRO - tạo từ NAM48 gốc
+
+Đã làm:
+- Giữ nền NAM48, giữ assets/banner, không cắt cụt app.
+- Giữ Chat AI chuyên nghiệp, đổi tên thành Đặng Năm AI.
+- Tiêu đề SyNam Mystic thu nhỏ còn khoảng 70%.
+- Giữ mobile-first, không ép mobile thành desktop.
+- Thêm hình động desktop dạng Mystic glow animation.
+- Làm mờ viền ảnh banner bên phải bằng CSS.
+- Weather Pro: thêm /api/weather-detail, ưu tiên Việt Trì/Phú Thọ/Lào Cai, dự báo chi tiết Open-Meteo.
+- Mystic Deep: prompt luận giải dài hơn, chuyên nghiệp hơn.
+- Thêm Privacy / Terms / Disclaimer.
+- Dọn note/changelog cũ, giữ runtime.
+
+node --check server.js: 0
+stderr:
+
+
+Tên cũ còn sót:
+[('public/style.css', {'NAM44': 3})]
+
+File đã dọn:
+[('FIX_NOTE.txt', 153, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM12_STABLE_FIX_NOTE.txt', 241, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM14_IMAGE_AI_NOTE.txt', 609, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM16_FINAL_REUPLOAD_NOTE.txt', 273, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM16_PHOENIX_CHANGELOG.txt', 975, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM17_IMAGE_MODEL_MANAGER_NOTE.txt', 784, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM18_MEMBER_AUTH_NOTE.txt', 1265, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM19_20_MULTI_AI_SMART_NOTE.txt', 1250, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM21_1_VOICE_VIET_PRO_NOTE.txt', 800, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM21_CHAT_PRO_VOICE_NOTE.txt', 1012, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM22_VOICE_CONTROL_PRO_NOTE.txt', 147, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM23_AI_CHAT_ULTRA_PRO_NOTE.txt', 839, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM24_1_UX_REAL_FIX_NOTE.txt', 588, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM24_2_GROQ_OPENROUTER_FREE_NOTE.md', 1574, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM24_UX_AUTH_FIX_NOTE.txt', 384, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM3_CHATBOT_UPGRADE_NOTE.txt', 722, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM3_FIX_NOTE.txt', 2273, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM3_QA_AI_NOTE.txt', 371, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM3_TINH_DUYEN_FIX_NOTE.txt', 421, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM5_UI_ROUTE_NOTE.txt', 298, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM7_GEMINI_PIXEL_THEME_NOTE.txt', 724, 'Dọn dấu vết/changelog phiên bản cũ'), ('README_NAM5_UI_ROUTE.md', 686, 'Dọn dấu vết/changelog phiên bản cũ'), ('REBUILD_NOTE.txt', 57, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM25_MOBILE_VOICE_BRAND_NOTE.txt', 501, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM26_FIXED_LOVE_NUMEROLOGY_NOTE.txt', 161, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM27_AI_CORE_STABLE_FIX_NOTE.txt', 870, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM28_AI_WEATHER_DATE_STABLE_NOTE.txt', 1244, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM29_VOICE_UX_PRO_NOTE.txt', 948, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM30_MEMORY_PRO_NOTE.txt', 1039, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM31_HIDE_MODEL_BANNER_80_NOTE.txt', 318, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM32_WEATHER_BANNER_FIX_NOTE.txt', 167, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM33_REAL_DASHBOARD_BANNER_BLEND_NOTE.txt', 982, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM34_WEATHER_BANNER_TABS_FIX_NOTE.txt', 836, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM35_TABS_ALIGN_FIX_NOTE.txt', 352, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM36_WEATHER_REAL_TABS_BANNER_NOTE.txt', 217, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM37_CAREFUL_UI_WEATHER_FIX_NOTE.txt', 835, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM38_MOBILE_FIX_NOTE.txt', 558, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM40_STABLE_DESKTOP_MOBILE_NOTE.txt', 471, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM41_MOBILE_AI_PRO_NOTE.txt', 327, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM42_MOBILE_CHATGPT_STYLE_NOTE.txt', 602, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM44_REACT_ULTRA_PREMIUM_NOTE.txt', 2304, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM44_1_ALL_TABS_FIX_NOTE.txt', 231, 'Dọn dấu vết/changelog phiên bản cũ'), ('NAM48_TUVI_LUAN_GIAI_FIX_NOTE.txt', 419, 'Dọn dấu vết/changelog phiên bản cũ'), ('public/index_nam42_backup.html', 23421, 'Xóa backup NAM42 khỏi bản phát hành, không xóa assets'), ('public/app_nam42_backup.js', 58675, 'Xóa backup NAM42 khỏi bản phát hành, không xóa assets'), ('public/style_nam42_backup.css', 102008, 'Xóa backup NAM42 khỏi bản phát hành, không xóa assets')]
