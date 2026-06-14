@@ -100,7 +100,7 @@ function Hero({ setTab, health, providers }) {
       <p>Tử vi • Thần số học • Chiêm tinh • Tình duyên • Phong thủy</p>
       <div className="hero-actions quick"><button onClick={() => setTab('horoscope')}>🔮 Tử vi hôm nay</button><button onClick={() => setTab('astrology')}>🪐 Cung hoàng đạo</button><button onClick={() => setTab('palm')}>✋ Xem chỉ tay</button><button onClick={() => setTab('face')}>🙂 Xem tướng</button></div>
     </div>
-    <div className="hero-img hero-right"><img src="assets/hero-right.jpg" /></div>
+    <div className="hero-img hero-right"><img src="assets/hero-right-dangnam-nam52.jpg?v=nam52-banner-20260614" /></div>
   </header>;
 }
 

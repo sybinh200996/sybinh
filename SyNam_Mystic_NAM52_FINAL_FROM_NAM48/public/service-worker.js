@@ -1,4 +1,4 @@
-const CACHE = "synam-nam24-1-ux-real-fix-v1";
+const CACHE = "synam-mystic-nam52-banner-20260614-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,9 @@ const ASSETS = [
   "./app.js",
   "./knowledge.js",
   "./manifest.webmanifest",
-  "./assets/icon.svg"
+  "./assets/icon.svg",
+  "./assets/hero-right-dangnam-nam52.jpg",
+  "./assets/hero-right-dangnam-nam52.png"
 ];
 
 self.addEventListener("install", event => {
@@ -20,5 +22,11 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  const url = new URL(event.request.url);
+  const isFreshFile = url.pathname.endsWith("/") || url.pathname.endsWith(".html") || url.pathname.endsWith(".js") || url.pathname.endsWith(".css");
+  if (isFreshFile) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request)));
 });
