@@ -236,9 +236,6 @@ function maskKey(key = "") {
 function pickProviderKey(provider, user = null) {
   const info = AI_PROVIDERS[provider];
   if (!info) return "";
-  if (provider === "claude") {
-    return user?.aiKeys?.[provider] || process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY || "";
-  }
   return user?.aiKeys?.[provider] || process.env[info.keyEnv] || "";
 }
 
@@ -722,7 +719,7 @@ async function tryModels(parts, preferredModel = "auto") {
 }
 
 app.get("/api", (req, res) => {
-  res.json({ ok: true, app: "SyNam NAM44 React Ultra Premium", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
+  res.json({ ok: true, app: "Sỹ Năm Mystic Phoenix", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
 });
 
 app.post("/api/auth/register", async (req, res) => {
@@ -984,7 +981,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "SyNam NAM44 React Ultra Premium"
+    app: "Sỹ Năm Mystic AI NAM30 Memory Pro"
   });
 });
 

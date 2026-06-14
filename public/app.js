@@ -588,25 +588,8 @@ async function sendChat(){
     lastResult='';
   }
 }
-function parseMysticDate(v){
-  if(!v) return null;
-  if(/^\d{4}-\d{2}-\d{2}$/.test(v)){const [y,m,d]=v.split('-').map(Number);return {y,m,d};}
-  const parts=String(v).match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/);
-  if(parts) return {d:+parts[1],m:+parts[2],y:+parts[3]};
-  return null;
-}
-function mysticCanChiYear(y){const can=['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];const chi=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];return `${can[(y+6)%10]} ${chi[(y+8)%12]}`;}
-function mysticElementYear(y){return ['Kim','Thủy','Hỏa','Thổ','Mộc'][(Math.floor(((y-4)%60)/2)%5+5)%5];}
-function mysticZodiac(d,m){const z=[['Ma Kết',1,19],['Bảo Bình',2,18],['Song Ngư',3,20],['Bạch Dương',4,19],['Kim Ngưu',5,20],['Song Tử',6,21],['Cự Giải',7,22],['Sư Tử',8,22],['Xử Nữ',9,22],['Thiên Bình',10,23],['Bọ Cạp',11,22],['Nhân Mã',12,21],['Ma Kết',12,31]];for(const [name,mm,last] of z){if(m===mm&&d<=last)return name;}return 'Ma Kết';}
-function localMystic(){
-  const name=$('name').value||'Bạn'; const birthDate=$('birthDate').value; const birthTime=$('birthTime').value||'Chưa nhập'; const gender=$('gender').value||'Chưa chọn'; const focus=$('mysticFocus')?.value||'Tổng quan hôm nay, công việc, tình cảm, tài chính';
-  const bd=parseMysticDate(birthDate);
-  if(!bd){const warn='⚠️ Bạn cần nhập ngày sinh hợp lệ để luận giải. Ví dụ: 2000-01-01.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi',warn);return warn;}
-  const age=new Date().getFullYear()-bd.y; const canchi=mysticCanChiYear(bd.y); const element=mysticElementYear(bd.y); const cung=mysticZodiac(bd.d,bd.m);
-  const text=`### 📜 Tổng quan tử vi cho ${name}\n\n| Mục | Thông tin |\n|---|---|\n| Ngày sinh | ${String(bd.d).padStart(2,'0')}/${String(bd.m).padStart(2,'0')}/${bd.y} |\n| Giờ sinh | ${birthTime} |\n| Giới tính | ${gender} |\n| Tuổi tham khảo | ${age} |\n| Can chi năm sinh | ${canchi} |\n| Ngũ hành tham khảo | ${element} |\n| Cung hoàng đạo | ${cung} |\n\n### 🔮 Luận giải hôm nay\n- **Tổng quan:** năng lượng hiện tại hợp với việc sắp xếp lại mục tiêu, giảm ôm đồm và chọn việc quan trọng nhất để làm trước.\n- **Công việc:** nên đi theo hướng chắc chắn, kiểm tra kỹ chi tiết, tránh quyết định vội vì cảm xúc nhất thời.\n- **Tài chính:** ưu tiên giữ ổn định, hạn chế chi tiêu bốc đồng; khoản nào chưa rõ thì nên chậm lại một nhịp.\n- **Tình cảm:** cần nói rõ cảm xúc, tránh im lặng quá lâu. Một lời hỏi han đúng lúc có thể làm dịu nhiều hiểu lầm.\n- **Tinh thần:** nên ngủ đủ hơn, bớt căng não vì nhiều kế hoạch cùng lúc.\n\n### ✨ Trọng tâm\n${focus}\n\n> Kết quả mang tính tham khảo văn hóa/giải trí, không thay thế quyết định thực tế.`;
-  $('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text);return text;
-}
-async function generateMystic(){setLoading('report',true);try{const birthDate=$('birthDate').value;const bd=parseMysticDate(birthDate);const localReport=localMystic();if(!bd) return;const computed={canChiYear:mysticCanChiYear(bd.y),element:mysticElementYear(bd.y),westernZodiac:mysticZodiac(bd.d,bd.m),focus:$('mysticFocus')?.value||''};const payload={name:$('name').value,birthDate,birthTime:$('birthTime').value,gender:$('gender').value,profile:{name:$('name').value,birthDate,birthTime:$('birthTime').value,gender:$('gender').value,focus:$('mysticFocus')?.value||''},computed,localReport};const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||localReport||'Không có nội dung trả về.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng local ổn định')}finally{setLoading('report',false)}}
+function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
+async function generateMystic(){setLoading('report',true);try{const payload={name:$('name').value,birthDate:$('birthDate').value,birthTime:$('birthTime').value,gender:$('gender').value};const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng local')}finally{setLoading('report',false)}}
 
 function reduceNumber(n, keepMaster=true){
   n = Math.abs(parseInt(n||0,10)||0);

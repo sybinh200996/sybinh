@@ -1,0 +1,5 @@
+NAM50 ROLLBACK SAFE
+- Khôi phục nền NAM46 nguyên bản để tránh phá giao diện/tính năng.
+- Không dùng app.js/index.html dạng React của NAM48 vì khác kiến trúc và dễ bung layout.
+- Giữ desktop, tính năng, server, public của NAM46.
+- Dùng bản này để thay cho NAM49 nếu NAM49 bị lỗi giao diện.
