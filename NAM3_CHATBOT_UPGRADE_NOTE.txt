@@ -1,0 +1,16 @@
+NAM3 CHATBOT AI UPGRADE
+
+Đã thêm tab Chatbot AI nâng cấp:
+- Chat tự do giống Gemini.
+- Upload nhiều ảnh/file để hỏi.
+- Hỗ trợ ảnh, PDF và file text/csv/json/md/html/css/js.
+- File text được đọc nội dung trực tiếp trên trình duyệt rồi gửi vào Gemini.
+- Ảnh/PDF gửi dạng inlineData cho Gemini nếu model hỗ trợ.
+- Có lịch sử chat lưu localStorage.
+- Dùng lại chọn model Gemini + fallback tự động.
+- Endpoint server mới: POST /api/chat-ai.
+
+Lưu ý:
+- Nên dùng model auto hoặc gemini-2.5-flash để đọc ảnh/file ổn hơn.
+- File nên dưới 8MB để tránh quá tải server/free host.
+- Không đưa GEMINI_API_KEY vào frontend/APK.

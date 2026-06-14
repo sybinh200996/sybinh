@@ -1,0 +1,1 @@
+NAM32: Fix thời tiết Việt Trì/Phú Thọ bằng Open-Meteo, sửa markdown **đậm**, chỉnh ảnh banner phải hiển thị đầy đủ và khớp banner.

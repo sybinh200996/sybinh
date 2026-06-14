@@ -1,0 +1,49 @@
+NĂM 3 FIX NOTE - 2026-05-27
+
+Đã chỉnh các lỗi chính:
+
+1) Gemini/server
+- Thêm endpoint /api/gemini-check để test kết nối Gemini trực tiếp.
+- Thêm nút "🧪 Test kết nối Gemini" trong app.
+- Thêm timeout khi gọi Gemini để tránh treo lâu.
+- Thêm model fallback: GEMINI_MODEL trong .env, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash.
+- Cải thiện thông báo lỗi: API key, quota, model không khả dụng, lỗi mạng/proxy/DNS/tường lửa.
+
+2) Xem chỉ tay / xem tướng
+- Tab Ảnh tay/mặt đã có nút:
+  + 🤖 Xem chỉ tay bằng AI
+  + 🔎 Xem chỉ tay local
+  + 🤖 Xem tướng mặt bằng AI
+  + 🔎 Xem tướng mặt local
+- Thêm vùng kết quả riêng "Kết quả xem tay/mặt".
+- Xem ảnh AI không bắt buộc nhập ngày sinh nữa.
+- Nếu Gemini lỗi, app tự hiện bản local + thông báo lỗi.
+
+3) Chữ tiếng Việt có dấu bị nhỏ
+- Đổi font ưu tiên sang Arial/Tahoma/Segoe UI/Noto Sans để hiển thị tiếng Việt đều hơn.
+- Thêm line-height và font smoothing.
+- Áp font đồng nhất cho input, select, textarea, button, card, report.
+
+Cách chạy:
+1. Giải nén zip.
+2. Mở CMD trong thư mục app.
+3. Chạy: npm install
+4. Tạo file .env từ .env.example và thêm GEMINI_API_KEY.
+5. Chạy: npm start
+6. Mở: http://localhost:3000
+7. Bấm "🧪 Test kết nối Gemini" để kiểm tra API.
+
+Nếu vẫn báo server Gemini:
+- Kiểm tra GEMINI_API_KEY trong .env không có dấu ngoặc kép thừa.
+- Thử đổi mạng/VPN/proxy.
+- Kiểm tra quota tài khoản Google AI Studio.
+- Có thể thêm GEMINI_MODEL=gemini-2.5-flash vào .env.
+
+NAM3 MODEL SWITCH FIX:
+- Thêm ô chọn Model Gemini ở đầu app.
+- Có chế độ Auto: tự thử lần lượt nhiều model nếu model đầu bị lỗi/quota/không hỗ trợ.
+- Khi chọn một model cụ thể, server sẽ thử model đó trước rồi fallback sang danh sách dự phòng.
+- Có thể cấu hình thêm trong .env:
+  GEMINI_MODEL=gemini-2.5-flash
+  GEMINI_MODELS=gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.0-flash,gemini-2.0-flash-lite
+- API /api/health trả về danh sách model; /api/gemini-check?model=... dùng để test model đã chọn.

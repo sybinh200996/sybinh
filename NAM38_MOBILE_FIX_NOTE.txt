@@ -1,0 +1,7 @@
+NAM38 MOBILE FIX
+- Sửa riêng giao diện mobile, không phá desktop.
+- Ảnh banner trái/phải chuyển về lớp nền mờ trên mobile, không còn đè chữ và ô tìm kiếm.
+- Topbar mobile gọn lại: ẩn đồng hồ/profile, giữ menu + trạng thái API + nút âm thanh/ngôn ngữ.
+- Ô tìm kiếm mobile chuyển layout 2 dòng rõ ràng, nút AI PHÂN TÍCH full width.
+- Quick button mobile chỉ giữ 2 nút quan trọng để không vỡ layout.
+- Tab chức năng mobile tăng kích thước nhẹ, cuộn ngang ổn định.

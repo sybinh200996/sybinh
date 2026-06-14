@@ -1,0 +1,1 @@
+NAM36: sửa thời tiết có fallback Open-Meteo -> wttr.in -> browser fallback, không hiện lỗi kỹ thuật; sửa literal \n; căn lại tab chức năng; giữ ảnh banner phải nguyên ảnh vừa khung.

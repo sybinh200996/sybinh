@@ -1,0 +1,16 @@
+NAM21.1 VOICE VIỆT PRO
+
+Đã sửa lỗi chữ tiếng Việt nhưng giọng đọc bị tiếng Anh.
+
+Nâng cấp:
+- Ép SpeechSynthesisUtterance lang = vi-VN.
+- Tự tìm giọng vi-VN/Vietnam/Tiếng Việt trong trình duyệt.
+- Thêm dropdown chọn giọng đọc.
+- Lưu giọng đã chọn vào localStorage.
+- Nếu máy chưa có giọng Việt, app báo rõ để cài thêm voice tiếng Việt.
+- Cập nhật service-worker cache để tránh dùng file cũ.
+
+Lưu ý:
+- Chrome/Edge Android thường đọc tiếng Việt tốt nếu hệ thống có Google Text-to-Speech tiếng Việt.
+- Windows cần cài Speech language Tiếng Việt nếu không thấy giọng vi-VN.
+- iPhone/Safari có thể giới hạn SpeechRecognition, nhưng SpeechSynthesis vẫn tùy hệ thống.

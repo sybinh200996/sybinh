@@ -722,7 +722,7 @@ async function tryModels(parts, preferredModel = "auto") {
 }
 
 app.get("/api", (req, res) => {
-  res.json({ ok: true, app: "SyNam Mystic NAM52.2", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
+  res.json({ ok: true, app: "SyNam Mystic", routes: ["/api/health", "/api/models", "/api/ai/providers", "/api/multi-ai/chat", "/api/auth/register", "/api/auth/login", "/api/auth/social", "/api/auth/me", "/api/auth/firebase-config"] });
 });
 
 app.post("/api/auth/register", async (req, res) => {
@@ -984,7 +984,7 @@ app.get("/api/health", (req, res) => {
     imageModels: resolveImageModelOrder("auto"),
     imageModel: resolveImageModelOrder("auto")[0] || "auto",
     multiAIProviders: enabledProvidersForUser(null).map(p => ({ id: p.id, label: p.label, configured: p.configured, model: p.model })),
-    app: "SyNam Mystic NAM52.2"
+    app: "SyNam Mystic"
   });
 });
 
@@ -1048,7 +1048,7 @@ DỮ LIỆU NGƯỜI DÙNG:
 - Độ rõ đường tay: ${palmDepth || "Không chọn"}
 - Ghi chú chỉ tay: ${finalPalmNote || "Không có"}
 
-Hãy trả về thật chi tiết, chuyên nghiệp, nhiều lớp, không trả lời cụt. Cấu trúc:
+Hãy trả về theo cấu trúc:
 1. Nhận xét chất lượng ảnh/ghi chú
 2. Tổng quan lòng bàn tay và khí chất tham khảo
 3. Phân tích đường tay chính được chọn
@@ -1076,7 +1076,7 @@ DỮ LIỆU NGƯỜI DÙNG:
 - Bộ phận muốn xem kỹ: ${finalFacePart || "Không chọn"}
 - Ghi chú tướng mặt: ${finalFaceNote || "Không có"}
 
-Hãy trả về thật chi tiết, chuyên nghiệp, nhiều lớp, không trả lời cụt. Cấu trúc:
+Hãy trả về theo cấu trúc:
 1. Nhận xét chất lượng ảnh/ghi chú
 2. Tổng quan thần thái và phong thái tham khảo
 3. Phân tích bộ phận được chọn
@@ -1168,7 +1168,7 @@ app.post("/api/chat-ai", async (req, res) => {
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 6000) : "Không có";
 
     const parts = [{ text: `
-Bạn là Đặng Năm AI trong app SyNam Mystic Pro. Phong cách trả lời phải giống một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: hiểu đúng ý, trả lời có cấu trúc, thực tế, không vòng vo, không bịa. Không tiết lộ model, provider, API, tên nền tảng AI đang chạy. Bạn không phải là Đặng Năm AI và không tự nhận là Đặng Năm AI.
+Bạn là Đặng Năm AI trong app SyNam Mystic Ultimate Pro. Phong cách trả lời phải giống một trợ lý AI chuyên nghiệp kiểu ChatGPT/Gemini: hiểu đúng ý, trả lời có cấu trúc, thực tế, không vòng vo, không bịa. Không tiết lộ model, provider, API, tên nền tảng AI đang chạy. Bạn không phải là Đặng Năm AI và không tự nhận là Đặng Năm AI.
 
 THỜI GIAN HỆ THỐNG VIỆT NAM:
 - Hiện tại: ${currentVietnamTime()}
@@ -1335,7 +1335,7 @@ app.post("/api/teacher-ai", async (req, res) => {
     if (!cleanMessage) return res.status(400).json({ error: "Bạn cần nhập câu hỏi trước." });
     const contextText = context ? JSON.stringify(context, null, 2).slice(0, 7000) : "Không có";
     const parts = [{ text: `
-Bạn là "Đặng Năm AI" trong app SyNam Mystic Pro. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
+Bạn là "Đặng Năm AI" trong app SyNam Mystic Ultimate Pro. Hãy trả lời bằng tiếng Việt, giọng ấm áp, gần gũi, có màu sắc huyền học nhưng không mê tín cực đoan.
 
 QUY TẮC:
 - Đây là module riêng của Đặng Năm AI, không phải chatbot Hỏi và Đáp AI.
@@ -1367,7 +1367,7 @@ app.post("/api/love-ai", async (req, res) => {
     const fixedProfiles = finalPersons.map((p, i) => fixedLunarProfile(p, i + 1));
     const fixedSummary = fixedProfiles.map(p => `- ${p.name}: ${p.birthDate || 'chưa nhập'} => ${p.year || 'thiếu năm'}${p.canChi ? `, tuổi ${p.canChi}, nạp âm ${p.napAm}, ngũ hành ${p.nguHanh}` : ''}`).join("\n");
     const parts = [{ text: `
-Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app SyNam Mystic Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
+Bạn là chuyên gia luận TÌNH DUYÊN/HỢP TUỔI bằng tiếng Việt trong app SyNam Mystic Ultimate Pro. Hãy viết chi tiết, rõ ràng, có cấu trúc đẹp.
 
 THỜI GIAN HIỆN TẠI TẠI VIỆT NAM: ${currentVietnamTime()}
 
@@ -1395,7 +1395,7 @@ ${focus || "tong-quan"}
 BẢN LOCAL NỀN:
 ${localReport || ""}
 
-Hãy trả về thật chi tiết, chuyên nghiệp, nhiều lớp, không trả lời cụt. Cấu trúc:
+Hãy trả về theo cấu trúc:
 1. Bảng tổng quan 2 người
 2. Điểm hợp tổng quan và mức độ tương hợp
 3. Phân tích Can Chi - Địa Chi
@@ -1469,7 +1469,7 @@ ${finalFaceNote || "Không có"}
 BẢN LUẬN GIẢI LOCAL NỀN:
 ${localReport || ""}
 
-Hãy viết bài luận giải cuối cùng thật chi tiết, chuyên nghiệp, tối thiểu 900-1500 từ nếu đủ dữ liệu, theo cấu trúc:
+Hãy viết bài luận giải cuối cùng theo cấu trúc:
 1. Bảng tổng quan bản mệnh
 2. Phân tích âm dương, ngũ hành và can chi
 3. Cung mệnh, cung phi và hướng khí

@@ -1,0 +1,21 @@
+NAM52 RESCUE STABLE
+
+Nguồn: SyNam_NAM48_TUVI_LUAN_GIAI_FIX.zip
+
+Nguyên tắc:
+- Không làm lại UI.
+- Không phá mobile.
+- Không đụng Chat AI core.
+- Chỉ vá nhẹ banner và thương hiệu.
+
+Đã làm:
+- Đổi tên AI thành Đặng Năm AI trong app/server/knowledge/index.
+- Giữ giao diện NAM48 gốc.
+- Chỉ thêm CSS thu nhỏ ảnh banner bằng object-fit: contain.
+- Làm mờ viền ảnh phải bằng CSS.
+- Thêm Privacy / Terms / Disclaimer.
+- Bump cache.
+
+node --check server.js:
+exit_code=0
+stderr=

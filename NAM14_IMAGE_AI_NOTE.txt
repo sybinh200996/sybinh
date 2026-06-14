@@ -1,0 +1,15 @@
+NAM14 - Thêm tạo ảnh/chỉnh sửa ảnh AI trong Chatbot
+
+Đã thêm vào trang AI Chat - Hỏi và đáp:
+- Tab Hỏi đáp
+- Tab Tạo ảnh AI
+- Tab Chỉnh sửa ảnh AI
+- Chế độ chỉnh sửa ảnh có nút tải ảnh gốc
+- Kết quả ảnh có nút tải ảnh về máy
+
+Backend mới:
+- POST /api/image-ai
+- Dùng GEMINI_API_KEY thật
+- Có biến GEMINI_IMAGE_MODEL trong .env.example
+
+Lưu ý: tạo/chỉnh ảnh phụ thuộc API key Gemini có quyền dùng model image generation hay không. Nếu key/model không hỗ trợ, app sẽ báo lỗi rõ, không dùng ảnh giả.

@@ -1,0 +1,18 @@
+NAM27 CLEAN - AI CORE STABLE FIX
+
+Đã sửa nhóm lỗi AI:
+1. Chat AI/Multi-AI được gửi kèm lịch sử hội thoại gần đây, tránh mất ngữ cảnh.
+2. Câu hỏi ngày/giờ đơn giản được server xử lý trực tiếp bằng giờ Việt Nam, không để AI tự đoán/hỏi ngược.
+3. Prompt chat có thời gian hệ thống: hôm nay, ngày mai, ngày kia.
+4. Tình duyên khóa cứng Can Chi/Nạp âm/Ngũ hành bằng code trước khi gửi AI luận giải.
+   Ví dụ: 2004 = Giáp Thân, nạp âm Tuyền Trung Thủy.
+5. Thần số học: AI chỉ mở rộng bản local, không tự tính lại số.
+6. Voice nhập giọng không gửi ngay lập tức, chờ 3 giây sau khi ngừng nói.
+
+File đã chỉnh:
+- server.js
+- public/app.js
+
+Đã kiểm tra cú pháp:
+- node --check server.js
+- node --check public/app.js

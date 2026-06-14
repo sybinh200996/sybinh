@@ -1,0 +1,13 @@
+NAM42 - Mobile ChatGPT/Gemini Style Fix
+
+Mục tiêu:
+- Điện thoại là chính: mở app trên mobile vào thẳng AI Chat.
+- Trang chat ẩn banner lớn để không chiếm màn hình.
+- Ô nhập chat dính dưới, tin nhắn giống ChatGPT/Gemini hơn.
+- Các trang khác vẫn còn banner nhưng đã thu gọn mạnh trên mobile.
+- Không sửa ảnh gốc, không sửa server upload.
+- Giữ Weather Core và prompt AI chuyên nghiệp từ NAM41.
+
+Lưu ý:
+- Trên desktop vẫn vào Trang chủ như cũ.
+- Trên mobile nếu muốn xem trang chủ bấm icon Home ở thanh dưới.
