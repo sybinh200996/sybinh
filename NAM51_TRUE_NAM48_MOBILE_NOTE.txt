@@ -1,0 +1,10 @@
+NAM51 TRUE NAM48 MOBILE
+- Base source: NAM46, giữ desktop và toàn bộ tính năng NAM46.
+- Không thay index/app.js của NAM46 để tránh mất chức năng.
+- Chỉ thêm lớp CSS mobile <=760px để giao diện điện thoại giống NAM48 hơn:
+  + Banner thấp/gọn kiểu NAM48.
+  + 2 ảnh hai bên rõ hơn, mờ viền hòa banner.
+  + Ẩn ô search trên banner.
+  + Hỏi AI ngay sau banner.
+  + Tabs ngang premium kiểu NAM48, không bung bét nhiều dòng.
+  + Bottom nav compact.
