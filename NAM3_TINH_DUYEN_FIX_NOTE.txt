@@ -1,7 +1,0 @@
-NAM3_TINH_DUYEN_FIX
-- Tra lai tab Luan giai rieng, khong bi thay bang Thay Sy Nam.
-- Them tab Thay Sy Nam rieng biet.
-- Tra lai tab Hop tuoi theo yeu cau va doi ten thanh Tinh duyen.
-- Tinh duyen nhap day du thong tin ngay thang nam sinh, gio sinh neu co, gioi tinh cua 2 nguoi.
-- Them local report tinh duyen va endpoint AI /api/love-ai de luan giai chi tiet.
-- Giu rieng cac tab: Xem chi tay, Xem tuong, Hoi va Dap AI.

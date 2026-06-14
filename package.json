@@ -1,6 +1,6 @@
 {
-  "name": "synam-mystic-nam52-rescue-stable",
-  "version": "52.0.0-rescue",
+  "name": "synam-mystic-nam53-redesign-rc1",
+  "version": "53.0.0-rc1",
   "type": "module",
   "engines": {
     "node": "20.x"
@@ -16,5 +16,5 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.2"
   },
-  "description": "SyNam Mystic NAM52 Rescue Stable - based on NAM48, minimal fixes only."
+  "description": "SyNam Mystic NAM53 Redesign RC1 - Gemini audit inspired UI/UX redesign, preserving NAM48 features."
 }

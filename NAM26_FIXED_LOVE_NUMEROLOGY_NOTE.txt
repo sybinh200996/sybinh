@@ -1,1 +1,0 @@
-NAM26 FIXED: lấy NAM25 làm nền, giữ nguyên giao diện, chỉ thêm tab Tình duyên và Thần số học AI/local. Không chỉnh layout tổng thể.

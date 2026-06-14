@@ -1,7 +1,0 @@
-NAM40 STABLE - Desktop + Mobile tách riêng
-
-- Giữ nền NAM38 để giữ phần sửa desktop, AI thời tiết và server.
-- Thêm lớp CSS cuối file để mobile quay về bố cục NAM36.
-- Desktop: giữ banner/tab đã sửa từ NAM38.
-- Mobile: bỏ lỗi ảnh banner đè chữ/ô tìm kiếm; trả lại chiều cao, font, tab ngang giống NAM36.
-- Không thay đổi app.js/server.js so với bản NAM38 để tránh phát sinh lỗi chức năng.

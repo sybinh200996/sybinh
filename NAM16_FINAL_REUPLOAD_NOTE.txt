@@ -1,5 +1,0 @@
-NAM16 FINAL REUPLOAD
-- Them tab Chinh sua anh AI trong banner quick row.
-- Them nut chup anh camera trong AI Chat, Chinh sua anh AI, Xem chi tay, Xem tuong.
-- Giu Gemini AI, upload file/anh, tao anh/chinh anh AI tu ban NAM14.
-- File duoc dong goi lai that trong /mnt/data.

@@ -1,7 +1,0 @@
-NAM24 UX + AUTH GUIDE
-
-1. Xóa nội dung giải trình kỹ thuật khỏi trang Tài khoản.
-2. Đổi Sỹ Năm Pro thành Tài khoản.
-3. Bấm tab/menu tự cuộn tới nội dung chính.
-4. Bổ sung README hướng dẫn cấu hình Google/Facebook Firebase Auth chi tiết.
-5. Lưu ý: Google/Facebook login bắt buộc phải cấu hình Firebase và Authorized Domains.
