@@ -1,0 +1,6 @@
+NAM25 - Mobile UX Surgery
+- Đổi chữ hiển thị SyNam -> Sỹ Năm trong giao diện, manifest và system prompt chính.
+- Giữ nguyên domain synam.online và các khóa localStorage kỹ thuật.
+- Chuyển Voice AI Control thành khối Cài đặt giọng nói dạng thu gọn.
+- Thêm nút nhanh cạnh khung chat: 🎤 mic, 🔊 bật/tắt giọng đọc, ⛔ dừng đọc ngay, Gửi.
+- Tối ưu mobile: chat input sticky, provider/voice bớt chiếm màn hình, banner gọn hơn.

@@ -1,0 +1,36 @@
+NAM18 MEMBER AUTH UPGRADE
+
+Đã nâng cấp tài khoản thành viên chuyên nghiệp hơn:
+
+1) Email/mật khẩu
+- /api/auth/register
+- /api/auth/login
+- /api/auth/me
+- /api/auth/logout
+- Có session token lưu ở localStorage.
+- User lưu trong data/users.json.
+
+2) Google/Facebook login
+- Frontend dùng Firebase Authentication qua CDN.
+- Server có /api/auth/firebase-config để đưa config cho frontend.
+- Server có /api/auth/social để tạo/cập nhật hồ sơ thành viên local sau khi Firebase login thành công.
+
+3) Cần cấu hình .env / Render Environment Variables
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+FIREBASE_APP_ID=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_MEASUREMENT_ID=
+
+4) Cách bật Google/Facebook
+- Vào Firebase Console.
+- Tạo Web App.
+- Authentication > Sign-in method.
+- Bật Google.
+- Bật Facebook nếu có Facebook App ID/App Secret.
+- Thêm domain Render/Namecheap vào Authorized domains.
+
+5) Lưu ý bảo mật
+Bản này ưu tiên chạy được trên Render/Namecheap shared hosting, không thêm firebase-admin để tránh cấu hình service account phức tạp.
+Nếu đưa vào thương mại thật, nên nâng cấp tiếp bằng firebase-admin để verify idToken ở server.

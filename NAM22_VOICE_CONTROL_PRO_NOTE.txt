@@ -1,0 +1,6 @@
+NAM22 VOICE CONTROL PRO
+
+- Added Mute Voice toggle
+- Added Stop Speaking button
+- Voice settings persisted
+- Ready for Vietnamese voice preference

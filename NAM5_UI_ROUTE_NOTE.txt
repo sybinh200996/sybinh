@@ -1,0 +1,1 @@
+NAM5 UI ROUTE: Giao diện dựng theo ảnh demo, dashboard đa trang bằng hash route. Click các mục chuyển trang: /#/palm, /#/face, /#/chat, /#/history, /#/account... Giữ server Gemini từ bản NAM3. Không đóng gói node_modules để zip nhẹ; chạy npm install rồi npm start.

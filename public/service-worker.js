@@ -1,4 +1,4 @@
-const CACHE = "synam-mystic-nam53-rc1-v1";
+const CACHE = "synam-nam24-1-ux-real-fix-v1";
 const ASSETS = [
   "./",
   "./index.html",

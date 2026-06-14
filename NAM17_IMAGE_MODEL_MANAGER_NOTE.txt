@@ -1,0 +1,17 @@
+NAM17 IMAGE MODEL MANAGER
+
+Đã nâng cấp module tạo/chỉnh ảnh AI:
+
+1. Bỏ model ảnh preview cũ làm mặc định.
+2. Mặc định mới: gemini-3.1-flash-image.
+3. Thêm fallback tự động:
+   - gemini-3.1-flash-image
+   - gemini-3-pro-image
+   - gemini-2.5-flash-image
+   - gemini-2.5-flash-image-preview
+   - gemini-2.0-flash-preview-image-generation
+4. Thêm biến GEMINI_IMAGE_MODELS để đổi danh sách model mà không cần sửa server.js.
+5. Thêm endpoint /api/models để kiểm tra model đang dùng.
+6. Request tạo ảnh ưu tiên format mới, chỉ fallback responseModalities cho model preview cũ.
+
+Nếu vẫn báo quota/rate limit: nguyên nhân là API key/tài khoản Gemini bị giới hạn image generation, không phải lỗi app.
