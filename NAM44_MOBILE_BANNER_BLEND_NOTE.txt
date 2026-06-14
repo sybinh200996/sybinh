@@ -1,1 +1,0 @@
-NAM44: Mobile banner fix. Removed hero quick button “Chỉnh sửa ảnh AI”; left portrait now fills banner height on mobile; both portraits use stronger opacity plus CSS masks to fade edges into the banner. Based on NAM43 chat markdown/copy/regenerate build.

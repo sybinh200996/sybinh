@@ -1,1 +1,0 @@
-NAM12: Sửa app thật. Dùng lại ảnh gốc cho banner để tránh lỗi xóa nền hỏng ảnh; xóa nền/hòa banner bằng CSS mask, ảnh phải sát mép, AI Chat - Hỏi và đáp, giữ nút Tải ảnh/Tải file cho Gemini.
