@@ -1,0 +1,16 @@
+{
+  "name": "SyNam Mystic",
+  "short_name": "SyNam Mystic",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#040b1e",
+  "theme_color": "#07142f",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "description": "Luận giải Mystic tham khảo và giải trí."
+}

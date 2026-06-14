@@ -1,0 +1,15 @@
+Test nhanh NAM52.1 HOTFIX
+
+1. npm install
+2. npm start
+3. Mở Desktop và Mobile.
+
+Cần kiểm:
+[ ] Giao diện còn đủ ảnh/banner.
+[ ] Nền desktop có hiệu ứng glow động.
+[ ] Viền ảnh banner phải mờ hòa nền.
+[ ] Chat xưng là Đặng Năm AI.
+[ ] Hỏi: "Dự báo thời tiết Việt Trì Phú Thọ hôm nay" không trả Hà Nội.
+[ ] Hỏi: "Dự báo thời tiết Lào Cai hôm nay" không trả Hà Nội.
+[ ] Thời tiết có nhiệt độ, cảm nhận, độ ẩm, gió, áp suất, mưa, 6 giờ tới, 3 ngày tới.
+[ ] Privacy / Terms / Disclaimer mở được.
