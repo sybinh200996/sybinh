@@ -1,0 +1,13 @@
+NAM45 MOBILE BANNER STATUS NAV FIX
+
+Đã chỉnh theo yêu cầu:
+1. Mobile: ẩn biểu tượng loa đọc lại trên banner bằng class .banner-speaker-btn trong style.css.
+2. Đổi trạng thái Gemini/API key thành:
+   - Sỹ Năm AI: online
+   - Sỹ Năm AI: offline
+3. Thanh Điều hướng nhanh: đưa Tài khoản Member lên đầu tiên trong side menu.
+
+File đã sửa:
+- public/index.html
+- public/app.js
+- public/style.css

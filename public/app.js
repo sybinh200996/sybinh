@@ -3,7 +3,7 @@ let lastResult='';
 const $=id=>document.getElementById(id);
 function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');if($('featureTabs')) $('featureTabs').innerHTML=html;if($('sideLinks')) $('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');if($('featureTabs')) $('featureTabs').innerHTML=html;if($('sideLinks')){const quickRoutes=[['account','Tài khoản Member','account']].concat(routes,[['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep']]);$('sideLinks').innerHTML=quickRoutes.map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}}
 function routeTo(route,push=true){
   if(!route)route='home';
   document.body.dataset.route=route;
@@ -29,7 +29,7 @@ function toggleMenu(open){$('sideMenu').classList.toggle('open',open);$('menuSha
 function escapeHtml(str=''){return String(str).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
 function parseError(e){const raw=String(e?.message||e||'Lỗi không xác định');try{const j=JSON.parse(raw);let msg=j.error||raw;if(Array.isArray(j.attempts)&&j.attempts.length){msg+='\n\nCác model đã thử:\n'+j.attempts.map(a=>`- ${a.model}: ${a.error}`).join('\n')}return msg}catch{return raw.replace(/^Error:\s*/,'')}}
 function startClock(){const tick=()=>{const el=$('liveClock');if(el)el.textContent=new Date().toLocaleString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});};tick();setInterval(tick,30000)}
-async function checkGeminiStatus(){const el=$('geminiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasGeminiKey?'Gemini: đã cấu hình API key':'Gemini: chưa có API key';el.className=h.hasGeminiKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Server AI: chưa kết nối';el.className='ai-status warn'}}
+async function checkGeminiStatus(){const el=$('geminiStatus');if(!el)return;try{const h=await fetch('/api/health').then(r=>r.json());el.textContent=h.hasGeminiKey?'Sỹ Năm AI: online':'Sỹ Năm AI: offline';el.className=h.hasGeminiKey?'ai-status ok':'ai-status warn'}catch(e){el.textContent='Sỹ Năm AI: offline';el.className='ai-status warn'}}
 
 function getCurrentMember(){
   try{return JSON.parse(localStorage.getItem('synam_user')||'null')}catch{return null}

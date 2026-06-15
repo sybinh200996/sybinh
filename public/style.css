@@ -1144,3 +1144,9 @@ body{
   .hero-left{left:0!important;width:29%!important;height:100%!important;bottom:0!important;}
   .hero-right{right:0!important;width:36%!important;height:100%!important;bottom:0!important;object-position:right bottom!important;opacity:.96!important;}
 }
+
+
+/* NAM45 mobile banner cleanup: hide read-aloud speaker on banner, keep desktop safe */
+@media (max-width: 768px){
+  .topbar .banner-speaker-btn{display:none!important;}
+}
