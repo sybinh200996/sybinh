@@ -1247,3 +1247,121 @@ body{
 
 /* Desktop không đổi, chỉ bảo đảm nút bấm có cursor */
 .feature-card[onclick], .quick-row button, .tab-card{ cursor:pointer; }
+
+/* ========================================================================== 
+   NAM45 MOBILE FIX - Banner full width, height -50%, compact quick tabs
+   Yêu cầu: giữ chiều ngang banner ban đầu, giảm chiều cao, tab banner gọn sát hơn
+   ========================================================================== */
+@media (max-width: 768px){
+  /* Trả lại chiều ngang ban đầu: banner phủ đủ ngang màn hình như bản mobile trước */
+  .app{
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .hero-section{
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 -10px 10px !important;
+    min-height: 215px !important; /* khoảng 50% so với 430px của NAM42/NAM43 */
+    height: 215px !important;
+    padding-bottom: 8px !important;
+    overflow: hidden !important;
+    border-radius: 0 0 24px 24px !important;
+  }
+
+  /* Ảnh nền vẫn phủ banner nhưng không làm banner quá cao */
+  .hero-person{
+    height: 100% !important;
+    max-height: 100% !important;
+    opacity: .68 !important;
+    object-fit: cover !important;
+  }
+  .hero-left{
+    left: -70px !important;
+    width: 58% !important;
+    height: 100% !important;
+  }
+  .hero-right{
+    right: -70px !important;
+    width: 56% !important;
+    height: 100% !important;
+  }
+  .hero-section:after{
+    height: 72% !important;
+    background: linear-gradient(0deg,rgba(3,8,24,.96),rgba(3,8,24,.52),transparent) !important;
+  }
+
+  /* Thu gọn chữ banner để nằm trong chiều cao mới */
+  .hero-center{
+    padding: 14px 16px 8px !important;
+    max-width: 100% !important;
+  }
+  .hero-center h1{
+    font-size: clamp(30px, 9.5vw, 42px) !important;
+    line-height: .92 !important;
+    margin: 2px 0 4px !important;
+    white-space: nowrap !important;
+  }
+  .hero-center p{
+    font-size: 9.5px !important;
+    line-height: 1.25 !important;
+    letter-spacing: .16em !important;
+    margin: 0 auto 8px !important;
+    max-width: 94% !important;
+  }
+
+  /* Khung hỏi AI thấp hơn, gọn hơn */
+  .search-shell{
+    width: min(92%, 560px) !important;
+    min-height: 0 !important;
+    margin: 8px auto 7px !important;
+    padding: 7px 8px !important;
+    border-radius: 18px !important;
+    gap: 6px !important;
+    display: grid !important;
+    grid-template-columns: 22px 1fr !important;
+  }
+  .search-shell input{
+    min-height: 30px !important;
+    height: 30px !important;
+    font-size: 13px !important;
+  }
+  .search-shell button{
+    grid-column: 1 / -1 !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    margin-top: 4px !important;
+    padding: 6px 10px !important;
+    border-radius: 14px !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+  }
+
+  /* Thu ngắn và rút sát khoảng cách các tab nhanh trên banner */
+  .quick-row{
+    width: min(92%, 560px) !important;
+    margin: 0 auto !important;
+    gap: 5px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+  .quick-row button{
+    min-height: 32px !important;
+    height: 32px !important;
+    padding: 5px 10px !important;
+    border-radius: 14px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+  }
+  .quick-row button:nth-child(n+5){
+    display: none !important;
+  }
+
+  /* Nếu màn rất thấp hoặc nhỏ, ẩn bớt nút nhanh để banner không dài */
+  @media (max-width: 420px){
+    .hero-section{height: 205px !important; min-height: 205px !important;}
+    .hero-center h1{font-size: 32px !important;}
+    .hero-center p{font-size: 9px !important; margin-bottom: 6px !important;}
+    .quick-row button{height: 30px !important; min-height: 30px !important; font-size: 11.5px !important;}
+  }
+}
