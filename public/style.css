@@ -1150,3 +1150,105 @@ body{
 @media (max-width: 768px){
   .topbar .banner-speaker-btn{display:none!important;}
 }
+
+/* NAM46: mobile banner polish - Team Nam exact requests */
+@media (max-width: 768px){
+  /* Đưa "Sỹ Năm AI online/offline" ra giữa thanh trên */
+  .hero-section .topbar{
+    position:relative!important;
+    justify-content:center!important;
+    align-items:center!important;
+    min-height:48px!important;
+    padding:8px 10px!important;
+  }
+  .hero-section .menu-btn{
+    position:absolute!important;
+    left:10px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    z-index:9!important;
+  }
+  .hero-section .top-actions{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    transform:translate(-50%,-50%)!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    width:auto!important;
+    max-width:62vw!important;
+    z-index:8!important;
+    gap:0!important;
+  }
+  .hero-section .top-actions .ai-status{
+    max-width:62vw!important;
+    height:30px!important;
+    padding:0 12px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .hero-section .top-actions .live-clock,
+  .hero-section .top-actions .profile-pill,
+  .hero-section .top-actions .banner-speaker-btn{
+    display:none!important;
+  }
+
+  /* Banner mobile giữ thấp, chữ dịch lên trên một chút */
+  .hero-section{
+    height:clamp(145px,34vw,190px)!important;
+    min-height:0!important;
+  }
+  .hero-center{
+    padding-top:0!important;
+    transform:translateY(-8px)!important;
+    max-width:58%!important;
+  }
+
+  /* Thu nhỏ chữ Sỹ Năm Mystic còn khoảng 70% */
+  .hero-center h1{
+    font-size:clamp(18px,4.9vw,24px)!important;
+    line-height:1.02!important;
+    margin:0 0 3px!important;
+  }
+  .hero-center p{
+    font-size:8.5px!important;
+    line-height:1.25!important;
+    margin:0 0 4px!important;
+    letter-spacing:.10em!important;
+  }
+  .search-shell{
+    height:34px!important;
+    min-height:34px!important;
+    margin:4px auto!important;
+    padding:3px 4px 3px 10px!important;
+  }
+  .search-shell input{font-size:12px!important;min-height:28px!important;}
+  .search-shell button{font-size:11px!important;padding:6px 9px!important;min-height:28px!important;}
+
+  /* Làm rõ ảnh trái, không cắt, mờ viền hòa vào banner */
+  .hero-left{
+    left:0!important;
+    bottom:0!important;
+    width:31%!important;
+    height:100%!important;
+    max-height:100%!important;
+    object-fit:contain!important;
+    object-position:left bottom!important;
+    opacity:.96!important;
+    filter:drop-shadow(0 0 22px rgba(97,210,255,.32))!important;
+    -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 68%,rgba(0,0,0,.72) 86%,transparent 100%)!important;
+    mask-image:linear-gradient(90deg,#000 0%,#000 68%,rgba(0,0,0,.72) 86%,transparent 100%)!important;
+  }
+  .hero-right{
+    object-fit:contain!important;
+    object-position:right bottom!important;
+  }
+}
