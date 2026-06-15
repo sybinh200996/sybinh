@@ -45,6 +45,7 @@
           <button onclick="routeTo('astrology')">♈ Cung hoàng đạo</button>
           <button onclick="routeTo('palm')">🖐 Xem chỉ tay</button>
           <button onclick="routeTo('face')">♙ Xem tướng</button>
+          <button onclick="routeTo('chat'); setTimeout(()=>setChatMode('edit-image'),80)">🎨 Chỉnh sửa ảnh AI</button>
         </div>
       </div>
     </header>
@@ -57,7 +58,7 @@
 
     <section id="page-home" class="page active">
       <div class="dashboard-grid">
-        <article class="feature-card wide" onclick="startDeepAnalysis()">
+        <article class="feature-card wide" onclick="routeTo('deep')">
           <div><h2>AI PHÂN TÍCH SÂU <em>PRO</em></h2><p>AI phân tích đa lớp, kết hợp thông tin bạn nhập để đưa ra bản luận giải chi tiết nhất.</p><button>✦ BẮT ĐẦU NGAY</button></div><div class="card-art ai-head">AI</div>
         </article>
         <article class="feature-card wide" onclick="routeTo('palm')">
@@ -148,6 +149,8 @@
           </div>
         </div>
       </div></section>
+
+    <section id="page-deep" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();deepAnalyze()"><h2>🤯 AI phân tích sâu</h2><p class="muted">Nhập vấn đề bạn muốn AI phân tích kỹ, app sẽ trả kết quả nhiều lớp và có lời khuyên thực tế.</p><label>Chủ đề cần phân tích<textarea id="deepAsk" rows="6" placeholder="Ví dụ: phân tích tình duyên, công việc, kế hoạch app, một quyết định quan trọng..."></textarea></label><button class="primary">✦ BẮT ĐẦU PHÂN TÍCH</button><button type="button" onclick="document.getElementById('deepAsk').value='';document.getElementById('deepResult').innerHTML='<h2>Kết quả phân tích sâu</h2><p>Nhập chủ đề rồi bấm phân tích.</p>'">🧹 Xóa</button></form><article id="deepResult" class="result-panel"><h2>Kết quả phân tích sâu</h2><p>Nhập chủ đề rồi bấm phân tích.</p></article></div></section>
     <section id="page-ai" class="page"><div class="route-layout"><form class="glass-panel" onsubmit="event.preventDefault();saveAIKeys()"><h2>🤖 Multi-AI Provider</h2><p class="muted">Nhập API key cá nhân để bật từng AI. Có key nào dùng key đó, không có thì tự ẩn.</p><div id="aiProviderGrid" class="ai-provider-grid"></div><button class="primary">💾 Lưu API Keys</button><button type="button" onclick="loadAIProviders()">🔄 Kiểm tra lại</button><p class="ai-note">Lưu ý: bản demo lưu key trong <code>data/users.json</code>. Chỉ dùng test cá nhân; khi thương mại cần mã hóa hoặc dùng vault.</p></form><article class="result-panel"><h2>🧠 AI Router</h2><div id="aiProviderStatus" class="ai-status-list"><p>Đang tải danh sách AI...</p></div><hr><h3>Chế độ hỗ trợ</h3><ul><li><b>Auto Router</b>: tự chọn AI phù hợp.</li><li><b>Fallback</b>: AI lỗi thì thử AI kế tiếp.</li><li><b>Hội Đồng AI</b>: nhiều AI cùng trả lời rồi hiển thị từng ý kiến.</li></ul><p>Vào trang Chat để chọn Provider hoặc bật Hội Đồng AI.</p></article></div></section>
     <section id="page-history" class="page"><div class="glass-panel full"><h2>🗂 Lịch sử phân tích</h2><div id="historyList"></div><button onclick="clearHistory()">🧹 Xóa lịch sử</button></div></section>
     <section id="page-account" class="page"><div class="route-layout account-clean-layout"><form class="glass-panel auth-panel" onsubmit="event.preventDefault();registerAccount()"><h2>👤 Tài khoản</h2><p class="muted">Đăng nhập hoặc đăng ký để lưu hồ sơ, lịch sử chat và cài đặt AI của bạn.</p><div class="social-login-row"><button type="button" class="google-btn" onclick="socialLogin('google')">🔴 Đăng nhập Google</button><button type="button" class="facebook-btn" onclick="socialLogin('facebook')">🔵 Đăng nhập Facebook</button></div><div class="auth-divider"><span>hoặc dùng email</span></div><label>Tên hiển thị<input id="profileName" placeholder="Tên của bạn"></label><label>Email<input id="profileEmail" placeholder="email@example.com"></label><label>Mật khẩu<input id="profilePassword" type="password" placeholder="Tối thiểu 6 ký tự"></label><label>Gói sử dụng<select id="profilePlan"><option>Free</option><option>Pro Demo</option><option>Ultimate Pro</option></select></label><button class="primary">📝 Đăng ký</button><button type="button" onclick="loginAccount()">🔐 Đăng nhập</button><button type="button" onclick="saveAccount()">💾 Lưu hồ sơ</button></form><article class="result-panel account-user-panel"><h2>👤 Tài khoản</h2><div id="accountStatus"><div class="account-warn"><h3>🔐 Chưa đăng nhập</h3><p>Đăng nhập để đồng bộ hồ sơ và cá nhân hóa trải nghiệm AI.</p></div></div><div class="clean-member-actions"><button type="button" onclick="routeTo('chat')">🤖 Mở AI Chat</button><button type="button" onclick="routeTo('ai')">⚙️ Cài đặt AI</button><button type="button" onclick="routeTo('history')">📜 Xem lịch sử</button></div></article></div></section>

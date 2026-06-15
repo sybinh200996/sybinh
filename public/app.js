@@ -3,11 +3,9 @@ let lastResult='';
 const $=id=>document.getElementById(id);
 function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
 function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></span>`}
-function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
+function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');if($('featureTabs')) $('featureTabs').innerHTML=html;if($('sideLinks')) $('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
-  // NAM44 FIX: route 'deep' trước đây không có page riêng nên bấm không phản hồi.
-  if(route==='deep') route='chat';
   document.body.dataset.route=route;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const page=$('page-'+route)||$('page-home');
@@ -444,19 +442,7 @@ function authHeaders(){const token=localStorage.getItem('synam_token')||'';retur
 async function postJSON(url,data){const r=await fetch(url,{method:'POST',headers:authHeaders(),body:JSON.stringify(data)});if(!r.ok)throw new Error(await r.text());return r.json()}
 async function getJSON(url){const token=localStorage.getItem('synam_token')||'';const r=await fetch(url,{headers:token?{'Authorization':'Bearer '+token}:{}});if(!r.ok)throw new Error(await r.text());return r.json()}
 
-async 
-// NAM44 FIX: AI phân tích chuyên sâu hoạt động thật bằng AI Chat hiện có
-function startDeepAnalysis(){
-  routeTo('chat');
-  setTimeout(()=>{
-    setChatTextValue('AI phân tích chuyên sâu: Hãy hỏi tôi các thông tin cần thiết để luận giải tổng hợp tử vi, tình duyên, thần số học, phong thủy và đưa ra lời khuyên chi tiết.');
-    const el=$('chatText');
-    if(el) el.focus();
-    toast('Đã mở AI phân tích chuyên sâu');
-  },120);
-}
-
-function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');setChatTextValue(q);sendChat()}
+async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');setChatTextValue(q);sendChat()}
 
 // ===== NAM30 MEMORY PRO CORE =====
 // Lưu hội thoại thật vào localStorage, không chỉ đọc chữ từ khung chat.
@@ -605,7 +591,7 @@ async function sendChat(){
   }
 }
 function localMystic(){const name=$('name').value||'Bạn';const text=`### Luận giải local cho ${name}\n- Tổng quan: năng lượng hiện tại thiên về thay đổi và hoàn thiện bản thân.\n- Công việc: nên tập trung một mục tiêu chính, tránh ôm quá nhiều việc cùng lúc.\n- Tình cảm: cần giao tiếp rõ ràng, chân thành và bớt suy diễn.\n- Lời khuyên: kết quả chỉ mang tính tham khảo văn hóa, quyết định vẫn nên dựa trên thực tế.`;$('report').innerHTML=htmlResult('📜 Kết quả tử vi',text);saveHistory('Tử vi local',text)}
-async function generateMystic(){setLoading('report',true);try{const payload={name:$('name').value,birthDate:$('birthDate').value,birthTime:$('birthTime').value,gender:$('gender').value};const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';$('report').innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng local')}finally{setLoading('report',false)}}
+async function generateMystic(){const report=$('report');if(!report)return toast('Không tìm thấy vùng kết quả tử vi');setLoading('report',true);try{const payload={name:$('name')?.value||'',birthDate:$('birthDate')?.value||'',birthTime:$('birthTime')?.value||'',gender:$('gender')?.value||'Nam',clientTime:new Date().toLocaleString('vi-VN')};if(!payload.name && !payload.birthDate){toast('Nhập tên/ngày sinh để AI luận giải rõ hơn nhé')}const data=await postJSON('/api/mystic-ai',payload);const text=data.text||data.result||data.answer||'Không có nội dung trả về.';report.innerHTML=htmlResult('📜 Kết quả tử vi AI',text);saveHistory('Tử vi AI',text)}catch(e){localMystic();toast('AI lỗi, đã dùng bản local')}}
 
 function reduceNumber(n, keepMaster=true){
   n = Math.abs(parseInt(n||0,10)||0);
