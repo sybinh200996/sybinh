@@ -11,7 +11,10 @@ function routeTo(route,push=true){
   const page=$('page-'+route)||$('page-home');
   page.classList.add('active');
   document.querySelectorAll('.tab-card').forEach(t=>t.classList.toggle('active',t.dataset.route===route));
-  document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.classList.toggle('active',btn.dataset.route===route));
+  document.querySelectorAll('.bottom-nav button').forEach(btn=>{
+    const nav=(btn.dataset.nav||'').split(',');
+    btn.classList.toggle('active', nav.includes(route));
+  });
   document.querySelectorAll('.side-menu button.link').forEach(btn=>btn.classList.remove('active'));
   if(push) location.hash='#/'+route;
   requestAnimationFrame(()=>{
