@@ -1,4 +1,4 @@
-const routes=[['home','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
+const routes=[['tuvi','Tử Vi','tuvi'],['palm','Xem Chỉ Tay','palm'],['face','Xem Tướng','face'],['astrology','Chiêm Tinh','astro'],['love','Tình Duyên','love'],['numerology','Thần Số Học','num'],['chat','AI Chat','chat'],['ai','Multi AI','deep'],['fengshui','Phong Thủy','feng'],['tarot','Bói Bài','tarot'],['history','Lịch Sử','history']];
 let lastResult='';
 const $=id=>document.getElementById(id);
 function init(){renderTabs();renderHistory();loadAccount();loadVoicePrefs();initVietnameseVoices();startClock();routeTo(location.hash?.replace('#/','')||'home',false);window.addEventListener('hashchange',()=>routeTo(location.hash.replace('#/','')||'home',false));checkGeminiStatus();loadAIProviders();}
@@ -6,6 +6,8 @@ function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></spa
 function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
+  // NAM44 FIX: route 'deep' trước đây không có page riêng nên bấm không phản hồi.
+  if(route==='deep') route='chat';
   document.body.dataset.route=route;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const page=$('page-'+route)||$('page-home');
@@ -442,7 +444,19 @@ function authHeaders(){const token=localStorage.getItem('synam_token')||'';retur
 async function postJSON(url,data){const r=await fetch(url,{method:'POST',headers:authHeaders(),body:JSON.stringify(data)});if(!r.ok)throw new Error(await r.text());return r.json()}
 async function getJSON(url){const token=localStorage.getItem('synam_token')||'';const r=await fetch(url,{headers:token?{'Authorization':'Bearer '+token}:{}});if(!r.ok)throw new Error(await r.text());return r.json()}
 
-async function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');setChatTextValue(q);sendChat()}
+async 
+// NAM44 FIX: AI phân tích chuyên sâu hoạt động thật bằng AI Chat hiện có
+function startDeepAnalysis(){
+  routeTo('chat');
+  setTimeout(()=>{
+    setChatTextValue('AI phân tích chuyên sâu: Hãy hỏi tôi các thông tin cần thiết để luận giải tổng hợp tử vi, tình duyên, thần số học, phong thủy và đưa ra lời khuyên chi tiết.');
+    const el=$('chatText');
+    if(el) el.focus();
+    toast('Đã mở AI phân tích chuyên sâu');
+  },120);
+}
+
+function quickAsk(){const q=$('globalAsk').value.trim();if(!q){routeTo('chat');return}routeTo('chat');setChatTextValue(q);sendChat()}
 
 // ===== NAM30 MEMORY PRO CORE =====
 // Lưu hội thoại thật vào localStorage, không chỉ đọc chữ từ khung chat.

@@ -1125,3 +1125,125 @@ body{
   .bottom-nav{left:8px!important;right:8px!important;grid-template-columns:1fr 1fr 64px 1fr 1fr!important;}
   .bottom-nav .magic{width:64px!important;height:64px!important;}
 }
+
+
+/* ==========================================================================
+   NAM44 MOBILE FIX - Banner gọn hơn + tab hoạt động + bỏ Chỉnh sửa ảnh AI
+   ========================================================================== */
+@media (max-width: 768px){
+  /* Thu gọn banner theo yêu cầu: không còn tràn ngang sát mép, thấp hơn, gọn hơn */
+  .app{
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .hero-section{
+    width: calc(100% - 18px) !important;
+    margin: 0 auto 14px !important;
+    min-height: 0 !important;
+    height: auto !important;
+    border-radius: 0 0 28px 28px !important;
+    padding-bottom: 18px !important;
+  }
+  .hero-center{
+    padding: 56px 14px 0 !important;
+    max-width: 100% !important;
+  }
+  .hero-center h1{
+    font-size: clamp(38px, 12vw, 58px) !important;
+    line-height: .95 !important;
+    margin-bottom: 8px !important;
+    white-space: nowrap !important;
+  }
+  .hero-center p{
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+    letter-spacing: .22em !important;
+    max-width: 92% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .hero-person{
+    opacity: .78 !important;
+    max-height: 100% !important;
+  }
+  .hero-left{ left: -42px !important; width: 56% !important; }
+  .hero-right{ right: -42px !important; width: 52% !important; }
+
+  /* Thu ngắn khung hỏi AI trên banner */
+  .search-shell{
+    width: min(100%, 560px) !important;
+    margin: 18px auto 12px !important;
+    padding: 12px !important;
+    border-radius: 26px !important;
+    gap: 8px !important;
+  }
+  .search-shell input{
+    font-size: 15px !important;
+  }
+  .search-shell button{
+    width: 100% !important;
+    margin-top: 8px !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+  }
+  .search-shell{
+    display: grid !important;
+    grid-template-columns: 26px 1fr !important;
+  }
+  .search-shell button{
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Thu gọn các tab nhanh trên banner */
+  .quick-row{
+    width: min(100%, 560px) !important;
+    margin: 0 auto !important;
+    gap: 10px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+  .quick-row button{
+    min-height: 56px !important;
+    padding: 10px 14px !important;
+    border-radius: 20px !important;
+    font-size: 15px !important;
+  }
+  .quick-row button:nth-child(n+5){
+    display: none !important;
+  }
+
+  /* Tab ngang: làm gọn, bấm đúng route, không bị trượt khó chịu */
+  .feature-tabs-wrap{
+    width: calc(100% - 18px) !important;
+    margin: 12px auto 16px !important;
+    padding: 12px !important;
+    border-radius: 24px !important;
+  }
+  .feature-tabs{
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 12px !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important;
+  }
+  .feature-tabs::-webkit-scrollbar{ display:none !important; }
+  .tab-card{
+    min-width: 112px !important;
+    width: 112px !important;
+    min-height: 92px !important;
+    transform: none !important;
+    scroll-snap-align: start !important;
+  }
+  .tab-card.active{
+    transform: translateY(-2px) !important;
+  }
+
+  /* Card nội dung tránh bị bottom nav che */
+  .dashboard-grid,
+  .route-layout{
+    padding-bottom: 88px !important;
+  }
+}
+
+/* Desktop không đổi, chỉ bảo đảm nút bấm có cursor */
+.feature-card[onclick], .quick-row button, .tab-card{ cursor:pointer; }

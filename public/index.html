@@ -45,7 +45,6 @@
           <button onclick="routeTo('astrology')">♈ Cung hoàng đạo</button>
           <button onclick="routeTo('palm')">🖐 Xem chỉ tay</button>
           <button onclick="routeTo('face')">♙ Xem tướng</button>
-          <button onclick="routeTo('chat'); setTimeout(()=>setChatMode('edit-image'),80)">🎨 Chỉnh sửa ảnh AI</button>
         </div>
       </div>
     </header>
@@ -58,7 +57,7 @@
 
     <section id="page-home" class="page active">
       <div class="dashboard-grid">
-        <article class="feature-card wide" onclick="routeTo('deep')">
+        <article class="feature-card wide" onclick="startDeepAnalysis()">
           <div><h2>AI PHÂN TÍCH SÂU <em>PRO</em></h2><p>AI phân tích đa lớp, kết hợp thông tin bạn nhập để đưa ra bản luận giải chi tiết nhất.</p><button>✦ BẮT ĐẦU NGAY</button></div><div class="card-art ai-head">AI</div>
         </article>
         <article class="feature-card wide" onclick="routeTo('palm')">
