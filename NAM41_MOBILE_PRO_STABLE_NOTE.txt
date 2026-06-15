@@ -1,0 +1,30 @@
+NAM41 MOBILE PRO STABLE
+
+Mục tiêu:
+- Kết hợp đề xuất Claude + Gemini nhưng theo hướng an toàn.
+- Giữ nguyên lõi NAM40, không đập lại server.js/API/logic chức năng.
+- Nâng cấp giao diện mobile chuyên nghiệp hơn, mượt hơn, ít nguy cơ bung app.
+
+Đã chỉnh:
+1. public/index.html
+- Đổi bottom nav mobile thành 5 mục hợp lý hơn:
+  Trang chủ / AI Chat / Hỏi nhanh / Tình duyên / Thêm.
+- Nút Thêm mở side menu để vẫn đủ toàn bộ tab cũ.
+
+2. public/app.js
+- Thêm body data-route để CSS mobile biết đang ở trang nào.
+- Bottom nav active theo data-route.
+
+3. public/style.css
+- Thêm cuối file: NAM41 MOBILE PRO STABLE PATCH.
+- Hero mobile giữ 2 ảnh, làm rõ hơn, mờ viền hòa banner.
+- Tabs mobile cuộn ngang mượt, ẩn scrollbar, không bung nhiều dòng.
+- Card/panel mobile bo góc, glass effect, chống tràn màn hình.
+- AI Chat mobile gọn hơn, input sticky, giao diện giống app chat hiện đại.
+- Bottom nav nổi kiểu app, có safe-area cho điện thoại tai thỏ/nút điều hướng.
+
+Không làm:
+- Không đổi server.js.
+- Không đổi API AI.
+- Không xóa tính năng.
+- Không bỏ ảnh banner.

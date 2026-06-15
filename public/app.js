@@ -6,11 +6,12 @@ function tabIcon(icon){return `<span class="holo-icon icon-${icon}"><i></i></spa
 function renderTabs(){const html=routes.map(([id,name,ico])=>`<button class="tab-card" data-route="${id}" onclick="routeTo('${id}')">${tabIcon(ico)}<span>${name}</span></button>`).join('');$('featureTabs').innerHTML=html;$('sideLinks').innerHTML=routes.concat([['deep','AI phân tích sâu','deep'],['ai','Cài đặt Multi-AI','deep'],['account','Tài khoản','account']]).map(([id,name,ico])=>`<button class="link" onclick="routeTo('${id}');toggleMenu(false)">${tabIcon(ico)} <span>${name}</span></button>`).join('')}
 function routeTo(route,push=true){
   if(!route)route='home';
+  document.body.dataset.route=route;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const page=$('page-'+route)||$('page-home');
   page.classList.add('active');
   document.querySelectorAll('.tab-card').forEach(t=>t.classList.toggle('active',t.dataset.route===route));
-  document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.classList.toggle('active',btn.dataset.route===route));
   document.querySelectorAll('.side-menu button.link').forEach(btn=>btn.classList.remove('active'));
   if(push) location.hash='#/'+route;
   requestAnimationFrame(()=>{
