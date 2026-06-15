@@ -1,8 +1,0 @@
-SyNam NAM42 MOBILE PRO DASHBOARD
-
-- Giữ lõi NAM40: server.js/API/app logic chính không đổi.
-- Kết hợp đề xuất Claude: dashboard chuyên nghiệp, bottom nav 5 mục + Thêm, AI Chat là trung tâm.
-- Kết hợp đề xuất Gemini: mobile scroll snap tabs, card/panel kính, bottom nav fixed, safe-area, haptic-like active effect.
-- Theo ý Team Năm: không bỏ ảnh banner; desktop tạo cảm giác giống ảnh mẫu với menu trái + card ảnh phải; mobile mở app thấy banner + ô hỏi AI + chức năng chính.
-- Sửa nhẹ app.js: body data-route và active bottom nav an toàn.
-- Sửa nhẹ index.html: bottom nav Trang chủ / AI Chat / Quick Ask / Tình duyên / Thêm.

@@ -1,0 +1,1 @@
+NAM41: Mobile-first real fix. Banner điện thoại gọn lại, ảnh nền không đè nội dung, tabs không cắt, chat mobile giống app chat hơn. Nâng cấp system prompt AI Chat để trả lời chuyên nghiệp, bám ngữ cảnh, không bịa, ưu tiên câu trả lời trực tiếp và checklist thực tế.

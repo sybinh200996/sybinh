@@ -993,375 +993,190 @@ html,body{scroll-padding-top:18px}
   .bottom-nav span{display:none!important;}
 }
 
+/* NAM41 MOBILE FIRST REAL FIX - ưu tiên điện thoại, không để ảnh/banner đè layout */
+@media (max-width: 640px){
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;background:#111d53!important;}
+  body{font-size:15px!important;}
+  .app{width:100%!important;max-width:100%!important;margin:0!important;padding:0 10px 94px!important;overflow-x:hidden!important;}
 
-/* ==========================================================================
-   NAM42 MOBILE PRO STABLE - Claude + Gemini + Team Năm Safe Patch
-   Mục tiêu: giống tinh thần ảnh mẫu desktop, mobile chuyên nghiệp, giữ lõi NAM40.
-   ========================================================================== */
-:root{
-  --nam42-sidebar: 232px;
-  --nam42-right-card: 310px;
-  --nam42-radius: 22px;
-  --nam42-safe-bottom: env(safe-area-inset-bottom, 12px);
-}
-body{
-  -webkit-tap-highlight-color: transparent;
-  text-rendering: optimizeLegibility;
-}
+  /* Banner điện thoại: gọn, rõ, không bị desktop ép xuống mobile */
+  .hero-section{
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0 auto 14px!important;
+    padding:0!important;
+    border-radius:0 0 28px 28px!important;
+    overflow:hidden!important;
+    background:
+      radial-gradient(circle at 15% 88%, rgba(18,185,255,.22), transparent 34%),
+      radial-gradient(circle at 90% 50%, rgba(178,65,255,.25), transparent 34%),
+      linear-gradient(180deg, rgba(5,14,39,.98), rgba(10,22,66,.96))!important;
+  }
+  .hero-section:before{opacity:.28!important;}
+  .hero-section:after{background:linear-gradient(180deg,rgba(2,8,24,.16),rgba(2,8,24,.58))!important;z-index:3!important;}
+  .hero-person{position:absolute!important;pointer-events:none!important;z-index:2!important;filter:drop-shadow(0 0 24px rgba(22,194,255,.22))!important;}
+  .hero-left{width:38%!important;height:48%!important;left:-44px!important;bottom:92px!important;opacity:.34!important;object-fit:contain!important;object-position:left bottom!important;transform:none!important;}
+  .hero-right{width:42%!important;height:58%!important;right:-54px!important;bottom:52px!important;opacity:.38!important;object-fit:contain!important;object-position:right bottom!important;transform:none!important;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 24%,#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0%,#000 24%,#000 100%)!important;}
 
-/* Desktop/tablet rộng: tạo cảm giác dashboard giống ảnh mẫu nhưng không đổi HTML lõi */
-@media (min-width: 1024px){
-  .app{max-width:1600px!important;padding:92px 22px 28px calc(var(--nam42-sidebar) + 24px)!important;}
-  .topbar{position:fixed!important;left:0!important;right:0!important;top:0!important;height:76px!important;padding:14px 22px!important;background:rgba(3,9,25,.82)!important;border-bottom:1px solid rgba(95,172,255,.16)!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;z-index:35!important;}
-  .topbar:before{content:'✧ SỸ NĂM';font-weight:950;font-size:30px;letter-spacing:.02em;background:linear-gradient(135deg,#d9c9ff,#66d9ff 45%,#9b5cff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 24px rgba(121,80,255,.28);}
-  .topbar .menu-btn{display:none!important;}
-  .top-actions{margin-left:auto!important;}
-  .side-menu{left:0!important;top:76px!important;width:var(--nam42-sidebar)!important;height:calc(100vh - 76px)!important;border-right:1px solid rgba(95,172,255,.18)!important;background:rgba(3,10,26,.86)!important;box-shadow:18px 0 45px rgba(0,0,0,.22)!important;z-index:28!important;}
-  .side-menu .close-menu{display:none!important;}
-  .side-menu h2{font-size:20px!important;margin-top:0!important;background:linear-gradient(135deg,#fff,#82eaff,#a56cff);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  .side-menu p{color:#a8bad8!important;margin-bottom:18px!important;}
-  .side-menu button.link{width:100%!important;display:flex!important;align-items:center!important;gap:12px!important;margin:7px 0!important;border:0!important;border-radius:13px!important;padding:12px 14px!important;background:transparent!important;color:#eaf2ff!important;text-align:left!important;font-weight:850!important;}
-  .side-menu button.link:hover{background:rgba(123,92,255,.16)!important;box-shadow:inset 0 0 0 1px rgba(120,210,255,.14)!important;}
-  .menu-shade{display:none!important;}
-  .hero-section{position:fixed!important;right:22px!important;top:100px!important;width:var(--nam42-right-card)!important;height:calc(100vh - 128px)!important;min-height:560px!important;border-radius:24px!important;border:1px solid rgba(164,132,255,.46)!important;box-shadow:0 22px 70px rgba(0,0,0,.42), inset 0 0 38px rgba(115,81,255,.12)!important;background:linear-gradient(180deg,rgba(11,20,55,.44),rgba(7,10,28,.92)),radial-gradient(circle at 62% 18%,rgba(97,210,255,.18),transparent 30%)!important;}
-  .hero-section .topbar{display:flex!important;}
-  .hero-section .hero-left{display:none!important;}
-  .hero-section .hero-right{right:0!important;left:0!important;bottom:0!important;width:100%!important;height:100%!important;opacity:.96!important;object-fit:cover!important;object-position:62% center!important;filter:drop-shadow(0 0 38px rgba(140,94,255,.34))!important;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 72%,rgba(0,0,0,.88) 100%)!important;mask-image:linear-gradient(180deg,#000 0%,#000 72%,rgba(0,0,0,.88) 100%)!important;}
-  .hero-section .hero-center{position:absolute!important;left:16px!important;right:16px!important;bottom:30px!important;padding:0!important;max-width:none!important;text-align:center!important;}
-  .hero-center h1{font-size:44px!important;line-height:1!important;margin:0 0 8px!important;color:#f1e7ff!important;text-shadow:0 0 24px rgba(211,161,255,.66)!important;}
-  .hero-center p{font-size:13px!important;letter-spacing:.16em!important;color:#f2d8ff!important;}
-  .hero-center .search-shell,.hero-center .quick-row{display:none!important;}
-  .feature-tabs-wrap,.page{margin-right:calc(var(--nam42-right-card) + 26px)!important;}
-  .feature-tabs-wrap{margin-top:0!important;padding:10px!important;border-radius:18px!important;background:rgba(5,13,35,.58)!important;border-color:rgba(95,172,255,.16)!important;box-shadow:none!important;}
-  .slide-btn{display:none!important;}
-  .feature-tabs{display:grid!important;grid-template-columns:repeat(6,minmax(112px,1fr))!important;gap:14px!important;}
-  .tab-card{height:142px!important;min-height:142px!important;transform:none!important;border-radius:14px!important;background:linear-gradient(145deg,rgba(16,32,70,.82),rgba(7,15,35,.78))!important;box-shadow:inset 0 0 20px rgba(97,210,255,.05)!important;}
-  .tab-card:hover,.tab-card.active{transform:translateY(-3px)!important;border-color:rgba(154,94,255,.68)!important;}
-  .dashboard-grid{grid-template-columns:repeat(6,1fr)!important;}
-  .feature-card{grid-column:span 3!important;min-height:190px!important;border-radius:18px!important;padding:22px!important;}
-  .mini-card{grid-column:span 2!important;min-height:220px!important;}
-  .bottom-nav{display:none!important;}
-}
-
-/* Mobile Pro: ưu tiên mở app thấy banner + hỏi AI + chức năng, mượt và không tràn */
-@media (max-width: 768px){
-  :root{--safe-bottom:env(safe-area-inset-bottom,12px)}
-  html,body{overscroll-behavior-y:contain;}
-  body{background:radial-gradient(circle at 20% -10%,rgba(35,119,255,.32),transparent 32%),radial-gradient(circle at 92% 4%,rgba(184,92,255,.23),transparent 30%),linear-gradient(180deg,#030817,#07142f 55%,#020712)!important;}
-  .app{padding:0 10px calc(92px + var(--safe-bottom))!important;max-width:100%!important;}
-  .topbar{padding:12px 10px!important;gap:8px!important;}
-  .top-actions{gap:7px!important;}
+  .topbar{position:relative!important;z-index:8!important;padding:16px 14px 8px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}
+  .menu-btn,.top-actions .icon-btn{width:54px!important;height:54px!important;min-width:54px!important;border-radius:20px!important;font-size:26px!important;background:rgba(4,11,31,.74)!important;}
+  .top-actions{display:flex!important;gap:8px!important;align-items:center!important;margin-left:auto!important;}
   .top-actions .live-clock,.top-actions .profile-pill{display:none!important;}
-  .top-actions .ai-status{max-width:170px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:11px!important;height:38px!important;padding:0 10px!important;display:inline-flex!important;align-items:center!important;border-radius:999px!important;}
-  .top-actions .icon-btn{width:40px!important;min-width:40px!important;height:40px!important;border-radius:14px!important;}
-  .hero-section{min-height:430px!important;height:auto!important;border-radius:0 0 30px 30px!important;margin:0 -10px 12px!important;background:linear-gradient(180deg,rgba(3,8,24,.32),rgba(4,10,28,.86)),radial-gradient(circle at 52% 20%,rgba(97,210,255,.22),transparent 32%),radial-gradient(circle at 80% 40%,rgba(184,92,255,.22),transparent 34%)!important;box-shadow:0 18px 55px rgba(0,0,0,.34),inset 0 -1px 0 rgba(95,172,255,.24)!important;}
-  .hero-section:after{content:''!important;position:absolute!important;inset:auto 0 0 0!important;height:46%!important;background:linear-gradient(0deg,rgba(3,8,24,.92),rgba(3,8,24,.18),transparent)!important;z-index:3!important;pointer-events:none!important;}
-  .hero-left{left:-92px!important;width:58%!important;height:88%!important;opacity:.50!important;object-fit:cover!important;object-position:center!important;filter:blur(.15px) drop-shadow(0 0 24px rgba(97,210,255,.18))!important;}
-  .hero-right{right:-88px!important;width:58%!important;height:88%!important;opacity:.62!important;object-fit:cover!important;object-position:center!important;filter:drop-shadow(0 0 28px rgba(184,92,255,.20))!important;}
-  .hero-center{padding:22px 14px 18px!important;max-width:100%!important;}
-  .hero-center h1{font-size:42px!important;line-height:1.02!important;margin:10px 0 8px!important;}
-  .hero-center p{font-size:11px!important;letter-spacing:.18em!important;line-height:1.45!important;}
-  .search-shell{height:auto!important;min-height:58px!important;margin:18px auto 12px!important;padding:10px!important;border-radius:24px!important;display:grid!important;grid-template-columns:30px 1fr!important;gap:8px!important;background:rgba(5,14,37,.78)!important;border:1px solid rgba(104,228,255,.30)!important;box-shadow:0 10px 36px rgba(0,0,0,.30),0 0 30px rgba(91,154,255,.15)!important;}
-  .search-shell input{font-size:16px!important;min-height:40px!important;}
-  .search-shell button{grid-column:1/3!important;width:100%!important;min-height:46px!important;border-radius:18px!important;padding:12px!important;}
-  .quick-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
-  .quick-row button{padding:10px 8px!important;font-size:12px!important;min-height:42px!important;border-radius:16px!important;white-space:normal!important;}
-  .quick-row button:nth-child(5){grid-column:1/3!important;}
+  .top-actions .ai-status{max-width:190px!important;min-width:0!important;height:44px!important;border-radius:999px!important;font-size:13px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;padding:0 14px!important;background:rgba(4,17,39,.62)!important;}
 
-  body:not([data-route="chat"]) .feature-tabs-wrap{margin:8px 0 14px!important;padding:10px!important;border-radius:20px!important;background:rgba(5,14,37,.72)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;border:1px solid rgba(255,255,255,.06)!important;box-shadow:0 12px 38px rgba(0,0,0,.25)!important;transform:none!important;}
-  .slide-btn{display:none!important;}
-  body:not([data-route="chat"]) .feature-tabs{display:flex!important;gap:10px!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important;padding:2px 2px 4px!important;}
-  body:not([data-route="chat"]) .feature-tabs::-webkit-scrollbar{display:none!important;}
-  body:not([data-route="chat"]) .tab-card{flex:0 0 98px!important;width:98px!important;min-width:98px!important;height:88px!important;min-height:88px!important;padding:9px!important;border-radius:16px!important;scroll-snap-align:start!important;transform:none!important;background:rgba(255,255,255,.03)!important;border:1px solid rgba(95,172,255,.12)!important;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s!important;}
-  body:not([data-route="chat"]) .tab-card:active{transform:scale(.95)!important;background:rgba(95,172,255,.15)!important;}
-  body:not([data-route="chat"]) .tab-card.active{border-color:rgba(184,92,255,.56)!important;box-shadow:0 0 18px rgba(129,57,255,.18)!important;}
-  body:not([data-route="chat"]) .tab-card .holo-icon{width:28px!important;height:28px!important;min-width:28px!important;}
-  body:not([data-route="chat"]) .tab-card span:last-child{font-size:10.5px!important;font-weight:700!important;line-height:1.12!important;letter-spacing:.1px!important;}
-  .dashboard-grid,.route-layout{grid-template-columns:1fr!important;gap:14px!important;padding:0 2px!important;}
-  .feature-card,.mini-card,.glass-panel,.result-panel,.chat-page{border-radius:20px!important;padding:16px!important;background:linear-gradient(145deg,rgba(8,24,58,.72),rgba(4,11,29,.72))!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;border:1px solid rgba(95,172,255,.15)!important;box-shadow:0 8px 32px rgba(0,0,0,.24)!important;}
-  .feature-card{display:grid!important;grid-template-columns:1fr auto!important;gap:10px!important;min-height:150px!important;}
-  .feature-card h2{font-size:20px!important;letter-spacing:-.35px!important;}
-  .feature-card p{font-size:13px!important;line-height:1.55!important;}
-  .card-art{min-width:76px!important;font-size:42px!important;}
-  .mini-card{min-height:auto!important;}
-  .nam33-history-card,.nam33-voice-card,.nam33-stats-card{display:none!important;}
+  .hero-center{position:relative!important;z-index:7!important;width:100%!important;max-width:100%!important;margin:0!important;padding:42px 18px 22px!important;text-align:center!important;}
+  .hero-center h1{font-size:clamp(46px,15vw,62px)!important;line-height:.96!important;margin:0 auto 18px!important;max-width:360px!important;letter-spacing:.01em!important;text-shadow:0 4px 18px rgba(0,0,0,.72)!important;}
+  .hero-center p{font-size:13px!important;line-height:1.55!important;letter-spacing:.24em!important;margin:0 auto 18px!important;max-width:330px!important;text-shadow:0 3px 12px rgba(0,0,0,.78)!important;}
 
+  .search-shell{width:100%!important;max-width:100%!important;min-height:0!important;margin:0 auto 18px!important;padding:13px!important;border-radius:26px!important;display:grid!important;grid-template-columns:28px minmax(0,1fr)!important;gap:9px 10px!important;background:rgba(10,21,49,.78)!important;border:1px solid rgba(89,221,255,.42)!important;box-shadow:0 18px 42px rgba(0,0,0,.28)!important;}
+  .search-shell span{font-size:23px!important;align-self:center!important;justify-self:center!important;}
+  .search-shell input{width:100%!important;min-width:0!important;height:42px!important;font-size:17px!important;line-height:1.25!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;padding:0!important;background:transparent!important;}
+  .search-shell button{grid-column:1/3!important;width:100%!important;height:58px!important;min-height:58px!important;border-radius:22px!important;font-size:16px!important;font-weight:900!important;padding:0 16px!important;}
+
+  .quick-row{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin:0!important;}
+  .quick-row button{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:54px!important;padding:10px 8px!important;border-radius:999px!important;font-size:14px!important;line-height:1.15!important;white-space:normal!important;}
+  .quick-row button:nth-child(n+5){grid-column:1/3!important;max-width:240px!important;margin:auto!important;}
+
+  /* Tabs mobile: nhìn đủ, không phóng to/cắt */
+  .feature-tabs-wrap{width:100%!important;margin:10px auto 18px!important;padding:14px 12px!important;border-radius:26px!important;transform:none!important;min-height:0!important;overflow:hidden!important;}
+  .slide-btn{width:38px!important;height:38px!important;min-width:38px!important;}
+  .feature-tabs{height:auto!important;display:flex!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:0 2px 4px!important;scroll-snap-type:x mandatory!important;}
+  .feature-tabs .tab-card,.tab-card{flex:0 0 96px!important;width:96px!important;min-width:96px!important;max-width:96px!important;min-height:82px!important;height:82px!important;padding:9px 7px!important;border-radius:18px!important;scroll-snap-align:center!important;}
+  .feature-tabs .tab-card .holo-icon,.tab-card .holo-icon{width:32px!important;height:32px!important;min-width:32px!important;}
+  .feature-tabs .tab-card span:last-child,.tab-card span:last-child{font-size:11px!important;line-height:1.15!important;max-width:82px!important;white-space:normal!important;}
+
+  .dashboard-grid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin-top:8px!important;}
+  .feature-card,.mini-card,.glass-panel,.result-panel,.chat-page{border-radius:24px!important;padding:18px!important;margin:0!important;min-height:auto!important;}
+  .feature-card h2{font-size:24px!important;line-height:1.15!important;}
+
+  /* Chat giống app chat chuyên nghiệp hơn trên điện thoại */
+  #page-chat.page.active{display:block!important;padding-bottom:10px!important;}
+  .chat-page{padding:0!important;background:transparent!important;border:none!important;box-shadow:none!important;}
   .chat-pro-shell{display:block!important;}
   .chat-pro-sidebar{display:none!important;}
-  .chat-pro-main{padding:12px!important;border-radius:20px!important;}
-  .chat-pro-head h2{font-size:21px!important;}
-  .chat-pro-head p{font-size:12px!important;}
-  .chat-head-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important;}
-  .chat-mode-tabs{display:flex!important;overflow-x:auto!important;flex-wrap:nowrap!important;gap:8px!important;scrollbar-width:none!important;}
-  .chat-mode-tabs::-webkit-scrollbar{display:none!important;}
-  .chat-mode-tabs button{white-space:nowrap!important;min-width:max-content!important;}
-  .pro-toolbar{display:none!important;}
-  .voice-status{font-size:12px!important;margin:8px 0!important;}
-  .pro-chat-log{height:52vh!important;min-height:360px!important;border-radius:20px!important;padding:12px!important;}
-  .pro-chat-log .msg{max-width:92%!important;font-size:14px!important;border-radius:18px!important;}
-  .pro-upload{display:flex!important;gap:8px!important;overflow-x:auto!important;scrollbar-width:none!important;padding:8px!important;}
-  .pro-upload::-webkit-scrollbar{display:none!important;}
-  .upload-chip,.clear-attachments{white-space:nowrap!important;min-width:max-content!important;}
-  .mobile-voice-input{grid-template-columns:46px minmax(0,1fr) 46px!important;gap:8px!important;position:sticky!important;bottom:calc(82px + var(--safe-bottom))!important;z-index:22!important;background:rgba(4,10,27,.94)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;border:1px solid rgba(105,222,255,.18)!important;border-radius:20px!important;padding:8px!important;box-shadow:0 12px 34px rgba(0,0,0,.36)!important;}
-  .mobile-voice-input #voiceReplyQuickBtn,.mobile-voice-input #stopSpeakQuickBtn{display:none!important;}
-  .mobile-voice-input #chatSendBtn{grid-column:auto!important;width:46px!important;height:46px!important;min-width:46px!important;font-size:0!important;border-radius:16px!important;}
-  .mobile-voice-input #chatSendBtn:before{content:'➤';font-size:22px!important;}
-  .mobile-voice-input textarea{min-height:46px!important;max-height:150px!important;border-radius:16px!important;font-size:15px!important;}
+  .chat-pro-main{min-height:calc(100vh - 104px)!important;border-radius:26px!important;padding:12px!important;background:rgba(5,12,31,.88)!important;border:1px solid rgba(98,218,255,.18)!important;}
+  .chat-pro-head{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:10px!important;margin-bottom:10px!important;}
+  .chat-pro-head h2{font-size:22px!important;margin:0!important;}
+  .chat-pro-head p{font-size:12px!important;margin:4px 0 0!important;color:#b9c9e8!important;}
+  .chat-head-actions{display:flex!important;gap:6px!important;width:auto!important;}
+  .chat-head-actions button{font-size:0!important;width:42px!important;height:42px!important;padding:0!important;border-radius:14px!important;}
+  .chat-head-actions button:first-child:before{content:'⚙️';font-size:18px!important;}
+  .chat-head-actions button:last-child:before{content:'🔊';font-size:18px!important;}
+  .chat-mode-tabs{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:7px!important;margin:8px 0!important;}
+  .chat-mode-tabs button{font-size:12px!important;padding:10px 4px!important;border-radius:14px!important;}
+  .multi-ai-toolbar{display:none!important;}
+  .voice-status{display:none!important;}
+  .pro-chat-log{height:calc(100vh - 318px)!important;min-height:320px!important;max-height:none!important;padding:12px!important;border-radius:22px!important;background:rgba(2,8,24,.52)!important;overflow-y:auto!important;}
+  .pro-chat-log .msg{max-width:92%!important;font-size:15px!important;line-height:1.55!important;border-radius:18px!important;padding:12px 13px!important;}
+  .pro-chat-log .msg.me{margin-left:auto!important;background:linear-gradient(135deg,rgba(34,171,255,.34),rgba(137,65,255,.31))!important;}
+  .pro-chat-log .ai-msg,.pro-chat-log .ai-welcome{margin-right:auto!important;background:rgba(255,255,255,.07)!important;}
+  .pro-upload{padding:8px!important;margin-top:8px!important;border-radius:18px!important;}
+  .chat-upload-bar{display:flex!important;gap:7px!important;overflow-x:auto!important;}
+  .upload-chip,.clear-attachments{flex:0 0 auto!important;font-size:12px!important;padding:9px 10px!important;border-radius:999px!important;}
+  .mobile-voice-input{position:sticky!important;bottom:76px!important;z-index:40!important;display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 44px!important;gap:7px!important;margin-top:8px!important;padding:8px!important;border-radius:22px!important;background:rgba(4,10,27,.96)!important;border:1px solid rgba(105,222,255,.20)!important;box-shadow:0 -10px 34px rgba(0,0,0,.36)!important;}
+  .mobile-voice-input textarea{min-height:44px!important;max-height:140px!important;font-size:15px!important;border-radius:16px!important;padding:12px!important;}
+  .mobile-voice-input .voice-btn,.mobile-voice-input .quick-voice-btn,.mobile-voice-input .quick-stop-btn{width:44px!important;min-width:44px!important;height:44px!important;border-radius:16px!important;}
+  .mobile-voice-input #chatSendBtn{grid-column:1/5!important;height:44px!important;border-radius:16px!important;font-size:15px!important;}
 
-  .bottom-nav{position:fixed!important;left:12px!important;right:12px!important;bottom:var(--safe-bottom)!important;transform:none!important;width:auto!important;height:68px!important;border-radius:24px!important;padding:6px 8px!important;background:rgba(5,10,28,.90)!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;border:1px solid rgba(184,92,255,.22)!important;box-shadow:0 -4px 24px rgba(0,0,0,.42),0 0 36px rgba(91,154,255,.12)!important;display:grid!important;grid-template-columns:1fr 1fr 72px 1fr 1fr!important;align-items:center!important;z-index:60!important;}
-  .bottom-nav button{font-size:20px!important;color:#dbeafe!important;border-radius:18px!important;min-height:50px!important;}
-  .bottom-nav button span{display:block!important;font-size:10px!important;line-height:1!important;font-weight:800!important;margin-top:2px!important;}
-  .bottom-nav button.active{background:rgba(123,92,255,.16)!important;color:#9eeaff!important;}
-  .bottom-nav .magic{width:68px!important;height:68px!important;transform:translateY(-16px)!important;border-radius:24px!important;font-size:30px!important;background:linear-gradient(135deg,#18c8ff,#7f35ff 65%,#d850ff)!important;box-shadow:0 0 30px rgba(125,92,255,.58)!important;}
-  main,.container,#app,.app{padding-bottom:calc(92px + var(--safe-bottom))!important;}
+  .bottom-nav{position:fixed!important;left:10px!important;right:10px!important;bottom:8px!important;width:auto!important;height:66px!important;border-radius:24px!important;z-index:80!important;padding:0 10px!important;}
+  .bottom-nav button{min-width:44px!important;}
+  .bottom-nav span{display:none!important;}
 }
 
-@media (max-width: 420px){
-  .hero-center h1{font-size:36px!important;}
-  .hero-section{min-height:410px!important;}
-  .quick-row{grid-template-columns:1fr!important;}
-  .quick-row button:nth-child(5){grid-column:auto!important;}
-  body:not([data-route="chat"]) .tab-card{flex-basis:92px!important;width:92px!important;min-width:92px!important;}
-  .bottom-nav{left:8px!important;right:8px!important;grid-template-columns:1fr 1fr 64px 1fr 1fr!important;}
-  .bottom-nav .magic{width:64px!important;height:64px!important;}
+@media (max-width: 380px){
+  .top-actions .ai-status{max-width:150px!important;font-size:12px!important;}
+  .menu-btn,.top-actions .icon-btn{width:48px!important;height:48px!important;min-width:48px!important;}
+  .hero-center{padding-left:14px!important;padding-right:14px!important;}
+  .hero-center h1{font-size:44px!important;}
+  .hero-center p{font-size:12px!important;letter-spacing:.18em!important;}
+  .quick-row button{font-size:13px!important;}
 }
 
 
-/* ==========================================================================
-   NAM44 MOBILE FIX - Banner gọn hơn + tab hoạt động + bỏ Chỉnh sửa ảnh AI
-   ========================================================================== */
-@media (max-width: 768px){
-  /* Thu gọn banner theo yêu cầu: không còn tràn ngang sát mép, thấp hơn, gọn hơn */
-  .app{
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-  .hero-section{
-    width: calc(100% - 18px) !important;
-    margin: 0 auto 14px !important;
-    min-height: 0 !important;
-    height: auto !important;
-    border-radius: 0 0 28px 28px !important;
-    padding-bottom: 18px !important;
-  }
-  .hero-center{
-    padding: 56px 14px 0 !important;
-    max-width: 100% !important;
-  }
-  .hero-center h1{
-    font-size: clamp(38px, 12vw, 58px) !important;
-    line-height: .95 !important;
-    margin-bottom: 8px !important;
-    white-space: nowrap !important;
-  }
-  .hero-center p{
-    font-size: 12px !important;
-    line-height: 1.55 !important;
-    letter-spacing: .22em !important;
-    max-width: 92% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  .hero-person{
-    opacity: .78 !important;
-    max-height: 100% !important;
-  }
-  .hero-left{ left: -42px !important; width: 56% !important; }
-  .hero-right{ right: -42px !important; width: 52% !important; }
+/* NAM42 MOBILE APP FIRST - ChatGPT/Gemini style on phone */
+.mobile-chat-shortcuts{display:none}
+@media(max-width:760px){
+  html,body{min-height:100%;overflow-x:hidden;background:#07122f!important;}
+  body{font-size:15px;}
+  .app{width:100%;max-width:100%;padding:0 10px 92px!important;}
+  .topbar{position:sticky!important;top:0;z-index:80;height:64px!important;min-height:64px!important;padding:8px 8px!important;margin:0 -10px 8px!important;border-radius:0 0 22px 22px!important;background:rgba(5,10,28,.84)!important;backdrop-filter:blur(16px);box-shadow:0 12px 30px rgba(0,0,0,.26)}
+  .menu-btn,.icon-btn{width:48px!important;height:48px!important;min-width:48px!important;border-radius:16px!important;font-size:24px!important;}
+  .top-actions{gap:8px!important;align-items:center!important;width:100%;justify-content:flex-end!important;}
+  .top-actions .live-clock,.top-actions .profile-pill{display:none!important;}
+  .ai-status{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px!important;padding:11px 14px!important;border-radius:999px!important;}
 
-  /* Thu ngắn khung hỏi AI trên banner */
-  .search-shell{
-    width: min(100%, 560px) !important;
-    margin: 18px auto 12px !important;
-    padding: 12px !important;
-    border-radius: 26px !important;
-    gap: 8px !important;
-  }
-  .search-shell input{
-    font-size: 15px !important;
-  }
-  .search-shell button{
-    width: 100% !important;
-    margin-top: 8px !important;
-    padding: 14px 16px !important;
-    font-size: 15px !important;
-  }
-  .search-shell{
-    display: grid !important;
-    grid-template-columns: 26px 1fr !important;
-  }
-  .search-shell button{
-    grid-column: 1 / -1 !important;
-  }
+  /* Chat page is the real home on mobile */
+  body[data-route="chat"] .hero-section,
+  body[data-route="chat"] .feature-tabs-wrap{display:none!important;}
+  body[data-route="chat"] .page.active{margin-top:8px!important;}
+  body[data-route="chat"] .chat-page{padding:0!important;margin:0!important;}
+  body[data-route="chat"] .chat-pro-shell{display:block!important;min-height:calc(100vh - 164px)!important;}
+  body[data-route="chat"] .chat-pro-sidebar{display:none!important;}
+  body[data-route="chat"] .chat-pro-main{padding:10px!important;border-radius:24px!important;min-height:calc(100vh - 164px)!important;background:linear-gradient(180deg,rgba(9,18,48,.96),rgba(4,8,22,.96))!important;border:1px solid rgba(91,213,255,.18)!important;box-shadow:0 18px 55px rgba(0,0,0,.32)!important;}
+  body[data-route="chat"] .chat-pro-head{position:sticky;top:72px;z-index:35;background:linear-gradient(180deg,rgba(9,18,48,.98),rgba(9,18,48,.88));backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:12px;margin:0 0 10px!important;}
+  body[data-route="chat"] .chat-pro-head h2{font-size:22px!important;margin:0!important;}
+  body[data-route="chat"] .chat-pro-head p{font-size:12px!important;color:#bcd3f3!important;margin-top:4px!important;}
+  body[data-route="chat"] .chat-head-actions{display:flex!important;gap:8px!important;width:100%;}
+  body[data-route="chat"] .chat-head-actions button{flex:1;padding:10px 8px!important;border-radius:14px!important;font-size:12px!important;}
+  body[data-route="chat"] .chat-mode-tabs{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:7px!important;margin:8px 0!important;}
+  body[data-route="chat"] .chat-mode-tabs button{min-width:0!important;padding:10px 4px!important;border-radius:14px!important;font-size:11px!important;line-height:1.2!important;}
+  body[data-route="chat"] .multi-ai-toolbar{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:8px 0!important;}
+  body[data-route="chat"] .multi-ai-toolbar label{font-size:11px!important;}
+  body[data-route="chat"] .multi-ai-toolbar select{height:42px!important;font-size:13px!important;border-radius:14px!important;}
+  body[data-route="chat"] .multi-ai-toolbar label:nth-child(3){grid-column:1/3;display:flex!important;align-items:center;gap:8px;justify-content:center;}
+  body[data-route="chat"] .voice-status{display:none!important;}
+  body[data-route="chat"] .pro-chat-log{height:calc(100vh - 380px)!important;min-height:300px!important;max-height:none!important;border-radius:20px!important;padding:12px!important;background:rgba(2,6,23,.42)!important;}
+  body[data-route="chat"] .pro-chat-log .msg{max-width:92%!important;font-size:14px!important;line-height:1.58!important;padding:12px 13px!important;border-radius:18px!important;margin:10px 0!important;}
+  body[data-route="chat"] .pro-chat-log .msg.me{max-width:86%!important;}
+  body[data-route="chat"] .ai-welcome{max-width:100%!important;}
+  body[data-route="chat"] .pro-upload{margin-top:8px!important;padding:8px!important;border-radius:16px!important;}
+  body[data-route="chat"] .chat-upload-bar{display:flex!important;gap:8px!important;overflow-x:auto!important;padding-bottom:2px;}
+  body[data-route="chat"] .upload-chip{white-space:nowrap!important;min-width:max-content!important;font-size:12px!important;padding:9px 10px!important;border-radius:13px!important;}
+  body[data-route="chat"] .pro-input{position:sticky!important;bottom:82px!important;z-index:50;display:grid!important;grid-template-columns:46px 1fr 54px!important;gap:8px!important;margin:10px 0 0!important;padding:8px!important;background:rgba(7,12,32,.96)!important;border:1px solid rgba(91,213,255,.18)!important;border-radius:22px!important;backdrop-filter:blur(14px);box-shadow:0 -12px 36px rgba(0,0,0,.25)!important;}
+  body[data-route="chat"] .pro-input input,
+  body[data-route="chat"] .pro-input textarea{min-height:46px!important;height:46px!important;border-radius:16px!important;font-size:15px!important;padding:12px!important;}
+  body[data-route="chat"] .voice-btn{width:46px!important;height:46px!important;min-width:46px!important;border-radius:16px!important;}
+  body[data-route="chat"] #chatSendBtn{grid-column:auto!important;width:54px!important;height:46px!important;border-radius:16px!important;font-size:0!important;padding:0!important;}
+  body[data-route="chat"] #chatSendBtn::before{content:'➤';font-size:22px;}
 
-  /* Thu gọn các tab nhanh trên banner */
-  .quick-row{
-    width: min(100%, 560px) !important;
-    margin: 0 auto !important;
-    gap: 10px !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-  }
-  .quick-row button{
-    min-height: 56px !important;
-    padding: 10px 14px !important;
-    border-radius: 20px !important;
-    font-size: 15px !important;
-  }
-  .quick-row button:nth-child(n+5){
-    display: none !important;
-  }
-
-  /* Tab ngang: làm gọn, bấm đúng route, không bị trượt khó chịu */
-  .feature-tabs-wrap{
-    width: calc(100% - 18px) !important;
-    margin: 12px auto 16px !important;
-    padding: 12px !important;
-    border-radius: 24px !important;
-  }
-  .feature-tabs{
-    display: flex !important;
-    overflow-x: auto !important;
-    gap: 12px !important;
-    scroll-snap-type: x mandatory !important;
-    scrollbar-width: none !important;
-  }
-  .feature-tabs::-webkit-scrollbar{ display:none !important; }
-  .tab-card{
-    min-width: 112px !important;
-    width: 112px !important;
-    min-height: 92px !important;
-    transform: none !important;
-    scroll-snap-align: start !important;
-  }
-  .tab-card.active{
-    transform: translateY(-2px) !important;
-  }
-
-  /* Card nội dung tránh bị bottom nav che */
-  .dashboard-grid,
-  .route-layout{
-    padding-bottom: 88px !important;
-  }
+  /* Other pages mobile: compact banner, no huge landing block */
+  body:not([data-route="chat"]) .hero-section{min-height:300px!important;height:auto!important;margin:8px 0 12px!important;padding:72px 14px 18px!important;border-radius:0 0 26px 26px!important;overflow:hidden!important;}
+  body:not([data-route="chat"]) .hero-center{position:relative!important;z-index:3!important;padding:0!important;}
+  body:not([data-route="chat"]) .hero-center h1{font-size:clamp(34px,13vw,58px)!important;line-height:1!important;margin:8px 0!important;text-align:center!important;}
+  body:not([data-route="chat"]) .hero-center p{font-size:10px!important;letter-spacing:.20em!important;line-height:1.45!important;}
+  body:not([data-route="chat"]) .hero-person{opacity:.28!important;filter:blur(.2px) saturate(1.05)!important;pointer-events:none!important;}
+  body:not([data-route="chat"]) .hero-left{left:-34px!important;bottom:0!important;width:34%!important;height:auto!important;}
+  body:not([data-route="chat"]) .hero-right{right:-26px!important;bottom:0!important;width:40%!important;height:auto!important;object-fit:cover!important;}
+  body:not([data-route="chat"]) .search-shell{display:none!important;}
+  body:not([data-route="chat"]) .quick-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:14px!important;}
+  body:not([data-route="chat"]) .quick-row button{font-size:12px!important;padding:10px 8px!important;border-radius:16px!important;}
+  body:not([data-route="chat"]) .feature-tabs-wrap{margin:10px 0 14px!important;padding:10px!important;border-radius:22px!important;}
+  body:not([data-route="chat"]) .feature-tabs{gap:8px!important;overflow-x:auto!important;scroll-snap-type:x mandatory!important;}
+  body:not([data-route="chat"]) .tab-card{min-width:96px!important;width:96px!important;height:86px!important;border-radius:18px!important;scroll-snap-align:center!important;}
+  body:not([data-route="chat"]) .tab-card span{font-size:11px!important;}
+  .dashboard-grid{grid-template-columns:1fr!important;gap:12px!important;}
+  .feature-card,.mini-card,.glass-panel,.result-panel{border-radius:22px!important;padding:16px!important;}
+  .feature-card h2{font-size:24px!important;}
+  .route-layout{grid-template-columns:1fr!important;gap:12px!important;}
+  .bottom-nav{position:fixed!important;left:10px!important;right:10px!important;bottom:10px!important;z-index:200;height:72px!important;border-radius:24px!important;padding:8px!important;background:rgba(5,10,28,.94)!important;backdrop-filter:blur(18px);box-shadow:0 -14px 40px rgba(0,0,0,.36)!important;}
+  .bottom-nav button{font-size:21px!important;border-radius:18px!important;}
+  .bottom-nav button span{font-size:10px!important;}
+  .bottom-nav .magic{width:76px!important;height:76px!important;margin-top:-32px!important;font-size:32px!important;}
+}
+@media(min-width:761px){
+  body[data-route="chat"] .chat-pro-shell{grid-template-columns:300px 1fr!important;}
 }
 
-/* Desktop không đổi, chỉ bảo đảm nút bấm có cursor */
-.feature-card[onclick], .quick-row button, .tab-card{ cursor:pointer; }
-
-/* ========================================================================== 
-   NAM45 MOBILE FIX - Banner full width, height -50%, compact quick tabs
-   Yêu cầu: giữ chiều ngang banner ban đầu, giảm chiều cao, tab banner gọn sát hơn
-   ========================================================================== */
-@media (max-width: 768px){
-  /* Trả lại chiều ngang ban đầu: banner phủ đủ ngang màn hình như bản mobile trước */
-  .app{
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-  .hero-section{
-    width: auto !important;
-    max-width: none !important;
-    margin: 0 -10px 10px !important;
-    min-height: 215px !important; /* khoảng 50% so với 430px của NAM42/NAM43 */
-    height: 215px !important;
-    padding-bottom: 8px !important;
-    overflow: hidden !important;
-    border-radius: 0 0 24px 24px !important;
-  }
-
-  /* Ảnh nền vẫn phủ banner nhưng không làm banner quá cao */
-  .hero-person{
-    height: 100% !important;
-    max-height: 100% !important;
-    opacity: .68 !important;
-    object-fit: cover !important;
-  }
-  .hero-left{
-    left: -70px !important;
-    width: 58% !important;
-    height: 100% !important;
-  }
-  .hero-right{
-    right: -70px !important;
-    width: 56% !important;
-    height: 100% !important;
-  }
-  .hero-section:after{
-    height: 72% !important;
-    background: linear-gradient(0deg,rgba(3,8,24,.96),rgba(3,8,24,.52),transparent) !important;
-  }
-
-  /* Thu gọn chữ banner để nằm trong chiều cao mới */
-  .hero-center{
-    padding: 14px 16px 8px !important;
-    max-width: 100% !important;
-  }
-  .hero-center h1{
-    font-size: clamp(30px, 9.5vw, 42px) !important;
-    line-height: .92 !important;
-    margin: 2px 0 4px !important;
-    white-space: nowrap !important;
-  }
-  .hero-center p{
-    font-size: 9.5px !important;
-    line-height: 1.25 !important;
-    letter-spacing: .16em !important;
-    margin: 0 auto 8px !important;
-    max-width: 94% !important;
-  }
-
-  /* Khung hỏi AI thấp hơn, gọn hơn */
-  .search-shell{
-    width: min(92%, 560px) !important;
-    min-height: 0 !important;
-    margin: 8px auto 7px !important;
-    padding: 7px 8px !important;
-    border-radius: 18px !important;
-    gap: 6px !important;
-    display: grid !important;
-    grid-template-columns: 22px 1fr !important;
-  }
-  .search-shell input{
-    min-height: 30px !important;
-    height: 30px !important;
-    font-size: 13px !important;
-  }
-  .search-shell button{
-    grid-column: 1 / -1 !important;
-    min-height: 34px !important;
-    height: 34px !important;
-    margin-top: 4px !important;
-    padding: 6px 10px !important;
-    border-radius: 14px !important;
-    font-size: 13px !important;
-    line-height: 1 !important;
-  }
-
-  /* Thu ngắn và rút sát khoảng cách các tab nhanh trên banner */
-  .quick-row{
-    width: min(92%, 560px) !important;
-    margin: 0 auto !important;
-    gap: 5px !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-  }
-  .quick-row button{
-    min-height: 32px !important;
-    height: 32px !important;
-    padding: 5px 10px !important;
-    border-radius: 14px !important;
-    font-size: 12px !important;
-    line-height: 1 !important;
-  }
-  .quick-row button:nth-child(n+5){
-    display: none !important;
-  }
-
-  /* Nếu màn rất thấp hoặc nhỏ, ẩn bớt nút nhanh để banner không dài */
-  @media (max-width: 420px){
-    .hero-section{height: 205px !important; min-height: 205px !important;}
-    .hero-center h1{font-size: 32px !important;}
-    .hero-center p{font-size: 9px !important; margin-bottom: 6px !important;}
-    .quick-row button{height: 30px !important; min-height: 30px !important; font-size: 11.5px !important;}
-  }
-}
+/* NAM46 MOBILE PREMIUM FIX
+   - Nền/giao diện giữ NAM42.
+   - Banner bỏ nút AI phân tích và bỏ bói bài/đổi bài.
+   - Sau banner là ô Hỏi AI ngay bây giờ.
+   - 2 ảnh banner mở rộng, rõ nét hơn, viền vẫn hòa nền.
+*/
+.banner-actions{margin-top:22px!important;max-width:520px;margin-left:auto;margin-right:auto;display:grid!important;grid-template-columns:1fr 1fr;gap:12px!important}
+.banner-actions button{min-height:50px!important;border-radius:24px!important;background:rgba(5,13,35,.58)!important;border:1px solid rgba(105,222,255,.32)!important;backdrop-filter:blur(12px)!important}
+.home-ask-panel{margin:18px 8px 16px}.home-ask-card{position:relative;overflow:hidden;border:1px solid rgba(95,172,255,.32);border-radius:28px;background:linear-gradient(145deg,rgba(8,28,64,.82),rgba(4,13,34,.78));box-shadow:0 24px 80px rgba(0,0,0,.35),inset 0 0 35px rgba(58,154,255,.08);padding:22px;backdrop-filter:blur(16px)}.home-ask-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 15%,rgba(53,215,255,.18),transparent 28%),radial-gradient(circle at 88% 18%,rgba(143,67,255,.18),transparent 30%);pointer-events:none}.home-ask-card>*{position:relative}.home-ask-title{font-size:clamp(24px,5.8vw,34px);font-weight:950;color:#fff;margin-bottom:8px;text-shadow:0 0 18px rgba(53,215,255,.28)}.home-ask-card p{margin:0 0 14px;color:#bfd0ec;line-height:1.55}.home-ask-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;border:1px solid rgba(111,188,255,.35);background:rgba(3,12,30,.50);border-radius:24px;padding:10px;box-shadow:inset 0 0 20px rgba(70,150,255,.10)}.home-ask-box textarea{width:100%;min-height:52px;max-height:160px;border:0;outline:0;resize:none;background:transparent;color:#fff;padding:14px 12px;font-size:16px;line-height:1.45}.home-ask-box textarea::placeholder{color:#aebfe0}.home-ask-box button{border:0;color:#fff;border-radius:18px;min-height:52px;padding:0 22px;font-weight:950;background:linear-gradient(135deg,#18c8ff,#7f35ff 70%,#b646ff);box-shadow:0 0 26px rgba(81,117,255,.38)}
+.hero-section{min-height:clamp(380px,60vh,540px)!important}.hero-center{padding-top:8px!important}.hero-center h1{margin-top:14px!important}.hero-person{image-rendering:auto!important;filter:drop-shadow(0 0 18px rgba(63,185,255,.24)) drop-shadow(0 0 38px rgba(106,75,255,.16)) saturate(1.08) contrast(1.04)!important}.hero-left{width:37%!important;height:100%!important;left:0!important;bottom:0!important;object-fit:cover!important;object-position:48% bottom!important;opacity:1!important;-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 76%,rgba(0,0,0,.72) 88%,transparent 100%),linear-gradient(0deg,transparent 0%,#000 8%,#000 100%)!important;mask-image:linear-gradient(90deg,#000 0%,#000 76%,rgba(0,0,0,.72) 88%,transparent 100%),linear-gradient(0deg,transparent 0%,#000 8%,#000 100%)!important}.hero-right{width:37%!important;height:100%!important;right:0!important;bottom:0!important;object-fit:cover!important;object-position:58% bottom!important;opacity:1!important;transform:none!important;-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.38) 10%,rgba(0,0,0,.82) 22%,#000 38%,#000 100%),linear-gradient(0deg,transparent 0%,#000 8%,#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.38) 10%,rgba(0,0,0,.82) 22%,#000 38%,#000 100%),linear-gradient(0deg,transparent 0%,#000 8%,#000 100%)!important}.feature-tabs-wrap{margin-top:12px!important}.tab-card{min-height:86px!important}.bottom-nav{overflow:hidden!important}.bottom-nav button{min-width:0!important}.bottom-nav span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:920px){.hero-section{min-height:450px!important}.hero-left{width:54%!important;left:-68px!important;object-position:54% bottom!important}.hero-right{width:54%!important;right:-64px!important;object-position:48% bottom!important}.hero-center{max-width:500px!important}.hero-center h1{font-size:clamp(46px,13vw,68px)!important}.hero-center p{font-size:12px!important;letter-spacing:.20em!important}.banner-actions{max-width:330px!important;grid-template-columns:1fr!important;gap:10px!important}.banner-actions button{min-height:46px!important}.home-ask-panel{margin:14px 10px}.home-ask-card{padding:18px;border-radius:24px}.feature-tabs-wrap{transform:none!important;width:auto!important;margin-left:8px!important;margin-right:8px!important;padding:14px 10px!important}.tab-card{min-width:102px!important;transform:none!important}.tab-card.active,.tab-card:hover{transform:translateY(-2px)!important}}
+@media(max-width:560px){.app{padding-left:0!important;padding-right:0!important}.hero-section{min-height:520px!important;border-radius:0 0 30px 30px!important;margin:0 0 12px!important}.hero-left{width:66%!important;left:-118px!important;opacity:.92!important}.hero-right{width:66%!important;right:-118px!important;opacity:.94!important}.hero-center{padding:20px 18px 10px!important}.hero-center h1{font-size:clamp(48px,16vw,70px)!important;line-height:1!important}.hero-center p{font-size:11px!important;letter-spacing:.18em!important}.banner-actions{margin-top:20px!important;margin-left:auto!important;margin-right:auto!important;width:min(270px,74vw)!important}.banner-actions button{font-size:15px!important;padding:10px 12px!important}.home-ask-title{font-size:28px}.home-ask-card p{font-size:14px}.home-ask-box{grid-template-columns:1fr;border-radius:22px}.home-ask-box button{width:100%}.feature-tabs{gap:10px!important}.tab-card{min-width:94px!important;min-height:82px!important;padding:9px!important}.tab-card span{font-size:12px}.holo-icon{width:40px!important;height:40px!important}.bottom-nav{width:calc(100% - 18px)!important;grid-template-columns:1fr 1fr 72px 1fr 1fr!important}.bottom-nav .magic{width:62px!important;height:62px!important}.bottom-nav span{font-size:11px!important;display:block!important}.dashboard-grid{padding:0 10px}.feature-card{padding:18px!important}.feature-card h2{font-size:21px!important}.chat-pro-shell{padding:0 8px}}
